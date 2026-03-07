@@ -1,0 +1,27 @@
+<div class="login-page">
+  <div class="login-box">
+    <div class="logo">
+      <div class="logo-icon"><i class="bi bi-hexagon-fill"></i></div>
+      SuperTech
+    </div>
+
+    <h2>Bem-vindo de volta!</h2>
+    <p>Acesse o painel do seu restaurante</p>
+
+    <div class="erro" *ngIf="erro">Login ou senha incorretos.</div>
+
+    <form [formGroup]="form" (ngSubmit)="fazerLogin()">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" formControlName="login" placeholder="seu@email.com" />
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" formControlName="senha" placeholder="••••••••" />
+      </div>
+      <button class="btn" type="submit" [disabled]="carregando">
+        {{ carregando ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+  </div>
+</div>

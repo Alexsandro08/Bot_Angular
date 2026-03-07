@@ -1,0 +1,19 @@
+<app-header 
+  [paginaAtual]="paginaAtual" 
+  (paginaMudou)="trocarPagina($event)">
+</app-header>
+
+<app-qr-modal></app-qr-modal>
+
+<div *ngIf="paginaAtual === 'dashboard'">
+  <app-stats-grid></app-stats-grid>
+  
+  <div class="main-layout">
+    <app-orders-panel></app-orders-panel>
+    <app-sidebar></app-sidebar>
+  </div>
+</div>
+
+<div *ngIf="paginaAtual === 'produtos'">
+  <app-produtos></app-produtos>
+</div>

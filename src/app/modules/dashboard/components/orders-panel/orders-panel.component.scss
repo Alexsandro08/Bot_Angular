@@ -1,0 +1,25 @@
+.orders-panel {
+  background: #252936;
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #363b4a;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  color: #9499a5;
+  font-size: 13px;
+  cursor: pointer;
+  padding-bottom: 8px;
+
+  &.active {
+    color: #4f8cff;
+    border-bottom: 2px solid #4f8cff;
+  }
+}

@@ -1,0 +1,86 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  margin-bottom: 30px;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.logo-icon {
+  background: #4f8cff;
+  padding: 8px;
+  border-radius: 10px;
+  display: flex;
+}
+
+nav a {
+  margin-left: 25px;
+  color: #9499a5;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+
+  &.active {
+    color: white;
+    border-bottom: 2px solid #4f8cff;
+    padding-bottom: 5px;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.bot-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-offline { 
+  background: #ff4757; 
+  box-shadow: 0 0 10px #ff4757; 
+}
+
+.dot-online { 
+  background: #2ed573; 
+  box-shadow: 0 0 10px #2ed573;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 
+  0% { opacity: 1; } 
+  50% { opacity: 0.5; } 
+  100% { opacity: 1; } 
+}
+
+.btn-logout {
+  background: #363b4a;
+  border: none;
+  color: #9499a5;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+
+  &:hover { color: white; }
+}

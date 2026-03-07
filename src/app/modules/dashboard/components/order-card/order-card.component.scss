@@ -1,0 +1,78 @@
+.order-wrapper { margin-bottom: 20px; }
+
+.status-badge-top {
+  background: rgba(241, 196, 15, 0.15);
+  color: #f1c40f;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px 20px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.order-list-item {
+  background: #ffffff;
+  color: #1e2433;
+  border-radius: 0 12px 12px 12px;
+  padding: 18px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-left { display: flex; align-items: center; gap: 15px; }
+
+.order-img {
+  background: #1e2433;
+  color: white;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.order-info-text {
+  h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  p { font-size: 12px; color: #6b7280; line-height: 1.4; }
+}
+
+.order-right { display: flex; align-items: center; gap: 20px; }
+
+.order-price { font-size: 20px; font-weight: 800; min-width: 90px; text-align: right; }
+
+.badge-pg {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  
+  img {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.btn-confirm { background: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
+
+.btn-pix { background: #4f8cff; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px; }
+
+.btn-cancel { 
+  background: #ff0000bd; 
+  color: #fff;
+  border: none; padding: 10px 20px; 
+  border-radius: 8px; font-weight: 700; 
+  cursor: pointer; 
+  font-size: 13px;
+
+  &:hover {
+    background: red;
+  }
+}

@@ -1,0 +1,18 @@
+<header class="header">
+  <div class="logo-box">
+    <div class="logo-icon"><i class="bi bi-hexagon-fill"></i></div>
+    SuperTech
+  </div>
+
+  <nav>
+    <a [class.active]="paginaAtual === 'dashboard'" (click)="navegar('dashboard')">Dashboard</a>
+    <a [class.active]="paginaAtual === 'produtos'" (click)="navegar('produtos')">Produtos</a>
+  </nav>
+
+  <div class="header-right">
+    <div class="bot-status">
+      <span class="status-dot" [class.dot-online]="botOnline" [class.dot-offline]="!botOnline"></span>
+      <span>{{ botOnline ? 'ONLINE' : 'OFFLINE' }}</span>
+    </div>
+  </div>
+</header>
