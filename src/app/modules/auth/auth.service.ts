@@ -7,16 +7,25 @@ import { Observable, tap } from 'rxjs';
 export class AuthService {
   private apiUrl = 'http://localhost:3000';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
   login(login: string, senha: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/login`, { login, senha }, { withCredentials: true }).pipe(
-      tap((res: any) => {
-        if (res.ok) {
-          sessionStorage.setItem('logado', 'true');
-        }
-      })
-    );
+    return this.http
+      .post(
+        `${this.apiUrl}/auth/login`,
+        { login, senha },
+        { withCredentials: true },
+      )
+      .pipe(
+        tap((res: any) => {
+          if (res.ok) {
+            sessionStorage.setItem('logado', 'true');
+          }
+        }),
+      );
   }
 
   logout(): void {

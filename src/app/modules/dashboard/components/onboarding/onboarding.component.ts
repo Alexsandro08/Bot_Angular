@@ -5,7 +5,7 @@ import { LojaService, HorarioLoja } from '../../services/loja.service';
   selector: 'app-onboarding',
   standalone: false,
   templateUrl: './onboarding.component.html',
-  styleUrl: './onboarding.component.scss'
+  styleUrl: './onboarding.component.scss',
 })
 export class OnboardingComponent {
   @Output() concluido = new EventEmitter<void>();
@@ -17,7 +17,10 @@ export class OnboardingComponent {
 
   salvar(): void {
     if (!this.abertura || !this.fechamento) return;
-    this.lojaService.definirHorario({ abertura: this.abertura, fechamento: this.fechamento });
+    this.lojaService.definirHorario({
+      abertura: this.abertura,
+      fechamento: this.fechamento,
+    });
     this.concluido.emit();
   }
 }

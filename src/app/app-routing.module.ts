@@ -4,20 +4,24 @@ import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { 
-    path: 'login', 
-    loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule) 
+  {
+    path: 'login',
+    loadChildren: () =>
+      import('./modules/auth/auth.module').then((m) => m.AuthModule),
   },
-  { 
-    path: 'dashboard', 
-    loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule),
-    canActivate: [AuthGuard]
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./modules/dashboard/dashboard.module').then(
+        (m) => m.DashboardModule,
+      ),
+    canActivate: [AuthGuard],
   },
-  { path: '**', redirectTo: '/login' }
+  { path: '**', redirectTo: '/login' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

@@ -1,16 +1,16 @@
 <div class="dashboard-container">
-  <app-onboarding *ngIf="mostrarOnboarding" (concluido)="onOnboardingConcluido()"></app-onboarding>
+  <app-onboarding
+    *ngIf="mostrarOnboarding"
+    (concluido)="onOnboardingConcluido()"
+  ></app-onboarding>
 
   <app-qr-modal></app-qr-modal>
 
-  <app-header
-    [paginaAtual]="paginaAtual"
-    (paginaMudou)="trocarPagina($event)">
+  <app-header [paginaAtual]="paginaAtual" (paginaMudou)="trocarPagina($event)">
   </app-header>
 
   <div class="dashboard-wrapper">
     <ng-container [ngSwitch]="paginaAtual">
-
       <ng-container *ngSwitchCase="'dashboard'">
         <app-stats-grid></app-stats-grid>
         <div class="main-layout">
@@ -23,15 +23,18 @@
         <app-produtos></app-produtos>
       </ng-container>
 
+      <ng-container *ngSwitchCase="'relatorios'">
+        <app-relatorios></app-relatorios>
+      </ng-container>
     </ng-container>
   </div>
 
   <div class="saindo-overlay" *ngIf="mostrarSaindo">
-  <div class="saindo-box">
-    <span class="emoji">😢</span>
-    <h2>Poxa...</h2>
-    <p>Estamos te deslogando por falta de renovação.</p>
-    <small>Entre em contato para renovar sua assinatura.</small>
+    <div class="saindo-box">
+      <span class="emoji">😢</span>
+      <h2>Poxa...</h2>
+      <p>Estamos te deslogando por falta de renovação.</p>
+      <small>Entre em contato para renovar sua assinatura.</small>
+    </div>
   </div>
-</div>
 </div>

@@ -1,11 +1,14 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { NotificationsService, Notification } from '../../services/notifications.service';
+import {
+  NotificationsService,
+  Notification,
+} from '../../services/notifications.service';
 
 @Component({
   selector: 'app-notifications',
   standalone: false,
   templateUrl: './notifications.component.html',
-  styleUrl: './notifications.component.scss'
+  styleUrl: './notifications.component.scss',
 })
 export class NotificationsComponent implements OnInit {
   aberto = false;
@@ -15,7 +18,7 @@ export class NotificationsComponent implements OnInit {
   constructor(private notificationsService: NotificationsService) {}
 
   ngOnInit(): void {
-    this.notificationsService.notificacoes$.subscribe(n => {
+    this.notificationsService.notificacoes$.subscribe((n) => {
       this.notificacoes = n;
       this.naoLidas = this.notificationsService.naoLidas;
     });

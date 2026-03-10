@@ -16,24 +16,31 @@ export class NotificationsService {
   notificacoes$ = this.notificacoesSubject.asObservable();
 
   get naoLidas(): number {
-    return this.notificacoesSubject.value.filter(n => !n.lida).length;
+    return this.notificacoesSubject.value.filter((n) => !n.lida).length;
   }
 
-  adicionar(tipo: Notification['tipo'], titulo: string, mensagem: string): void {
+  adicionar(
+    tipo: Notification['tipo'],
+    titulo: string,
+    mensagem: string,
+  ): void {
     const nova: Notification = {
       id: Date.now(),
       tipo,
       titulo,
       mensagem,
       hora: new Date(),
-      lida: false
+      lida: false,
     };
     this.notificacoesSubject.next([nova, ...this.notificacoesSubject.value]);
     this.tocar();
   }
 
   marcarTodasLidas(): void {
-    const atualizadas = this.notificacoesSubject.value.map(n => ({ ...n, lida: true }));
+    const atualizadas = this.notificacoesSubject.value.map((n) => ({
+      ...n,
+      lida: true,
+    }));
     this.notificacoesSubject.next(atualizadas);
   }
 

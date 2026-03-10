@@ -1,9 +1,33 @@
 <section class="orders-panel">
   <div class="tabs">
-    <div class="tab" [class.active]="filtro === 'todos'" (click)="filtrar('todos')">Todos</div>
-    <div class="tab" [class.active]="filtro === 'aguardando'" (click)="filtrar('aguardando')">Aguardando Pagamento</div>
-    <div class="tab" [class.active]="filtro === 'preparo'" (click)="filtrar('preparo')">Em Preparo</div>
-    <div class="tab" [class.active]="filtro === 'finalizados'" (click)="filtrar('finalizados')">Finalizados</div>
+    <div
+      class="tab"
+      [class.active]="filtro === 'todos'"
+      (click)="filtrar('todos')"
+    >
+      Todos
+    </div>
+    <div
+      class="tab"
+      [class.active]="filtro === 'aguardando'"
+      (click)="filtrar('aguardando')"
+    >
+      Aguardando Pagamento
+    </div>
+    <div
+      class="tab"
+      [class.active]="filtro === 'preparo'"
+      (click)="filtrar('preparo')"
+    >
+      Em Preparo
+    </div>
+    <div
+      class="tab"
+      [class.active]="filtro === 'finalizados'"
+      (click)="filtrar('finalizados')"
+    >
+      Finalizados
+    </div>
   </div>
 
   <app-order-card
@@ -12,6 +36,7 @@
     (onAceitar)="aceitar($event)"
     (onRecusar)="recusar($event)"
     (onConfirmarPreparo)="confirmarPreparo($event)"
-    (onEntrega)="entrega($event)">
+    (onEntrega)="entrega($event)"
+  >
   </app-order-card>
 </section>

@@ -7,7 +7,7 @@ declare var Swal: any;
   selector: 'app-produtos',
   standalone: false,
   templateUrl: './produtos.component.html',
-  styleUrl: './produtos.component.scss'
+  styleUrl: './produtos.component.scss',
 })
 export class ProdutosComponent implements OnInit {
   produtos: Produto[] = [];
@@ -15,14 +15,21 @@ export class ProdutosComponent implements OnInit {
   editando = false;
   indexAtual: number | null = null;
 
-  form: Partial<Produto> = { nome: '', preco: '', quantidade: '', status: 'Disponível' };
+  form: Partial<Produto> = {
+    nome: '',
+    preco: '',
+    quantidade: '',
+    status: 'Disponível',
+  };
 
   constructor(private produtosService: ProdutosService) {}
 
-  ngOnInit(): void { this.carregar(); }
+  ngOnInit(): void {
+    this.carregar();
+  }
 
   carregar(): void {
-    this.produtosService.listar().subscribe(p => this.produtos = p);
+    this.produtosService.listar().subscribe((p) => (this.produtos = p));
   }
 
   abrirModal(index: number | null): void {
@@ -30,25 +37,38 @@ export class ProdutosComponent implements OnInit {
     this.editando = index !== null;
     if (index !== null) {
       const p = this.produtos[index];
-      this.form = { nome: p.nome, preco: p.preco, quantidade: p.quantidade, status: p.status };
+      this.form = {
+        nome: p.nome,
+        preco: p.preco,
+        quantidade: p.quantidade,
+        status: p.status,
+      };
     } else {
       this.form = { nome: '', preco: '', quantidade: '', status: 'Disponível' };
     }
     this.modalAberto = true;
   }
 
-  fecharModal(): void { this.modalAberto = false; }
+  fecharModal(): void {
+    this.modalAberto = false;
+  }
 
   salvar(): void {
-    const obs = this.editando && this.indexAtual !== null
-      ? this.produtosService.editar(this.indexAtual, this.form)
-      : this.produtosService.adicionar(this.form);
+    const obs =
+      this.editando && this.indexAtual !== null
+        ? this.produtosService.editar(this.indexAtual, this.form)
+        : this.produtosService.adicionar(this.form);
 
     obs.subscribe((res: any) => {
       if (res.ok) {
         this.fecharModal();
         this.carregar();
-        Swal.fire({ title: 'Salvo!', icon: 'success', timer: 1500, showConfirmButton: false });
+        Swal.fire({
+          title: 'Salvo!',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
       }
     });
   }
@@ -61,12 +81,17 @@ export class ProdutosComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Sim, remover',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#ff4757'
+      confirmButtonColor: '#ff4757',
     }).then((r: any) => {
       if (r.isConfirmed) {
         this.produtosService.deletar(index).subscribe(() => {
           this.carregar();
-          Swal.fire({ title: 'Removido!', icon: 'success', timer: 1500, showConfirmButton: false });
+          Swal.fire({
+            title: 'Removido!',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+          });
         });
       }
     });

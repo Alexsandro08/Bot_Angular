@@ -7,24 +7,16 @@ import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/auth.interceptor';
 
-
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
-  imports: [
-    BrowserModule,
-    CommonModule,
-    HttpClientModule,
-    AppRoutingModule,
-  ],
+  declarations: [AppComponent],
+  imports: [BrowserModule, CommonModule, HttpClientModule, AppRoutingModule],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

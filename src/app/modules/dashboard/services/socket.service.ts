@@ -8,9 +8,9 @@ export class SocketService {
 
   constructor() {
     console.log('🔌 SocketService inicializado');
-    this.socket = io('http://localhost:3000', { 
+    this.socket = io('http://localhost:3000', {
       withCredentials: true,
-      transports: ['websocket', 'polling'] // Força usar websocket
+      transports: ['websocket', 'polling'], // Força usar websocket
     });
 
     this.socket.on('connect', () => {
@@ -27,7 +27,7 @@ export class SocketService {
   }
 
   on(event: string): Observable<any> {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       this.socket.on(event, (data: any) => {
         console.log(`📨 Evento recebido [${event}]:`, data);
         observer.next(data);

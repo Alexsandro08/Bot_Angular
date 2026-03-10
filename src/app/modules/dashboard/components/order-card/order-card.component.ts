@@ -7,7 +7,7 @@ declare var Swal: any;
   selector: 'app-order-card',
   standalone: false,
   templateUrl: './order-card.component.html',
-  styleUrl: './order-card.component.scss'
+  styleUrl: './order-card.component.scss',
 })
 export class OrderCardComponent {
   @Input() pedido!: Pedido;
@@ -18,7 +18,8 @@ export class OrderCardComponent {
 
   get statusMsg(): string {
     if (this.pedido.status === 'preparo') return 'Em Preparo...';
-    if (this.pedido.status === 'validacao_pendente') return 'Comprovante Enviado!';
+    if (this.pedido.status === 'validacao_pendente')
+      return 'Comprovante Enviado!';
     if (this.pedido.status === 'finalizado') return 'Concluído';
     return 'Aguardando Pagamento...';
   }
@@ -45,7 +46,7 @@ export class OrderCardComponent {
       showCancelButton: true,
       confirmButtonText: 'Confirmar Pagamento',
       cancelButtonText: 'Fechar',
-      confirmButtonColor: '#2ecc71'
+      confirmButtonColor: '#2ecc71',
     }).then((r: any) => {
       if (r.isConfirmed) this.onConfirmarPreparo.emit(this.pedido);
     });

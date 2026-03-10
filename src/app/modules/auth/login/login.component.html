@@ -13,14 +13,18 @@
     <form [formGroup]="form" (ngSubmit)="fazerLogin()">
       <div class="field">
         <label>Email</label>
-        <input type="email" formControlName="login" placeholder="seu@email.com" />
+        <input
+          type="email"
+          formControlName="login"
+          placeholder="seu@email.com"
+        />
       </div>
       <div class="field">
         <label>Senha</label>
         <input type="password" formControlName="senha" placeholder="••••••••" />
       </div>
       <button class="btn" type="submit" [disabled]="carregando">
-        {{ carregando ? 'Entrando...' : 'Entrar' }}
+        {{ carregando ? "Entrando..." : "Entrar" }}
       </button>
     </form>
   </div>

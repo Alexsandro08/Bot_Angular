@@ -1,13 +1,19 @@
 <div class="notifications-wrapper">
   <button class="btn-sino" (click)="toggle()">
     <i class="bi bi-bell-fill"></i>
-    <span class="badge" *ngIf="naoLidas > 0">{{ naoLidas > 9 ? '9+' : naoLidas }}</span>
+    <span class="badge" *ngIf="naoLidas > 0">{{
+      naoLidas > 9 ? "9+" : naoLidas
+    }}</span>
   </button>
 
   <div class="notif-dropdown" *ngIf="aberto">
     <div class="notif-header">
       <span>Notificações</span>
-      <button class="btn-limpar" (click)="limpar()" *ngIf="notificacoes.length > 0">
+      <button
+        class="btn-limpar"
+        (click)="limpar()"
+        *ngIf="notificacoes.length > 0"
+      >
         Limpar tudo
       </button>
     </div>
@@ -18,14 +24,22 @@
     </div>
 
     <div class="notif-list">
-      <div class="notif-item" *ngFor="let n of notificacoes" [class.nao-lida]="!n.lida">
-        <div class="notif-icone" [style.background]="getCor(n.tipo) + '22'" [style.color]="getCor(n.tipo)">
+      <div
+        class="notif-item"
+        *ngFor="let n of notificacoes"
+        [class.nao-lida]="!n.lida"
+      >
+        <div
+          class="notif-icone"
+          [style.background]="getCor(n.tipo) + '22'"
+          [style.color]="getCor(n.tipo)"
+        >
           <i class="bi" [class]="getIcone(n.tipo)"></i>
         </div>
         <div class="notif-info">
           <strong>{{ n.titulo }}</strong>
           <small>{{ n.mensagem }}</small>
-          <span class="notif-hora">{{ n.hora | date:'HH:mm' }}</span>
+          <span class="notif-hora">{{ n.hora | date: "HH:mm" }}</span>
         </div>
       </div>
     </div>

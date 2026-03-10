@@ -1,19 +1,22 @@
 <div class="modal-overlay" *ngIf="mostrar" (click)="fecharModal()">
   <div class="qr-card" (click)="$event.stopPropagation()">
-
-    <!-- View de Carregando / QR Code -->
     <div *ngIf="!conectado" class="qr-main-view">
       <h3>📱 Conectar WhatsApp</h3>
-      <p class="subtitle">Abra o WhatsApp → Dispositivos conectados → Conectar dispositivo</p>
+      <p class="subtitle">
+        Abra o WhatsApp → Dispositivos conectados → Conectar dispositivo
+      </p>
 
       <div class="qr-container">
-        <!-- Loading -->
         <div *ngIf="carregando" class="loading-spinner">
           <div class="spinner"></div>
         </div>
 
-        <!-- QR Code -->
-        <img *ngIf="!carregando && qrUrl" [src]="qrUrl" class="qr-image" alt="QR Code WhatsApp" />
+        <img
+          *ngIf="!carregando && qrUrl"
+          [src]="qrUrl"
+          class="qr-image"
+          alt="QR Code WhatsApp"
+        />
       </div>
 
       <div class="status-waiting">
@@ -28,6 +31,5 @@
       <h3>Conectado!</h3>
       <p>Sincronizando seu Dashboard...</p>
     </div>
-
   </div>
 </div>

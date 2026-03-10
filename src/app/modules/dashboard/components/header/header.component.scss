@@ -1,6 +1,6 @@
 .header {
   display: flex;
-  background: linear-gradient(180deg,#3a3f53,#323246);
+  background: linear-gradient(180deg, #3a3f53, #323246);
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
@@ -59,21 +59,27 @@ nav a {
   display: inline-block;
 }
 
-.dot-offline { 
-  background: #ff4757; 
-  box-shadow: 0 0 10px #ff4757; 
+.dot-offline {
+  background: #ff4757;
+  box-shadow: 0 0 10px #ff4757;
 }
 
-.dot-online { 
-  background: #2ed573; 
+.dot-online {
+  background: #2ed573;
   box-shadow: 0 0 10px #2ed573;
   animation: pulse 2s infinite;
 }
 
-@keyframes pulse { 
-  0% { opacity: 1; } 
-  50% { opacity: 0.5; } 
-  100% { opacity: 1; } 
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .btn-logout {
@@ -85,7 +91,9 @@ nav a {
   cursor: pointer;
   font-size: 13px;
 
-  &:hover { color: white; }
+  &:hover {
+    color: white;
+  }
 }
 
 .btn-loja {
@@ -113,18 +121,23 @@ nav a {
   }
 
   .btn-loja {
-  &.alerta {
-    background: rgba(241, 196, 15, 0.15);
-    color: #f1c40f;
-    border: 1px solid rgba(241, 196, 15, 0.3);
-    animation: alertaPulse 1s ease-in-out infinite;
+    &.alerta {
+      background: rgba(241, 196, 15, 0.15);
+      color: #f1c40f;
+      border: 1px solid rgba(241, 196, 15, 0.3);
+      animation: alertaPulse 1s ease-in-out infinite;
+    }
   }
-}
 
-@keyframes alertaPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
+  @keyframes alertaPulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
 }
 
 .status-dot-loja {
@@ -160,7 +173,10 @@ nav a {
   border-radius: 8px;
   transition: 0.2s;
 
-  &:hover { color: white; background: rgba(255,255,255,0.05); }
+  &:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+  }
 }
 
 .avatar-bot {
@@ -178,7 +194,10 @@ nav a {
   transition: 0.2s;
   color: #9499a5;
 
-  &:hover { border-color: #4f8cff; color: white; }
+  &:hover {
+    border-color: #4f8cff;
+    color: white;
+  }
 
   &.online {
     border-color: #2ed573;
@@ -196,8 +215,12 @@ nav a {
   border-radius: 50%;
   border: 2px solid #151929;
 
-  &.dot-online { background: #2ed573; }
-  &.dot-offline { background: #ff4757; }
+  &.dot-online {
+    background: #2ed573;
+  }
+  &.dot-offline {
+    background: #ff4757;
+  }
 }
 
 .avatar-popup {
@@ -205,12 +228,12 @@ nav a {
   top: calc(100% + 12px);
   right: 0;
   background: #1e2536;
-  border: 1px solid rgba(255,255,255,0.07);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   padding: 20px;
   min-width: 180px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
   animation: popDown 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 999;
   display: flex;
@@ -218,10 +241,18 @@ nav a {
   align-items: center;
   gap: 6px;
 
-  &.online { border-color: rgba(46, 213, 115, 0.2); }
+  &.online {
+    border-color: rgba(46, 213, 115, 0.2);
+  }
 
-  strong { font-size: 14px; color: white; }
-  small { font-size: 11px; color: #8892a4; }
+  strong {
+    font-size: 14px;
+    color: white;
+  }
+  small {
+    font-size: 11px;
+    color: #8892a4;
+  }
 }
 
 .popup-status {
@@ -245,9 +276,9 @@ nav a {
 
 .btn-sair {
   margin-top: 10px;
-  background: rgba(255,71,87,0.1);
+  background: rgba(255, 71, 87, 0.1);
   color: #ff4757;
-  border: 1px solid rgba(255,71,87,0.2);
+  border: 1px solid rgba(255, 71, 87, 0.2);
   padding: 7px 16px;
   border-radius: 8px;
   font-size: 12px;
@@ -260,26 +291,44 @@ nav a {
   width: 100%;
   justify-content: center;
 
-  &:hover { background: rgba(255,71,87,0.2); }
+  &:hover {
+    background: rgba(255, 71, 87, 0.2);
+  }
 }
 
 @keyframes avatarPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.3); }
-  50% { box-shadow: 0 0 0 8px rgba(46, 213, 115, 0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(46, 213, 115, 0);
+  }
 }
 
 @keyframes pulseRing {
-  0% { transform: scale(0.8); opacity: 1; }
-  100% { transform: scale(1.6); opacity: 0; }
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
 }
 
 @keyframes popDown {
-  from { opacity: 0; transform: translateY(-8px) scale(0.95); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .robot-face {
   width: 28px;
   height: 28px;
 }
-

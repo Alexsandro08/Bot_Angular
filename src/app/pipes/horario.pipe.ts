@@ -2,10 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'horario',
-  standalone: false
+  standalone: false,
 })
 export class HorarioPipe implements PipeTransform {
-
   transform(value: string): string {
     if (!value) return '';
 

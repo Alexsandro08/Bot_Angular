@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { SocketService } from './services/socket.service';
-import { PedidosService } from './services/pedidos.service';
+import { PedidosService, Pedido } from './services/pedidos.service';
 import { LojaService } from './services/loja.service';
 import { NotificationsService } from './services/notifications.service';
+import { RelatoriosService, RelatorioPayload } from './services/relatorios.service';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AuthService } from '../auth/auth.service';
@@ -11,14 +12,13 @@ import { AuthService } from '../auth/auth.service';
   selector: 'app-dashboard',
   standalone: false,
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   paginaAtual = 'dashboard';
   mostrarOnboarding = false;
   mostrarSaindo = false;
   private saindo = false;
-
   private jaAvisouExpiracao = false;
   private subs: Subscription[] = [];
 
@@ -28,80 +28,72 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private lojaService: LojaService,
     private notificationsService: NotificationsService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private relatoriosService: RelatoriosService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
-  verificarExpiracao(): void {
-  const checar = () => {
-    this.authService.getMe().subscribe({
-      next: (me: any) => {
-        console.log('getMe retornou:', me);
-        if (!me?.expira_em) return;
-        const expira = new Date(me.expira_em);
-        const agora = new Date();
-        const minutosRestantes = Math.ceil((expira.getTime() - agora.getTime()) / (1000 * 60));
-        console.log('Minutos restantes:', minutosRestantes);
-
-        if (minutosRestantes <= 10 && minutosRestantes > 0 && !this.jaAvisouExpiracao) {
-          this.jaAvisouExpiracao = true;
-          this.notificationsService.adicionar(
-            'alerta',
-            '⚠️ Assinatura expirando!',
-            `Sua assinatura expira em ${minutosRestantes} minuto(s). Renove para continuar.`
-          );
-          Swal.fire({
-            title: '⚠️ Atenção!',
-            text: `Sua assinatura expira em ${minutosRestantes} minuto(s)!`,
-            icon: 'warning',
-            toast: true,
-            position: 'top-end',
-            timer: 8000,
-            timerProgressBar: true,
-            showConfirmButton: false
-          });
-        }
-      },
-      error: (err: any) => {
-        this.mostrarSaindo = true;
-        this.cdr.detectChanges();
-        setTimeout(() => {
-          sessionStorage.removeItem('logado');
-          window.location.href = '/login';
-        }, 4000);
+  private montarPayloadRelatorio(): RelatorioPayload {
+    return this.relatoriosService.montarPayload(this.pedidosService.getHistorico());
   }
-    });
-  };
-
-  checar();
-  setInterval(checar, 10000); // era 60000
-}
-
 
   private deslogar(): void {
-  if (this.saindo) return;
-  this.saindo = true;
-  this.mostrarSaindo = true;
-  this.cdr.detectChanges();
-  setTimeout(() => {
-    sessionStorage.removeItem('logado');
-    window.location.href = '/login';
-  }, 4000);
-}
+    if (this.saindo) return;
+    this.saindo = true;
+    this.mostrarSaindo = true;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      sessionStorage.removeItem('logado');
+      window.location.href = '/login';
+    }, 4000);
+  }
+
+  verificarExpiracao(): void {
+    const checar = () => {
+      this.authService.getMe().subscribe({
+        next: (me: any) => {
+          if (!me?.expira_em) return;
+          const expira = new Date(me.expira_em);
+          const agora = new Date();
+          const minutosRestantes = Math.ceil((expira.getTime() - agora.getTime()) / (1000 * 60));
+
+          if (minutosRestantes <= 10 && minutosRestantes > 0 && !this.jaAvisouExpiracao) {
+            this.jaAvisouExpiracao = true;
+            this.notificationsService.adicionar('alerta', '⚠️ Assinatura expirando!', `Sua assinatura expira em ${minutosRestantes} minuto(s). Renove para continuar.`);
+            Swal.fire({
+              title: '⚠️ Atenção!',
+              text: `Sua assinatura expira em ${minutosRestantes} minuto(s)!`,
+              icon: 'warning', toast: true, position: 'top-end',
+              timer: 8000, timerProgressBar: true, showConfirmButton: false,
+            });
+          }
+        },
+        error: () => this.deslogar()
+      });
+    };
+
+    checar();
+    setInterval(checar, 10000);
+  }
 
   ngOnInit(): void {
     if (!this.lojaService.horarioDefinido) {
       this.mostrarOnboarding = true;
     }
 
+    this.lojaService.salvarRelatorio$.subscribe(() => {
+      const payload = this.montarPayloadRelatorio();
+      if (payload.total_pedidos > 0) {
+        this.relatoriosService.salvar(payload).subscribe();
+      }
+    });
+
     this.verificarExpiracao();
 
-   setInterval(() => {
-    this.authService.getMe().subscribe({
-    error: () => {
-      this.deslogar();
-    }
-  });
-}, 10000);
+    setInterval(() => {
+      this.authService.getMe().subscribe({
+        error: () => this.deslogar()
+      });
+    }, 10000);
 
     this.subs.push(
       this.socketService.on('novo_pedido').subscribe(p => {
@@ -118,14 +110,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (aviso) {
           this.notificationsService.adicionar('alerta', 'Atenção!', 'Sua loja fecha em 1 minuto!');
           Swal.fire({
-            title: '⚠️ Atenção!',
-            text: 'Sua loja fecha em 1 minuto!',
-            icon: 'warning',
-            timer: 8000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            toast: true,
-            position: 'top-end'
+            title: '⚠️ Atenção!', text: 'Sua loja fecha em 1 minuto!',
+            icon: 'warning', timer: 8000, timerProgressBar: true,
+            showConfirmButton: false, toast: true, position: 'top-end'
           });
         }
       }),
@@ -141,6 +128,5 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   trocarPagina(pagina: string): void { this.paginaAtual = pagina; }
   onOnboardingConcluido(): void { this.mostrarOnboarding = false; }
-
   ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
 }

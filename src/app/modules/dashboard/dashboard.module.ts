@@ -14,12 +14,10 @@ import { ProdutosComponent } from './components/produtos/produtos.component';
 import { DashboardComponent } from './dashboard.component';
 import { HorarioPipe } from '../../pipes/horario.pipe';
 import { OnboardingComponent } from './components/onboarding/onboarding.component';
-import { NotificationsComponent } from './components/notifications/notifications.component'
+import { NotificationsComponent } from './components/notifications/notifications.component';
+import { RelatoriosComponent } from './components/relatorios/relatorios.component';
 
-
-const routes: Routes = [
-  { path: '', component: DashboardComponent }
-];
+const routes: Routes = [{ path: '', component: DashboardComponent }];
 
 @NgModule({
   declarations: [
@@ -34,13 +32,14 @@ const routes: Routes = [
     HorarioPipe,
     OnboardingComponent,
     NotificationsComponent,
+    RelatoriosComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RouterModule.forChild(routes)
-  ]
+    RouterModule.forChild(routes),
+  ],
 })
-export class DashboardModule { }
+export class DashboardModule {}

@@ -25,10 +25,14 @@ export class ProdutosService {
   }
 
   editar(index: number, produto: Partial<Produto>): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${index}`, produto, { withCredentials: true });
+    return this.http.put(`${this.apiUrl}/${index}`, produto, {
+      withCredentials: true,
+    });
   }
 
   deletar(index: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${index}`, { withCredentials: true });
+    return this.http.delete(`${this.apiUrl}/${index}`, {
+      withCredentials: true,
+    });
   }
 }

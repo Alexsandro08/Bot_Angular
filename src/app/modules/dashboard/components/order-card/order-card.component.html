@@ -1,17 +1,22 @@
 <div class="order-wrapper">
   <div class="status-badge-top" [class.preparo]="pedido.status === 'preparo'">
-  <span class="dot-pulse"></span>
-  {{ statusMsg }}
-</div>
+    <span class="dot-pulse"></span>
+    {{ statusMsg }}
+  </div>
   <div class="order-list-item">
     <div class="order-left">
       <div class="order-img">SC</div>
       <div class="order-info-text">
         <h4>#{{ pedido.numPedido }} - {{ pedido.nome }}</h4>
-        <p><strong>Itens:</strong> {{ pedido.carrinho.join(', ') }}</p>
-        <p><strong>Endereço:</strong> {{ pedido.endereco || 'Retirada no Local' }}</p>
-        <br>
-        <p *ngIf="pedido.criadoEm"><strong>{{ pedido.criadoEm | horario }}</strong></p>
+        <p><strong>Itens:</strong> {{ pedido.carrinho.join(", ") }}</p>
+        <p>
+          <strong>Endereço:</strong>
+          {{ pedido.endereco || "Retirada no Local" }}
+        </p>
+        <br />
+        <p *ngIf="pedido.criadoEm">
+          <strong>{{ pedido.criadoEm | horario }}</strong>
+        </p>
       </div>
     </div>
 
@@ -19,28 +24,65 @@
       <div class="order-price">R$ {{ pedido.total.toFixed(2) }}</div>
 
       <!-- PENDENTE -->
-      <div *ngIf="pedido.status === 'pendente'" style="display:flex; align-items:center; gap:8px;">
-        <span [style.background]="pgColor + '22'" [style.color]="pgColor" class="badge-pg">{{ pedido.pagamento }}</span>
-        <button class="btn-confirm" (click)="onAceitar.emit(pedido)">Aceitar</button>
-        <button class="btn-cancel" (click)="onRecusar.emit(pedido)">Recusar</button>
+      <div
+        *ngIf="pedido.status === 'pendente'"
+        style="display: flex; align-items: center; gap: 8px"
+      >
+        <span
+          [style.background]="pgColor + '22'"
+          [style.color]="pgColor"
+          class="badge-pg"
+          >{{ pedido.pagamento }}</span
+        >
+        <button class="btn-confirm" (click)="onAceitar.emit(pedido)">
+          Aceitar
+        </button>
+        <button class="btn-cancel" (click)="onRecusar.emit(pedido)">
+          Recusar
+        </button>
       </div>
 
       <!-- AGUARDANDO PIX -->
-      <div *ngIf="pedido.status === 'validacao_pendente'" style="display:flex; align-items:center; gap:8px;">
-        <span class="badge-pg" style="background:#00b89422; color:#00b894;"><img src="assets/icon-pix.png" alt="">PIX</span>
-        <img *ngIf="thumbUrl" [src]="thumbUrl" (click)="verComprovante()"
-          style="width:42px; height:42px; border-radius:8px; object-fit:cover; cursor:pointer; border:2px solid #00b894;">
+      <div
+        *ngIf="pedido.status === 'validacao_pendente'"
+        style="display: flex; align-items: center; gap: 8px"
+      >
+        <span class="badge-pg" style="background: #00b89422; color: #00b894"
+          ><img src="assets/icon-pix.png" alt="" />PIX</span
+        >
+        <img
+          *ngIf="thumbUrl"
+          [src]="thumbUrl"
+          (click)="verComprovante()"
+          style="
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #00b894;
+          "
+        />
         <button class="btn-pix" (click)="verComprovante()">Validar Pix</button>
       </div>
 
       <!-- EM PREPARO -->
       <div *ngIf="pedido.status === 'preparo'">
-        <button class="btn-confirm" style="background:#4f8cff" (click)="onEntrega.emit(pedido)">Saiu Para Entrega</button>
+        <button
+          class="btn-confirm"
+          style="background: #4f8cff"
+          (click)="onEntrega.emit(pedido)"
+        >
+          Saiu Para Entrega
+        </button>
       </div>
 
       <!-- FINALIZADO -->
       <div *ngIf="pedido.status === 'finalizado'">
-        <i class="bi bi-check-circle-fill" style="color:#2ecc71; font-size:24px;"></i>
+        <i
+          class="bi bi-check-circle-fill"
+          style="color: #2ecc71; font-size: 24px"
+        ></i>
       </div>
     </div>
   </div>

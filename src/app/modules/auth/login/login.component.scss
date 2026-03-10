@@ -1,4 +1,4 @@
-@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");
 
 :root {
   --bg-deep: #1b1e29;
@@ -21,7 +21,7 @@
   border-radius: 16px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
 .logo {
@@ -41,12 +41,27 @@
   border-radius: 10px;
 }
 
-h2 { font-size: 18px; margin-bottom: 6px; color: white; }
-p { font-size: 13px; color: #9499a5; margin-bottom: 28px; }
+h2 {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: white;
+}
+p {
+  font-size: 13px;
+  color: #9499a5;
+  margin-bottom: 28px;
+}
 
-.field { margin-bottom: 18px; }
+.field {
+  margin-bottom: 18px;
+}
 
-label { font-size: 12px; color: #9499a5; display: block; margin-bottom: 6px; }
+label {
+  font-size: 12px;
+  color: #9499a5;
+  display: block;
+  margin-bottom: 6px;
+}
 
 input {
   width: 100%;
@@ -59,7 +74,9 @@ input {
   outline: none;
   transition: 0.2s;
 
-  &:focus { border-color: #4f8cff; }
+  &:focus {
+    border-color: #4f8cff;
+  }
 }
 
 .btn {
@@ -75,12 +92,17 @@ input {
   margin-top: 8px;
   transition: 0.2s;
 
-  &:hover { background: #3a7bd5; }
-  &:disabled { opacity: 0.7; cursor: not-allowed; }
+  &:hover {
+    background: #3a7bd5;
+  }
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
 .erro {
-  background: rgba(231,76,60,0.15);
+  background: rgba(231, 76, 60, 0.15);
   color: #e74c3c;
   padding: 10px 15px;
   border-radius: 8px;

@@ -1,0 +1,88 @@
+<div class="relatorios-container">
+  <div class="relatorios-header">
+    <h2><i class="bi bi-bar-chart-line"></i> Relatórios</h2>
+    <div class="header-actions">
+      <button class="btn-salvar" (click)="salvarManual()" [disabled]="salvando || jaExisteHoje">
+        <i class="bi bi-floppy"></i>
+        {{ jaExisteHoje ? "Já salvo hoje" : salvando ? "Salvando..." : "Salvar hoje" }}
+      </button>
+      <button class="btn-pdf" (click)="exportarPDF()" [disabled]="relatorios.length === 0">
+        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="cards-resumo">
+    <div class="card-resumo">
+      <i class="bi bi-cash-stack"></i>
+      <div>
+        <span class="label">Faturamento Total</span>
+        <span class="valor">R$ {{ faturamentoTotal.toFixed(2) }}</span>
+      </div>
+    </div>
+    <div class="card-resumo">
+      <i class="bi bi-receipt"></i>
+      <div>
+        <span class="label">Total de Dias</span>
+        <span class="valor">{{ relatorios.length }}</span>
+      </div>
+    </div>
+    <div class="card-resumo">
+      <i class="bi bi-bag-check"></i>
+      <div>
+        <span class="label">Total de Pedidos</span>
+        <span class="valor">{{ totalPedidos }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="relatorios-body">
+    <div class="tabela-box">
+      <h3>Histórico por dia</h3>
+      <div class="loading" *ngIf="carregando">Carregando...</div>
+      <div class="filtros">
+        <label>De: <input type="date" [(ngModel)]="filtroInicio" /></label>
+        <label>Até: <input type="date" [(ngModel)]="filtroFim" /></label>
+        <button (click)="filtrar()">Filtrar</button>
+        <button (click)="limparFiltro()">Limpar</button>
+      </div>
+      <table *ngIf="!carregando && relatoriosFiltrados.length > 0">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Pedidos</th>
+            <th>Faturamento</th>
+            <th>Pix</th>
+            <th>Dinheiro</th>
+            <th>Cartão</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of relatoriosFiltrados">
+            <td>{{ r.data }}</td>
+            <td>{{ r.total_pedidos }}</td>
+            <td>R$ {{ r.faturamento.toFixed(2) }}</td>
+            <td>{{ r.pix }}</td>
+            <td>{{ r.dinheiro }}</td>
+            <td>{{ r.cartao }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="vazio" *ngIf="!carregando && relatoriosFiltrados.length === 0">
+        Nenhum relatório encontrado nesse período.
+      </p>
+    </div>
+
+    <div class="ranking-box">
+      <h3>🏆 Produtos mais vendidos</h3>
+      <div class="ranking-list">
+        <div class="ranking-item" *ngFor="let p of rankingProdutos; let i = index">
+          <span class="posicao">{{ i + 1 }}º</span>
+          <span class="nome">{{ p.nome }}</span>
+          <span class="qtd">{{ p.quantidade }}x</span>
+        </div>
+        <p class="vazio" *ngIf="rankingProdutos.length === 0">Sem dados ainda.</p>
+      </div>
+    </div>
+  </div>
+</div>
