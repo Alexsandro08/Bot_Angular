@@ -5,7 +5,6 @@ import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
   private apiUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -23,6 +22,10 @@ export class AuthService {
   logout(): void {
     sessionStorage.removeItem('logado');
     this.router.navigate(['/login']);
+  }
+
+  getMe(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/me`, { withCredentials: true });
   }
 
   isLoggedIn(): boolean {

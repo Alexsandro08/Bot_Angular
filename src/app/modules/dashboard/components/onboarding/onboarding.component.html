@@ -1,0 +1,25 @@
+<div class="onboarding-overlay">
+  <div class="onboarding-box">
+    <div class="onboarding-icon">
+      <i class="bi bi-shop"></i>
+    </div>
+    <h2>Bem-vindo ao SuperTech! 🎉</h2>
+    <p>Antes de começar, defina o horário de funcionamento do seu restaurante.</p>
+    <p class="sub">O painel abrirá e fechará automaticamente neste horário.</p>
+
+    <div class="horario-grid">
+      <div class="field">
+        <label><i class="bi bi-sunrise"></i> Abertura</label>
+        <input type="time" [(ngModel)]="abertura" />
+      </div>
+      <div class="field">
+        <label><i class="bi bi-sunset"></i> Fechamento</label>
+        <input type="time" [(ngModel)]="fechamento" />
+      </div>
+    </div>
+
+    <button class="btn-salvar" (click)="salvar()">
+      <i class="bi bi-check-lg"></i> Confirmar e Começar
+    </button>
+  </div>
+</div>

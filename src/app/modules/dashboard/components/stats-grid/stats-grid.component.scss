@@ -7,10 +7,45 @@
 }
 
 .stat-card {
-  background: #252936;
+  background: linear-gradient(180deg,#323C50,#323246);
+  box-shadow: 0px 5px 3px #00000093;
   padding: 20px;
   border-radius: 12px;
 
   h3 { font-size: 24px; margin-bottom: 5px; }
   span { font-size: 12px; color: #9499a5; }
+}
+
+.tendencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  animation: fadeSlideIn 0.4s ease;
+
+  &.up {
+    color: #2ed573;
+    background: rgba(46, 213, 115, 0.12);
+  }
+
+  &.down {
+    color: #ff4757;
+    background: rgba(255, 71, 87, 0.12);
+  }
+}
+
+.stat-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }

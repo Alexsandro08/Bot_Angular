@@ -20,18 +20,34 @@ export class StatsGridComponent implements OnInit {
     this.pedidosService.historico$.subscribe(() => this.calcular());
   }
 
-  calcular(): void {
+  faturamentoHoje = 0;
+faturamentoOntem = 0;
+tendencia: 'up' | 'down' | 'neutral' = 'neutral';
+diferenca = 0;
+
+calcular(): void {
   const historico = this.pedidosService.getHistorico();
   const pedidos = this.pedidosService.getPedidos();
-  
+
+  const hoje = new Date().toDateString();
+  const ontem = new Date();
+  ontem.setDate(ontem.getDate() - 1);
+  const ontemStr = ontem.toDateString();
+
+  const pedidosHoje = historico.filter(p => p.criadoEm && new Date(p.criadoEm).toDateString() === hoje);
+  const pedidosOntem = historico.filter(p => p.criadoEm && new Date(p.criadoEm).toDateString() === ontemStr);
+
+  this.faturamentoHoje = pedidosHoje.reduce((a, b) => a + b.total, 0);
+  this.faturamentoOntem = pedidosOntem.reduce((a, b) => a + b.total, 0);
+  this.diferenca = this.faturamentoHoje - this.faturamentoOntem;
+  this.tendencia = this.diferenca > 0 ? 'up' : this.diferenca < 0 ? 'down' : 'neutral';
+
   this.faturamento = historico.reduce((a, b) => a + b.total, 0);
   this.finalizados = historico.length;
   this.pendentes = pedidos.length;
 
-  const hoje = new Date().toDateString();
-  this.hoje = historico.filter(p => {
-    if (!p.criadoEm) return false;
-    return new Date(p.criadoEm).toDateString() === hoje;
-  }).length;
+  const todayStr = new Date().toDateString();
+  this.hoje = historico.filter(p => p.criadoEm && new Date(p.criadoEm).toDateString() === todayStr).length;
 }
+
 }

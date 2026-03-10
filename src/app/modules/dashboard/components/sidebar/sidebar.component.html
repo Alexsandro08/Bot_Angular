@@ -15,3 +15,26 @@
     </div>
   </div>
 </aside>
+
+<div class="side-card">
+  <h3 style="margin-bottom: 20px; font-size: 18px; color: #fff;">Produtos Mais Vendidos</h3>
+
+  <div class="ranking-vazio" *ngIf="maisVendidos.length === 0">
+    <p>Nenhuma venda registrada.</p>
+  </div>
+
+  
+
+  <div class="ranking-list" *ngIf="maisVendidos.length > 0">
+    <div class="ranking-item" *ngFor="let item of maisVendidos; let i = index">
+  <span class="ranking-pos" [style.color]="i === 0 ? '#4f8cff' : i === 1 ? '#4f8cffcc' : '#4f8cff88'">
+    {{ i + 1 }}
+  </span>
+  <div class="ranking-icon">
+    <img [src]="getIconeProduto(item.nome)" [alt]="item.nome">
+  </div>
+  <span class="ranking-nome">{{ item.nome }}</span>
+  <span class="ranking-qtd">{{ item.quantidade }}</span>
+</div>
+  </div>
+</div>

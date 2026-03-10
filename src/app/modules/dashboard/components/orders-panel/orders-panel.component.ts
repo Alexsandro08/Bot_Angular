@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PedidosService, Pedido } from '../../services/pedidos.service';
 import { SocketService } from '../../services/socket.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-orders-panel',
@@ -51,4 +52,20 @@ export class OrdersPanelComponent implements OnInit {
     this.socketService.emit('saiu_entrega', { userId: p.userId, numPedido: p.numPedido });
     this.pedidosService.finalizarPedido(p.numPedido);
   }
+
+  limparPainel(): void {
+  Swal.fire({
+    title: 'Limpar painel?',
+    text: 'Remove todos os pedidos pendentes e em preparo.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sim, limpar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#ff4757'
+  }).then((r: any) => {
+    if (r.isConfirmed) {
+      this.pedidos.forEach(p => this.pedidosService.removerPedido(p.numPedido));
+    }
+  });
+}
 }

@@ -74,4 +74,18 @@ export class PedidosService {
 
   getPedidos(): Pedido[] { return this.pedidosSubject.value; }
   getHistorico(): Pedido[] { return this.historicoSubject.value; }
+
+  limparPendentes(): void {
+  const pendentes = this.pedidosSubject.value.filter(p => 
+    p.status === 'pendente' || p.status === 'validacao_pendente'
+  );
+  pendentes.forEach(p => this.removerPedido(p.numPedido));
+}
+zerarHistorico(): void {
+  this.historicoSubject.next([]);
+  localStorage.removeItem('historico_vendas');
+  localStorage.removeItem('pedidos_v4');
+  this.pedidosSubject.next([]);
+  this.salvarStorage();
+}
 }

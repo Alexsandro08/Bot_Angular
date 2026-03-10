@@ -10,9 +10,29 @@
   </nav>
 
   <div class="header-right">
-    <div class="bot-status">
-      <span class="status-dot" [class.dot-online]="botOnline" [class.dot-offline]="!botOnline"></span>
-      <span>{{ botOnline ? 'ONLINE' : 'OFFLINE' }}</span>
+    <!-- Status da Loja -->
+    <button class="btn-loja" [class.aberta]="lojaAberta" [class.fechada]="!lojaAberta" (click)="toggleLoja()" [class.alerta]="alertaFechamento"
+  (click)="toggleLoja()">
+      <span class="status-dot-loja" [class.dot-online]="lojaAberta" [class.dot-offline]="!lojaAberta" ></span>
+      <span>{{ lojaAberta ? 'Loja Aberta' : 'Loja Fechada' }}</span>
+      <span class="horario-label" *ngIf="horario">{{ horario.abertura }} - {{ horario.fechamento }}</span>
+    </button>
+    <button class="btn-config" (click)="editarHorario()" title="Editar horário">
+      <i class="bi bi-gear"></i>
+    </button>
+    <app-notifications></app-notifications>
+    <div class="avatar-bot" [class.online]="botOnline" (click)="toggleAvatarInfo()">
+  <i class="bi bi-robot"></i>
+  <span class="avatar-dot" [class.dot-online]="botOnline" [class.dot-offline]="!botOnline"></span>
+
+  <div class="avatar-popup" *ngIf="mostrarInfo" [class.online]="botOnline">
+    <div class="popup-status">
+      <span class="pulse-ring" *ngIf="botOnline"></span>
+      <i class="bi bi-robot"></i>
     </div>
+    <strong>Bot {{ botOnline ? 'Online' : 'Offline' }}</strong>
+    <small>{{ botOnline ? 'Recebendo pedidos' : 'Desconectado' }}</small>
+  </div>
+</div>
   </div>
 </header>

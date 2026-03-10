@@ -1,5 +1,18 @@
 <div class="stats-grid">
-  <div class="stat-card"><h3>R$ {{ faturamento.toFixed(2) }}</h3><span>Faturamento Total</span></div>
+  <div class="stat-card">
+    <div class="stat-top">
+      <h3>R$ {{ faturamento.toFixed(2).replace('.', ',') }}</h3>
+      <div class="tendencia up" *ngIf="tendencia === 'up'">
+        <i class="bi bi-arrow-up"></i>
+        <span>+R$ {{ diferenca.toFixed(2).replace('.', ',') }}</span>
+      </div>
+      <div class="tendencia down" *ngIf="tendencia === 'down'">
+        <i class="bi bi-arrow-down"></i>
+        <span>-R$ {{ (diferenca * -1).toFixed(2).replace('.', ',') }}</span>
+      </div>
+    </div>
+    <span>Faturamento Total</span>
+  </div>
   <div class="stat-card"><h3>{{ hoje }}</h3><span>Pedidos Hoje</span></div>
   <div class="stat-card"><h3>{{ pendentes }}</h3><span>Pendentes</span></div>
   <div class="stat-card"><h3>{{ finalizados }}</h3><span>Finalizados</span></div>

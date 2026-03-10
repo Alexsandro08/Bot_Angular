@@ -46,4 +46,34 @@ export class SidebarComponent implements OnInit {
   const total = historico.reduce((a, b) => a + b.total, 0);
   return `R$ ${(total / historico.length).toFixed(2).replace('.', ',')}`;
 }
+
+  get maisVendidos(): { nome: string; quantidade: number }[] {
+  const historico = this.pedidosService.getHistorico();
+  const contagem: Record<string, number> = {};
+
+  historico.forEach(pedido => {
+    pedido.carrinho.forEach(item => {
+      const nome = item
+        .replace(/^\d+x\s*/i, '')
+        .replace(/\s*\(R\$.*?\)/g, '')
+        .trim();
+      contagem[nome] = (contagem[nome] || 0) + 1;
+    });
+  });
+
+  return Object.entries(contagem)
+    .map(([nome, quantidade]) => ({ nome, quantidade }))
+    .sort((a, b) => b.quantidade - a.quantidade)
+    .slice(0, 5);
+}
+getIconeProduto(nome: string): string {
+  const n = nome.toLowerCase();
+  if (n.includes('burger') || n.includes('x-') || n.includes('sanduiche') || n.includes('lanche')) 
+    return 'assets/burguer.png';
+  if (n.includes('batata') || n.includes('frita')) 
+    return 'assets/batata.png';
+  if (n.includes('refri') || n.includes('coca') || n.includes('suco') || n.includes('bebida') || n.includes('lata')) 
+    return 'assets/refri.png';
+  return 'assets/default.png'; // imagem padrão
+}
 }

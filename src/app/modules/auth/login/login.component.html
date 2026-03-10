@@ -8,7 +8,7 @@
     <h2>Bem-vindo de volta!</h2>
     <p>Acesse o painel do seu restaurante</p>
 
-    <div class="erro" *ngIf="erro">Login ou senha incorretos.</div>
+    <div class="erro" *ngIf="erro">{{ erroMsg }}</div>
 
     <form [formGroup]="form" (ngSubmit)="fazerLogin()">
       <div class="field">

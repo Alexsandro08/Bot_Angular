@@ -1,5 +1,8 @@
 <div class="order-wrapper">
-  <div class="status-badge-top"><i class="bi bi-clock"></i> {{ statusMsg }}</div>
+  <div class="status-badge-top" [class.preparo]="pedido.status === 'preparo'">
+  <span class="dot-pulse"></span>
+  {{ statusMsg }}
+</div>
   <div class="order-list-item">
     <div class="order-left">
       <div class="order-img">SC</div>
@@ -7,6 +10,8 @@
         <h4>#{{ pedido.numPedido }} - {{ pedido.nome }}</h4>
         <p><strong>Itens:</strong> {{ pedido.carrinho.join(', ') }}</p>
         <p><strong>Endereço:</strong> {{ pedido.endereco || 'Retirada no Local' }}</p>
+        <br>
+        <p *ngIf="pedido.criadoEm"><strong>{{ pedido.criadoEm | horario }}</strong></p>
       </div>
     </div>
 
@@ -30,7 +35,7 @@
 
       <!-- EM PREPARO -->
       <div *ngIf="pedido.status === 'preparo'">
-        <button class="btn-confirm" style="background:#4f8cff" (click)="onEntrega.emit(pedido)">Finalizar Entrega</button>
+        <button class="btn-confirm" style="background:#4f8cff" (click)="onEntrega.emit(pedido)">Saiu Para Entrega</button>
       </div>
 
       <!-- FINALIZADO -->
