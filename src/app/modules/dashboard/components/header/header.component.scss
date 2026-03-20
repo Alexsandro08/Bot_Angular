@@ -1,14 +1,19 @@
+// ============================================================
+// HEADER
+// ============================================================
 .header {
   display: flex;
-  background: linear-gradient(180deg, #3a3f53, #323246);
+  background: linear-gradient(180deg, #323c50, #4e5366);
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  margin-bottom: 0; /* antes era 30px */
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
 
+// ============================================================
+// LOGO BOX
+// ============================================================
 .logo-box {
   display: flex;
   align-items: center;
@@ -18,18 +23,66 @@
 }
 
 .logo-icon {
-  background: #4f8cff;
-  padding: 8px;
+  background: transparent;
+  padding: 0;
   border-radius: 10px;
   display: flex;
+
+  &:not(:has(img)) {
+    background: linear-gradient(180deg, #323c50, #4e5366);
+    padding: 8px;
+  }
 }
 
+.logo-upload {
+  position: relative;
+  cursor: pointer;
+
+  .logo-img {
+    width: 65px;
+    height: 65px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .logo-edit-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 12px;
+    color: white;
+  }
+
+  &:hover .logo-edit-overlay {
+    opacity: 1;
+  }
+}
+
+.logo-skeleton {
+  width: 65px;
+  height: 65px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #2a2f45 25%, #363b54 50%, #2a2f45 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+// ============================================================
+// NAV
+// ============================================================
 nav a {
   margin-left: 25px;
   color: #9499a5;
   text-decoration: none;
   font-size: 14px;
   cursor: pointer;
+  transition: color 0.2s;
 
   &.active {
     color: white;
@@ -38,64 +91,18 @@ nav a {
   }
 }
 
+// ============================================================
+// HEADER RIGHT
+// ============================================================
 .header-right {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.bot-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.dot-offline {
-  background: #ff4757;
-  box-shadow: 0 0 10px #ff4757;
-}
-
-.dot-online {
-  background: #2ed573;
-  box-shadow: 0 0 10px #2ed573;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.btn-logout {
-  background: #363b4a;
-  border: none;
-  color: #9499a5;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-
-  &:hover {
-    color: white;
-  }
-}
-
+// ============================================================
+// BOTÃO LOJA
+// ============================================================
 .btn-loja {
   display: flex;
   align-items: center;
@@ -120,23 +127,11 @@ nav a {
     border: 1px solid rgba(255, 71, 87, 0.2);
   }
 
-  .btn-loja {
-    &.alerta {
-      background: rgba(241, 196, 15, 0.15);
-      color: #f1c40f;
-      border: 1px solid rgba(241, 196, 15, 0.3);
-      animation: alertaPulse 1s ease-in-out infinite;
-    }
-  }
-
-  @keyframes alertaPulse {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.6;
-    }
+  &.alerta {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+    border: 1px solid rgba(241, 196, 15, 0.3);
+    animation: alertaPulse 1s ease-in-out infinite;
   }
 }
 
@@ -163,6 +158,47 @@ nav a {
   font-weight: 400;
 }
 
+// ============================================================
+// CONFIG / ENGRENAGEM
+// ============================================================
+.config-wrapper {
+  position: relative;
+}
+
+.config-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #1e2536;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  animation: popDown 0.2s ease;
+
+  button {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #9499a5;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+  }
+}
+
 .btn-config {
   background: transparent;
   border: none;
@@ -173,12 +209,23 @@ nav a {
   border-radius: 8px;
   transition: 0.2s;
 
+  i {
+    display: inline-block;
+    transition: transform 0.6s ease;
+  }
+
   &:hover {
     color: white;
     background: rgba(255, 255, 255, 0.05);
+    i {
+      transform: rotate(60deg);
+    }
   }
 }
 
+// ============================================================
+// AVATAR BOT
+// ============================================================
 .avatar-bot {
   position: relative;
   width: 42px;
@@ -244,7 +291,6 @@ nav a {
   &.online {
     border-color: rgba(46, 213, 115, 0.2);
   }
-
   strong {
     font-size: 14px;
     color: white;
@@ -253,6 +299,13 @@ nav a {
     font-size: 11px;
     color: #8892a4;
   }
+}
+
+.logo {
+  width: 70px;
+  height: 81px;
+  object-fit: contain;
+  margin-top: 10px;
 }
 
 .popup-status {
@@ -296,6 +349,193 @@ nav a {
   }
 }
 
+// ============================================================
+// MODAL DE CROP
+// ============================================================
+.crop-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 20, 0.95);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.crop-box {
+  background: #1e2536;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 24px;
+  padding: 32px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  h3 {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+}
+
+.crop-container {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #151929;
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+.crop-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-cancelar {
+    background: #2a2f45;
+    color: #9499a5;
+    &:hover {
+      background: #363b54;
+      color: white;
+    }
+  }
+
+  .btn-confirmar {
+    background: #4f8cff;
+    color: white;
+    &:hover {
+      background: #3a7bd5;
+    }
+  }
+}
+
+.spinner-btn {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============================================================
+// HAMBURGUER
+// ============================================================
+.btn-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  z-index: 1001;
+
+  span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #9499a5;
+    border-radius: 2px;
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease,
+      background 0.2s;
+    transform-origin: center;
+  }
+
+  &:hover span {
+    background: #fff;
+  }
+
+  &.open {
+    span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+      background: #4f8cff;
+    }
+    span:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0);
+    }
+    span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      background: #4f8cff;
+    }
+  }
+}
+
+// ============================================================
+// ANIMAÇÕES
+// ============================================================
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes alertaPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
 @keyframes avatarPulse {
   0%,
   100% {
@@ -328,7 +568,140 @@ nav a {
   }
 }
 
-.robot-face {
-  width: 28px;
-  height: 28px;
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ============================================================
+// RESPONSIVO — TABLET
+// ============================================================
+@media (min-width: 769px) and (max-width: 1024px) {
+  .header {
+    padding: 12px 20px;
+  }
+  .logo-box {
+    font-size: 16px;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  nav a {
+    margin-left: 14px;
+    font-size: 13px;
+  }
+  .btn-loja {
+    font-size: 11px;
+    padding: 6px 10px;
+    .horario-label {
+      display: none;
+    }
+  }
+}
+
+// ============================================================
+// RESPONSIVO — MOBILE
+// ============================================================
+@media (max-width: 768px) {
+  .header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-radius: 0;
+    position: relative;
+  }
+  .logo-box {
+    font-size: 15px;
+    gap: 8px;
+    flex: 1;
+  }
+  .btn-hamburger {
+    display: flex;
+    order: 3;
+  }
+  .header-right {
+    order: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-loja {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  .btn-config {
+    display: flex;
+    font-size: 16px;
+    padding: 4px;
+  }
+  .avatar-bot {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+  .logo-icon {
+    &:not(:has(img)) {
+      padding: 8px;
+    }
+  }
+
+  .logo-upload {
+    .logo-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+    }
+  }
+
+  .logo-skeleton {
+    width: 42px;
+    height: 42px;
+  }
+
+  nav {
+    order: 10;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition:
+      max-height 0.35s ease,
+      opacity 0.25s ease;
+    border-top: 1px solid transparent;
+
+    &.open {
+      max-height: 200px;
+      opacity: 1;
+      border-top-color: #363b4a;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    a {
+      margin: 0;
+      padding: 10px 4px;
+      font-size: 14px;
+      border-bottom: 1px solid #1e2336;
+      display: block;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.active {
+        color: #4f8cff;
+        border-bottom-color: #1e2336;
+        padding-bottom: 10px;
+        border-left: 3px solid #4f8cff;
+        padding-left: 8px;
+      }
+    }
+  }
 }

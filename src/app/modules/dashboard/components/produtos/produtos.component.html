@@ -1,6 +1,25 @@
 <div class="page-produtos">
   <div class="produtos-header">
     <h2>Gerenciar Produtos</h2>
+
+    <div class="filtros">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" placeholder="Buscar produto..." [(ngModel)]="busca" />
+      </div>
+
+      <div class="dropdown">
+        <div class="dropdown-selected" (click)="toggleDropdown()">
+          {{ filtroCategoria || "Todas as categorias" }}
+          <i class="bi bi-chevron-down" [class.rotate]="dropdownAberto"></i>
+        </div>
+        <div class="dropdown-menu" *ngIf="dropdownAberto">
+          <div class="dropdown-item" (click)="selecionarCategoria('')">Todas as categorias</div>
+          <div class="dropdown-item" *ngFor="let c of categorias" (click)="selecionarCategoria(c)">{{ c }}</div>
+        </div>
+      </div>
+    </div>
+
     <button class="btn-confirm" (click)="abrirModal(null)">
       <i class="bi bi-plus-lg"></i> Novo Produto
     </button>
@@ -14,30 +33,24 @@
           <th>PREÇO</th>
           <th>ESTOQUE</th>
           <th>STATUS</th>
-          <th>AÇÕES</th>
+          <th>CATEGORIA</th>
+          <th>PREPARO</th>
+          <th>EDITAR</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let p of produtos; let i = index">
-          <td>{{ p.nome }}</td>
-          <td>R$ {{ (+p.preco).toFixed(2) }}</td>
-          <td>{{ p.quantidade }}</td>
-          <td>
-            <span
-              class="badge-status"
-              [class.disponivel]="p.status === 'Disponível'"
-              [class.esgotado]="p.status !== 'Disponível'"
-            >
-              {{ p.status }}
-            </span>
+        <tr *ngFor="let p of produtosFiltrados">
+          <td data-label="PRODUTO">{{ p.nome }}</td>
+          <td data-label="PREÇO">R$ {{ (+p.preco.replace(",", ".")).toFixed(2) }}</td>
+          <td data-label="ESTOQUE">{{ p.quantidade }}</td>
+          <td data-label="STATUS">
+            <span class="badge-status" [class.disponivel]="p.status === 'Disponível'" [class.esgotado]="p.status !== 'Disponível'">{{ p.status }}</span>
           </td>
-          <td>
-            <button class="btn-edit" (click)="abrirModal(i)">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn-delete" (click)="deletar(i)">
-              <i class="bi bi-trash"></i>
-            </button>
+          <td data-label="CATEGORIA">{{ p.categoria || "—" }}</td>
+          <td data-label="PREPARO">{{ p.tempoPreparo ? p.tempoPreparo + " min" : "—" }}</td>
+          <td data-label="EDITAR">
+            <button class="btn-edit" (click)="$event.stopPropagation(); abrirModal(p.rowIndex)"><i class="bi bi-pencil"></i></button>
+            <button class="btn-delete" (click)="$event.stopPropagation(); deletar(p.rowIndex)"><i class="bi bi-trash"></i></button>
           </td>
         </tr>
       </tbody>
@@ -45,39 +58,45 @@
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-overlay" *ngIf="modalAberto">
-  <div class="modal-box">
-    <h3>{{ editando ? "Editar Produto" : "Novo Produto" }}</h3>
+<!-- Modal fora do page-produtos -->
+<div class="modal-overlay" *ngIf="modalAberto" (click)="fecharModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ editando ? "Editar Produto" : "Novo Produto" }}</h3>
+      <button class="btn-fechar" (click)="fecharModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body">
+      <label>Nome</label>
+      <input [(ngModel)]="form.nome" placeholder="Nome do produto" />
 
-    <div class="field">
-      <label>Nome do Produto</label>
-      <input type="text" [(ngModel)]="form.nome" placeholder="Ex: X-Burguer" />
-    </div>
-    <div class="field">
-      <label>Preço (R$)</label>
-      <input
-        type="number"
-        [(ngModel)]="form.preco"
-        placeholder="Ex: 14.90"
-        step="0.01"
-      />
-    </div>
-    <div class="field">
-      <label>Quantidade em Estoque</label>
-      <input type="number" [(ngModel)]="form.quantidade" placeholder="Ex: 20" />
-    </div>
-    <div class="field">
+      <label>Preço</label>
+      <input [(ngModel)]="form.preco" placeholder="Ex: 12.90" />
+
+      <label>Estoque</label>
+      <div class="input-number">
+        <button type="button" (click)="form.quantidade = '' + (+form.quantidade! - 1)">−</button>
+        <input [(ngModel)]="form.quantidade" type="number" min="0" />
+        <button type="button" (click)="form.quantidade = '' + (+form.quantidade! + 1)">+</button>
+      </div>
+
       <label>Status</label>
       <select [(ngModel)]="form.status">
         <option value="Disponível">Disponível</option>
         <option value="Esgotado">Esgotado</option>
       </select>
-    </div>
 
-    <div class="modal-actions">
-      <button class="btn-confirm" (click)="salvar()">Salvar</button>
-      <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+      <label>Categoria</label>
+      <select [(ngModel)]="form.categoria">
+        <option value="">Sem categoria</option>
+        <option *ngFor="let c of categorias" [value]="c">{{ c }}</option>
+      </select>
+
+      <label>Tempo de Preparo (min)</label>
+      <input [(ngModel)]="form.tempoPreparo" placeholder="Ex: 15" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" (click)="fecharModal()">Cancelar</button>
+      <button class="btn-salvar" (click)="salvar()">Salvar</button>
     </div>
   </div>
 </div>

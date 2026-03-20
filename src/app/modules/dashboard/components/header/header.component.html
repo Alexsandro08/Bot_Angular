@@ -1,34 +1,98 @@
 <header class="header">
   <div class="logo-box">
-    <div class="logo-icon"><i class="bi bi-hexagon-fill"></i></div>
-    SuperTech
+    <div class="logo-icon logo-upload" (click)="logoInput.click()">
+      <div *ngIf="!logoUrl" class="logo-skeleton"></div>
+      <img *ngIf="logoUrl" [src]="logoUrl" alt="logo" class="logo-img" />
+      <div class="logo-edit-overlay">
+        <i class="bi bi-pencil-fill"></i>
+      </div>
+      <input
+        #logoInput
+        type="file"
+        accept="image/*"
+        style="display: none"
+        (change)="uploadLogo($event)"
+      />
+    </div>
+    {{ nomeRestaurante || "LunexIA" }}
   </div>
 
-  <nav>
+  <!-- Modal de Crop -->
+  <div class="crop-overlay" *ngIf="cropModalAberto" (click)="fecharCrop()">
+    <div class="crop-box" (click)="$event.stopPropagation()">
+      <h3>Ajustar Logo</h3>
+      <p
+        style="
+          color: #8892a4;
+          font-size: 12px;
+          text-align: center;
+          margin-bottom: 12px;
+        "
+      >
+        Arraste para mover • Scroll para zoom
+      </p>
+      <div class="crop-container">
+        <canvas
+          id="crop-canvas"
+          width="300"
+          height="300"
+          style="border-radius: 12px; cursor: grab"
+        ></canvas>
+      </div>
+      <div class="crop-actions">
+        <button class="btn-cancelar" (click)="fecharCrop()">Cancelar</button>
+        <button
+          class="btn-confirmar"
+          (click)="confirmarCrop()"
+          [disabled]="salvandoLogo"
+        >
+          <span *ngIf="!salvandoLogo"
+            ><i class="bi bi-check-lg"></i> Confirmar</span
+          >
+          <span *ngIf="salvandoLogo"
+            ><span class="spinner-btn"></span> Salvando...</span
+          >
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hamburguer (só mobile) -->
+  <button
+    class="btn-hamburger"
+    (click)="toggleMenu()"
+    [class.open]="menuAberto"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <nav [class.open]="menuAberto">
     <a
       [class.active]="paginaAtual === 'dashboard'"
-      (click)="navegar('dashboard')"
+      (click)="navegar('dashboard'); fecharMenu()"
       >Dashboard</a
     >
-    <a [class.active]="paginaAtual === 'produtos'" (click)="navegar('produtos')"
+    <a
+      [class.active]="paginaAtual === 'produtos'"
+      (click)="navegar('produtos'); fecharMenu()"
       >Produtos</a
     >
     <a
       [class.active]="paginaAtual === 'relatorios'"
-      (click)="navegar('relatorios')"
+      (click)="navegar('relatorios'); fecharMenu()"
       >Relatórios</a
     >
   </nav>
 
   <div class="header-right">
-    <!-- Status da Loja -->
     <button
       class="btn-loja"
       [class.aberta]="lojaAberta"
       [class.fechada]="!lojaAberta"
       (click)="toggleLoja()"
       [class.alerta]="alertaFechamento"
-      (click)="toggleLoja()"
     >
       <span
         class="status-dot-loja"
@@ -40,26 +104,41 @@
         >{{ horario.abertura }} - {{ horario.fechamento }}</span
       >
     </button>
-    <button class="btn-config" (click)="editarHorario()" title="Editar horário">
-      <i class="bi bi-gear"></i>
-    </button>
+    <div class="config-wrapper">
+      <button
+        class="btn-config"
+        (click)="toggleConfigMenu()"
+        title="Configurações"
+      >
+        <i class="bi bi-gear"></i>
+      </button>
+
+      <div class="config-menu" *ngIf="configMenuAberto">
+        <button (click)="editarHorario(); fecharConfigMenu()">
+          <i class="bi bi-clock"></i> Horário
+        </button>
+        <button (click)="abrirMotivoFechamento(); fecharConfigMenu()">
+          <i class="bi bi-exclamation-circle"></i> Aviso de fechamento
+        </button>
+      </div>
+    </div>
+
     <app-notifications></app-notifications>
     <div
       class="avatar-bot"
       [class.online]="botOnline"
       (click)="toggleAvatarInfo()"
     >
-      <i class="bi bi-robot"></i>
+      <img src="assets/logo.png" alt="logo" class="logo" />
       <span
         class="avatar-dot"
         [class.dot-online]="botOnline"
         [class.dot-offline]="!botOnline"
       ></span>
-
       <div class="avatar-popup" *ngIf="mostrarInfo" [class.online]="botOnline">
         <div class="popup-status">
           <span class="pulse-ring" *ngIf="botOnline"></span>
-          <i class="bi bi-robot"></i>
+          <img src="assets/logo.png" alt="logo" class="logo" />
         </div>
         <strong>Bot {{ botOnline ? "Online" : "Offline" }}</strong>
         <small>{{ botOnline ? "Recebendo pedidos" : "Desconectado" }}</small>

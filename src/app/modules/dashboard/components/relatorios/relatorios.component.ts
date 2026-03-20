@@ -1,13 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
   RelatoriosService,
   Relatorio,
   RelatorioPayload,
   ProdutoVendido,
 } from '../../services/relatorios.service';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { PedidosService } from '../../services/pedidos.service';
+import { AuthService } from '../../../auth/auth.service';
+import { HttpClient } from '@angular/common/http';
+
+// ============================================================
+// CONSTANTES
+// ============================================================
+const COR_HEADER_PDF: [number, number, number] = [79, 140, 255];
 
 @Component({
   selector: 'app-relatorios',
@@ -16,64 +23,61 @@ import { PedidosService } from '../../services/pedidos.service';
   styleUrl: './relatorios.component.scss',
 })
 export class RelatoriosComponent implements OnInit {
+  // ============================================================
+  // ESTADO
+  // ============================================================
   relatorios: Relatorio[] = [];
+  relatoriosFiltrados: Relatorio[] = [];
+  rankingProdutos: ProdutoVendido[] = [];
+
   carregando = true;
   salvando = false;
   jaExisteHoje = false;
-  rankingProdutos: ProdutoVendido[] = [];
   totalPedidos = 0;
+  nomeRestaurante = '';
+  logoUrl: string | null = null;
 
   filtroInicio = '';
   filtroFim = '';
-  relatoriosFiltrados: Relatorio[] = [];
-  
 
   constructor(
     private relatoriosService: RelatoriosService,
     private pedidosService: PedidosService,
+    private authService: AuthService,
+    private http: HttpClient,
   ) {}
 
+  // ============================================================
+  // LIFECYCLE
+  // ============================================================
   ngOnInit(): void {
     this.carregarRelatorios();
-    this.relatoriosFiltrados = this.relatorios;
+    this.authService.getMe().subscribe((res: any) => {
+      this.nomeRestaurante = res?.nome || 'SuperTech';
+    });
+    this.http.get<{ url: string | null }>('/api/logo').subscribe((res) => {
+      this.logoUrl = res.url;
+    });
   }
 
-  filtrar(): void {
-  console.log('filtroInicio:', this.filtroInicio);
-  console.log('filtroFim:', this.filtroFim);
-  
-  this.relatoriosFiltrados = this.relatorios.filter(r => {
-    const [d, m, a] = r.data.split('/');
-    const dataStr = `${a}-${m}-${d}`;
-    console.log('dataStr:', dataStr);
-    if (this.filtroInicio && dataStr < this.filtroInicio) return false;
-    if (this.filtroFim && dataStr > this.filtroFim) return false;
-    return true;
-  });
-
-  console.log('resultado:', this.relatoriosFiltrados);
-}
-
-limparFiltro(): void {
-  this.filtroInicio = '';
-  this.filtroFim = '';
-  this.relatoriosFiltrados = this.relatorios;
-}
-
+  // ============================================================
+  // RELATÓRIOS
+  // ============================================================
   carregarRelatorios(): void {
-  this.relatoriosService.listar().subscribe({
-    next: (data) => {
-      this.relatorios = data;
-      this.relatoriosFiltrados = data; // ← precisa disso
-      const hoje = new Date().toLocaleDateString('pt-BR');
-      this.jaExisteHoje = data.some(r => r.data === hoje);
-      this.totalPedidos = data.reduce((acc, r) => acc + r.total_pedidos, 0);
-      this.rankingProdutos = this.calcularRanking(data);
-      this.carregando = false;
-    },
-    error: () => this.carregando = false
-  });
-}
+    this.relatoriosService.listar().subscribe({
+      next: (data) => {
+        this.relatorios = data;
+        this.relatoriosFiltrados = data;
+        this.jaExisteHoje = data.some(
+          (r) => r.data === new Date().toLocaleDateString('pt-BR'),
+        );
+        this.totalPedidos = data.reduce((acc, r) => acc + r.total_pedidos, 0);
+        this.rankingProdutos = this.calcularRanking(data);
+        this.carregando = false;
+      },
+      error: () => (this.carregando = false),
+    });
+  }
 
   calcularRanking(relatorios: Relatorio[]): ProdutoVendido[] {
     const mapa: Record<string, number> = {};
@@ -87,11 +91,34 @@ limparFiltro(): void {
       .sort((a, b) => b.quantidade - a.quantidade)
       .slice(0, 5);
   }
+
   get faturamentoTotal(): number {
     return this.relatorios.reduce((acc, r) => acc + r.faturamento, 0);
   }
 
-  montarPayload(): RelatorioPayload {
+  // ============================================================
+  // FILTROS
+  // ============================================================
+  filtrar(): void {
+    this.relatoriosFiltrados = this.relatorios.filter((r) => {
+      const [d, m, a] = r.data.split('/');
+      const dataStr = `${a}-${m}-${d}`;
+      if (this.filtroInicio && dataStr < this.filtroInicio) return false;
+      if (this.filtroFim && dataStr > this.filtroFim) return false;
+      return true;
+    });
+  }
+
+  limparFiltro(): void {
+    this.filtroInicio = '';
+    this.filtroFim = '';
+    this.relatoriosFiltrados = this.relatorios;
+  }
+
+  // ============================================================
+  // SALVAR
+  // ============================================================
+  private montarPayload(): RelatorioPayload {
     const historico = this.pedidosService.getHistorico();
     const mapa: Record<string, number> = {};
 
@@ -121,40 +148,51 @@ limparFiltro(): void {
   salvarManual(): void {
     if (this.salvando || this.jaExisteHoje) return;
     this.salvando = true;
-    const payload = this.montarPayload();
-    this.relatoriosService.salvar(payload).subscribe({
-      next: () => {
-        this.salvando = false;
-        this.carregarRelatorios();
-      },
+    this.relatoriosService.salvar(this.montarPayload()).subscribe({
+      next: () => { this.salvando = false; this.carregarRelatorios(); },
       error: () => (this.salvando = false),
     });
   }
 
+  // ============================================================
+  // EXPORTAR PDF
+  // ============================================================
   exportarPDF(): void {
     const doc = new jsPDF();
+    const dataHoje = new Date().toLocaleDateString('pt-BR');
+    let cursorY = 20;
 
+    // logo
+    if (this.logoUrl) {
+      doc.addImage(this.logoUrl, 'PNG', 14, cursorY, 20, 20);
+      cursorY += 2;
+    }
+
+    // cabeçalho
+    const tituloX = this.logoUrl ? 38 : 14;
     doc.setFontSize(18);
-    doc.text('Relatório de Vendas - SuperTech', 14, 20);
+    doc.setTextColor(0);
+    doc.text(`Relatório de Vendas`, tituloX, cursorY + 6);
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(this.nomeRestaurante, tituloX, cursorY + 14);
+    doc.setFontSize(10);
+    doc.text(`Gerado em: ${dataHoje}`, tituloX, cursorY + 20);
 
-    doc.setFontSize(11);
-    doc.setTextColor(150);
-    doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 28);
+    cursorY += 36;
 
-    // Cards resumo
+    // resumo
     doc.setTextColor(0);
     doc.setFontSize(12);
-    doc.text(
-      `Faturamento Total: R$ ${this.faturamentoTotal.toFixed(2)}`,
-      14,
-      40,
-    );
-    doc.text(`Total de Pedidos: ${this.totalPedidos}`, 14, 48);
-    doc.text(`Total de Dias: ${this.relatorios.length}`, 14, 56);
+    doc.text(`Faturamento Total: R$ ${this.faturamentoTotal.toFixed(2)}`, 14, cursorY);
+    doc.text(`Total de Pedidos: ${this.totalPedidos}`, 14, cursorY + 8);
+    doc.text(`Total de Dias: ${this.relatorios.length}`, 14, cursorY + 16);
 
-    // Tabela histórico
+    cursorY += 26;
+
+    // tabela histórico
     autoTable(doc, {
-      startY: 65,
+      startY: cursorY,
       head: [['Data', 'Pedidos', 'Faturamento', 'Pix', 'Dinheiro', 'Cartão']],
       body: this.relatoriosFiltrados.map((r) => [
         r.data,
@@ -165,12 +203,13 @@ limparFiltro(): void {
         r.cartao,
       ]),
       theme: 'striped',
-      headStyles: { fillColor: [79, 140, 255] },
+      headStyles: { fillColor: COR_HEADER_PDF },
     });
 
-    // Ranking
+    // ranking
     const finalY = (doc as any).lastAutoTable.finalY + 10;
     doc.setFontSize(13);
+    doc.setTextColor(0);
     doc.text('Produtos Mais Vendidos', 14, finalY);
 
     autoTable(doc, {
@@ -182,11 +221,11 @@ limparFiltro(): void {
         `${p.quantidade}x`,
       ]),
       theme: 'striped',
-      headStyles: { fillColor: [79, 140, 255] },
+      headStyles: { fillColor: COR_HEADER_PDF },
     });
 
-    doc.save(
-      `relatorio-supertech-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`,
-    );
+    // salva
+    const nomeArquivo = this.nomeRestaurante.toLowerCase().replace(/\s+/g, '-');
+    doc.save(`relatorio-${nomeArquivo}-${dataHoje.replace(/\//g, '-')}.pdf`);
   }
 }

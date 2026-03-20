@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PedidosService } from '../../services/pedidos.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,19 +16,34 @@ export class SidebarComponent implements OnInit {
   maiorPerc = 0;
   gradiente = 'conic-gradient(#363b4a 0% 100%)';
 
-  constructor(private pedidosService: PedidosService) {}
+  constructor(
+    private pedidosService: PedidosService,
+    private http: HttpClient,
+  ) {}
 
   ngOnInit(): void {
-    this.pedidosService.historico$.subscribe(() => this.calcular());
+    this.pedidosService.historico$.subscribe(() => {
+      this.calcular();
+      this.carregarImagens();
+    });
+
+    setTimeout(() => this.carregarImagens(), 500);
   }
 
   calcular(): void {
     const historico = this.pedidosService.getHistorico();
     const total = historico.length;
 
+    if (!total) {
+      this.percPix = 0;
+      this.percDinheiro = 0;
+      this.percCartao = 0;
+      this.gradiente = 'conic-gradient(#9499a57c 0% 100%)';
+      return;
+    }
+
     const pix = historico.filter((p) => p.pagamento === 'Pix').length;
     const dinheiro = historico.filter((p) => p.pagamento === 'Dinheiro').length;
-    const cartao = historico.filter((p) => p.pagamento === 'Cartão').length;
 
     this.percPix = Math.round((pix / total) * 100);
     this.percDinheiro = Math.round((dinheiro / total) * 100);
@@ -65,24 +81,38 @@ export class SidebarComponent implements OnInit {
       .sort((a, b) => b.quantidade - a.quantidade)
       .slice(0, 5);
   }
+
+  imagensCache: Record<string, string> = {};
+
+  carregarImagens(): void {
+    console.log('carregarImagens chamado, maisVendidos:', this.maisVendidos);
+    this.maisVendidos.forEach((item) => {
+      console.log('buscando imagem para:', item.nome);
+      if (!this.imagensCache[item.nome]) {
+        this.imagensCache[item.nome] = 'assets/default.png';
+        this.http
+          .get<{
+            url: string;
+          }>(`/api/imagens/produto?nome=${encodeURIComponent(item.nome)}`)
+          .subscribe((res) => {
+            console.log('resposta pexels:', item.nome, res);
+            if (res.url) this.imagensCache[item.nome] = res.url;
+          });
+      }
+    });
+  }
+
   getIconeProduto(nome: string): string {
-    const n = nome.toLowerCase();
-    if (
-      n.includes('burger') ||
-      n.includes('x-') ||
-      n.includes('sanduiche') ||
-      n.includes('lanche')
-    )
-      return 'assets/burguer.png';
-    if (n.includes('batata') || n.includes('frita')) return 'assets/batata.png';
-    if (
-      n.includes('refri') ||
-      n.includes('coca') ||
-      n.includes('suco') ||
-      n.includes('bebida') ||
-      n.includes('lata')
-    )
-      return 'assets/refri.png';
-    return 'assets/default.png'; // imagem padrão
+    if (this.imagensCache[nome]) return this.imagensCache[nome];
+
+    this.http
+      .get<{
+        url: string;
+      }>(`/api/imagens/produto?nome=${encodeURIComponent(nome)}`)
+      .subscribe((res) => {
+        if (res.url) this.imagensCache[nome] = res.url;
+      });
+
+    return this.imagensCache[nome] || 'assets/defaultt.png';
   }
 }

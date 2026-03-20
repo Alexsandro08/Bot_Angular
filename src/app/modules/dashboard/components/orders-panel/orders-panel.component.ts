@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PedidosService, Pedido } from '../../services/pedidos.service';
 import { SocketService } from '../../services/socket.service';
+import { AuthService } from '../../../auth/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,15 +14,20 @@ export class OrdersPanelComponent implements OnInit {
   filtro = 'todos';
   pedidos: Pedido[] = [];
   historico: Pedido[] = [];
+  private restauranteId: number = 0;
 
   constructor(
     private pedidosService: PedidosService,
     private socketService: SocketService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.pedidosService.pedidos$.subscribe((p) => (this.pedidos = p));
     this.pedidosService.historico$.subscribe((h) => (this.historico = h));
+    this.authService.getMe().subscribe((me: any) => {
+      if (me?.id) this.restauranteId = me.id;
+    });
   }
 
   get lista(): Pedido[] {
@@ -44,6 +50,7 @@ export class OrdersPanelComponent implements OnInit {
       userId: p.userId,
       numPedido: p.numPedido,
       total: p.total,
+      restauranteId: this.restauranteId,
     });
     this.pedidosService.atualizarStatus(
       p.numPedido,
@@ -55,6 +62,7 @@ export class OrdersPanelComponent implements OnInit {
     this.socketService.emit('recusar_pedido', {
       userId: p.userId,
       numPedido: p.numPedido,
+      restauranteId: this.restauranteId,
     });
     this.pedidosService.removerPedido(p.numPedido);
   }
@@ -63,6 +71,7 @@ export class OrdersPanelComponent implements OnInit {
     this.socketService.emit('confirmar_preparo', {
       userId: p.userId,
       numPedido: p.numPedido,
+      restauranteId: this.restauranteId,
     });
     this.pedidosService.atualizarStatus(p.numPedido, 'preparo');
   }
@@ -71,6 +80,7 @@ export class OrdersPanelComponent implements OnInit {
     this.socketService.emit('saiu_entrega', {
       userId: p.userId,
       numPedido: p.numPedido,
+      restauranteId: this.restauranteId,
     });
     this.pedidosService.finalizarPedido(p.numPedido);
   }

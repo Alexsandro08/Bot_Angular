@@ -218,3 +218,81 @@
     }
   }
 }
+
+// Substitui o bloco @media (max-width: 768px) inteiro
+@media (max-width: 768px) {
+  .relatorios-container {
+    padding: 12px;
+    overflow-x: hidden;
+  }
+
+  .relatorios-header {
+    flex-wrap: wrap;
+    gap: 10px;
+
+    h2 { font-size: 18px; }
+
+    .header-actions {
+      width: 100%;
+      display: flex;
+    }
+
+    .btn-salvar, .btn-pdf {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+
+  .cards-resumo {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+ .relatorios-body {
+    grid-template-columns: 1fr;
+
+    .tabela-box {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+
+    table {
+      min-width: unset; // remove o min-width fixo
+      width: 100%;
+      font-size: 12px;
+
+      th, td {
+        padding: 8px 6px;
+        white-space: nowrap;
+      }
+
+      // esconde colunas menos críticas no mobile
+      th:nth-child(4), td:nth-child(4), // Pix
+      th:nth-child(5), td:nth-child(5), // Dinheiro
+      th:nth-child(6), td:nth-child(6) { // Cartão
+        display: none;
+      }
+    }
+  }
+}
+  .filtros {
+    flex-wrap: wrap;
+    gap: 8px;
+
+    label {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      flex: 1;
+    }
+  }

@@ -137,3 +137,25 @@
   from { transform: scale(0); }
   to { transform: scale(1); }
 }
+
+@media (max-width: 768px) {
+  .qr-card {
+    min-width: unset;
+    width: calc(100% - 32px);
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  .qr-container {
+    min-width: unset;
+    min-height: unset;
+    width: 100%;
+  }
+
+  .qr-image,
+  .loading-spinner {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+}

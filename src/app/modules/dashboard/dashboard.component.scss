@@ -82,3 +82,19 @@ app-header {
     transform: scale(1);
   }
 }
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 0;
+  }
+
+  .dashboard-wrapper {
+    padding: 16px;
+    border-radius: 0;
+  }
+
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

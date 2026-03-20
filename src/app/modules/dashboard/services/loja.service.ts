@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { PedidosService } from './pedidos.service';
+import { HttpClient } from '@angular/common/http';
 
 export interface HorarioLoja {
   abertura: string;
   fechamento: string;
+  dias: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -19,7 +21,6 @@ export class LojaService {
 
   private aviso5minSubject = new BehaviorSubject<boolean>(false);
   private alertaAmareloSubject = new BehaviorSubject<boolean>(false);
-  
 
   aberta$ = this.abertaSubject.asObservable();
   horario$ = this.horarioSubject.asObservable();
@@ -29,10 +30,25 @@ export class LojaService {
   private timer: any;
   private avisou5min = false;
 
-  constructor(private pedidosService: PedidosService) {
+  constructor(
+    private pedidosService: PedidosService,
+    private http: HttpClient,
+  ) {
     if (this.horarioSubject.value) {
       this.iniciarTimer();
     }
+  }
+
+  private sincronizar(aberta: boolean): void {
+    const horario = this.horarioSubject.value;
+    this.http
+      .post('/api/loja/status', {
+        aberta,
+        abertura: horario?.abertura,
+        fechamento: horario?.fechamento,
+        dias: horario?.dias,
+      })
+      .subscribe();
   }
 
   get aberta(): boolean {
@@ -62,22 +78,24 @@ export class LojaService {
     localStorage.setItem('loja_horario', JSON.stringify(horario));
     this.horarioSubject.next(horario);
     this.iniciarTimer();
+    this.sincronizar(this.aberta);
   }
 
   abrirLoja(): void {
     localStorage.setItem('loja_aberta', 'true');
     this.abertaSubject.next(true);
+    this.sincronizar(true);
   }
 
   fecharLoja(): void {
-  this.salvarRelatorioSubject.next();
-  localStorage.setItem('loja_aberta', 'false');
-  this.abertaSubject.next(false);
-  this.alertaAmareloSubject.next(false);
-  this.pedidosService.limparPendentes();
-  this.pedidosService.zerarHistorico();
-}
-
+    this.salvarRelatorioSubject.next();
+    localStorage.setItem('loja_aberta', 'false');
+    this.abertaSubject.next(false);
+    this.alertaAmareloSubject.next(false);
+    this.pedidosService.limparPendentes();
+    this.pedidosService.zerarHistorico();
+    this.sincronizar(false);
+  }
   private iniciarTimer(): void {
     clearInterval(this.timer);
     this.timer = setInterval(() => this.verificarHorario(), 10000);
@@ -89,6 +107,11 @@ export class LojaService {
     if (!horario) return;
 
     const agora = new Date();
+    const diasSemana = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
+    const diaAtual = diasSemana[agora.getDay()];
+
+    const diaFuncionamento = horario.dias?.includes(diaAtual) ?? true;
+
     const [hFe, mFe] = horario.fechamento.split(':').map(Number);
     const [hAb, mAb] = horario.abertura.split(':').map(Number);
 
@@ -98,8 +121,13 @@ export class LojaService {
     const segundosFechamento = hFe * 3600 + mFe * 60;
 
     const deveEstarAberta =
-      segundosAgora >= segundosAbertura && segundosAgora < segundosFechamento;
-    const segundosRestantes = segundosFechamento - segundosAgora;
+      diaFuncionamento &&
+      segundosAgora >= segundosAbertura &&
+      segundosAgora < segundosFechamento;
+
+    const segundosRestantes = diaFuncionamento
+      ? segundosFechamento - segundosAgora
+      : 0;
 
     if (
       segundosRestantes >= 60 &&

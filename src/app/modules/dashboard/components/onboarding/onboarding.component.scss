@@ -101,7 +101,63 @@ p {
   &:hover { background: #3a7bd5; }
 }
 
+.dias-section {
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.dias-label {
+  display: block;
+  font-size: 12px;
+  color: #8892a4;
+  margin-bottom: 12px;
+}
+
+.dias-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dia-btn {
+  background: #151929;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #8892a4;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  flex: 1;
+  min-width: 40px;
+
+  &.ativo {
+    background: rgba(79, 140, 255, 0.15);
+    border-color: #4f8cff;
+    color: #4f8cff;
+  }
+
+  &:hover:not(.ativo) {
+    border-color: rgba(255,255,255,0.2);
+    color: #fff;
+  }
+}
+
 @keyframes popIn {
   from { opacity: 0; transform: scale(0.85); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .onboarding-box {
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin: 16px;
+    width: calc(100% - 32px);
+  }
+
+  .horario-grid {
+    gap: 10px;
+  }
 }

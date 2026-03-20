@@ -4,9 +4,7 @@
       <i class="bi bi-shop"></i>
     </div>
     <h2>Bem-vindo ao SuperTech! 🎉</h2>
-    <p>
-      Antes de começar, defina o horário de funcionamento do seu restaurante.
-    </p>
+    <p>Antes de começar, defina o horário de funcionamento do seu restaurante.</p>
     <p class="sub">O painel abrirá e fechará automaticamente neste horário.</p>
 
     <div class="horario-grid">
@@ -20,7 +18,21 @@
       </div>
     </div>
 
-    <button class="btn-salvar" (click)="salvar()">
+    <div class="dias-section">
+      <label class="dias-label">Dias de funcionamento</label>
+      <div class="dias-grid">
+        <button
+          *ngFor="let dia of diasSemana"
+          class="dia-btn"
+          [class.ativo]="diasSelecionados.includes(dia.valor)"
+          (click)="toggleDia(dia.valor)"
+        >
+          {{ dia.label }}
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-salvar" (click)="salvar()" [disabled]="diasSelecionados.length === 0">
       <i class="bi bi-check-lg"></i> Confirmar e Começar
     </button>
   </div>

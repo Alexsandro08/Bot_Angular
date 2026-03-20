@@ -8,6 +8,8 @@ export interface Produto {
   preco: string;
   quantidade: string;
   status: string;
+  categoria?: string;
+  tempoPreparo?: string;
 }
 
 @Injectable({ providedIn: 'root' })

@@ -10,7 +10,7 @@ export class SocketService {
     console.log('🔌 SocketService inicializado');
     this.socket = io('http://localhost:3000', {
       withCredentials: true,
-      transports: ['websocket', 'polling'], // Força usar websocket
+      transports: ['websocket', 'polling'],
     });
 
     this.socket.on('connect', () => {
@@ -24,6 +24,11 @@ export class SocketService {
     this.socket.on('connect_error', (err) => {
       console.log('🚨 Erro na conexão:', err);
     });
+  }
+
+  identificar(restauranteId: number): void {
+    this.socket.emit('identificar', restauranteId);
+    console.log(`🏠 Identificado como restaurante ${restauranteId}`);
   }
 
   on(event: string): Observable<any> {
