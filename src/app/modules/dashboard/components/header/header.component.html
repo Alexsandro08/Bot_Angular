@@ -104,6 +104,17 @@
         >{{ horario.abertura }} - {{ horario.fechamento }}</span
       >
     </button>
+     <button
+      class="btn-som"
+      (click)="toggleSom()"
+      [title]="somAtivo ? 'Desativar som' : 'Ativar som'"
+    >
+      <i
+        class="bi"
+        [class.bi-volume-up-fill]="somAtivo"
+        [class.bi-volume-mute-fill]="!somAtivo"
+      ></i>
+    </button>
     <div class="config-wrapper">
       <button
         class="btn-config"

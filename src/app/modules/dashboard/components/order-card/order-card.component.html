@@ -8,9 +8,12 @@
       <div class="order-img">SC</div>
       <div class="order-info-text">
         <h4>#{{ pedido.numPedido }} - {{ pedido.nome }}</h4>
-        <p><strong>Itens:</strong> {{ pedido.carrinho.join(", ") }}</p>
+        <p><strong>📦 Itens:</strong> {{ pedido.carrinho.join(", ") }}</p>
+        <p *ngIf="pedido.observacao">
+          <strong>📝 Obs:</strong> {{ pedido.observacao }}
+        </p>
         <p>
-          <strong>Endereço:</strong>
+          <strong>📍Endereço:</strong>
           {{ pedido.endereco || "Retirada no Local" }}
         </p>
         <br />
@@ -63,7 +66,9 @@
             border: 2px solid #00b894;
           "
         />
-        <button class="btn-pix" (click)="verComprovante()">Validar Pix ✅</button>
+        <button class="btn-pix" (click)="verComprovante()">
+          Validar Pix ✅
+        </button>
       </div>
 
       <!-- EM PREPARO -->

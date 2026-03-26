@@ -15,6 +15,7 @@ import Cropper from 'cropperjs';
 import { SocketService } from '../../services/socket.service';
 import { AuthService } from '../../../auth/auth.service';
 import { LojaService } from '../../services/loja.service';
+import { AudioService } from '../../services/audio.service';
 
 declare var Swal: any;
 
@@ -95,7 +96,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private lojaService: LojaService,
     private http: HttpClient,
+    private audioService: AudioService
   ) {}
+
+  
+  // Sons de notificação 
+  get somAtivo(): boolean {
+    return this.audioService.somAtivo;
+  }
+
+  toggleSom(): void {
+    this.audioService.inicializar();
+    this.audioService.toggleSom(!this.audioService.somAtivo);
+  }
 
   // ============================================================
   // LIFECYCLE

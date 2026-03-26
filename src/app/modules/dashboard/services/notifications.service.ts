@@ -33,7 +33,6 @@ export class NotificationsService {
       lida: false,
     };
     this.notificacoesSubject.next([nova, ...this.notificacoesSubject.value]);
-    this.tocar();
   }
 
   marcarTodasLidas(): void {
@@ -46,20 +45,5 @@ export class NotificationsService {
 
   limpar(): void {
     this.notificacoesSubject.next([]);
-  }
-
-  private tocar(): void {
-    try {
-      const ctx = new AudioContext();
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g);
-      g.connect(ctx.destination);
-      o.frequency.value = 880;
-      g.gain.setValueAtTime(0.3, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      o.start(ctx.currentTime);
-      o.stop(ctx.currentTime + 0.3);
-    } catch {}
   }
 }

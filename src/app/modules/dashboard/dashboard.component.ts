@@ -1,15 +1,23 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
+import Swal from 'sweetalert2';
 import { SocketService } from './services/socket.service';
-import { PedidosService, Pedido } from './services/pedidos.service';
+import { PedidosService } from './services/pedidos.service';
 import { LojaService } from './services/loja.service';
 import { NotificationsService } from './services/notifications.service';
 import {
   RelatoriosService,
   RelatorioPayload,
 } from './services/relatorios.service';
-import { Subscription } from 'rxjs';
-import Swal from 'sweetalert2';
 import { AuthService } from '../auth/auth.service';
+import { AudioService } from './services/audio.service';
+
+// ============================================================
+// CONSTANTES
+// ============================================================
+const INTERVALO_CHECAGEM_MS = 10_000;
+const DELAY_DESLOGAR_MS = 4_000;
+const MINUTOS_AVISO_EXPIRACAO = 10;
 
 @Component({
   selector: 'app-dashboard',
@@ -18,10 +26,12 @@ import { AuthService } from '../auth/auth.service';
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  // ============================================================
+  // ESTADO
+  // ============================================================
   paginaAtual = 'dashboard';
   mostrarOnboarding = false;
   mostrarSaindo = false;
-  restauranteId: number = 0;
 
   private saindo = false;
   private jaAvisouExpiracao = false;
@@ -35,14 +45,182 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private relatoriosService: RelatoriosService,
     private cdr: ChangeDetectorRef,
+    private audioService: AudioService,
   ) {}
 
-  private montarPayloadRelatorio(): RelatorioPayload {
-    return this.relatoriosService.montarPayload(
-      this.pedidosService.getHistorico(),
+  // ============================================================
+  // LIFECYCLE
+  // ============================================================
+  ngOnInit(): void {
+    console.log('🚀 DashboardComponent ngOnInit chamado');
+    this.verificarOnboarding();
+    this.identificarSocket();
+    this.inscreverEventos();
+    this.verificarExpiracao();
+    this.iniciarChecagemSessao();
+
+    document.addEventListener('click', () => this.audioService.inicializar(), {
+      once: true,
+    });
+
+    this.lojaService.salvarRelatorio$.subscribe(() => {
+      const payload = this.relatoriosService.montarPayload(
+        this.pedidosService.getHistorico(),
+      );
+      if (payload.total_pedidos > 0) {
+        this.relatoriosService.salvar(payload).subscribe();
+      }
+    });
+
+    this.socketService.on('novo_pedido').subscribe((p) => {
+      console.log('pedido recebido completo:', p);
+      console.log('observacao:', p.observacao);
+      if (!this.lojaService.aberta) return;
+      this.pedidosService.adicionarPedido(p);
+      this.notificationsService.adicionar(
+        'pedido',
+        'Novo Pedido',
+        `${p.numPedido} - ${p.nome}`,
+      );
+      this.audioService.novoPedido();
+    });
+
+    this.socketService.on('novo_comprovante').subscribe((d) => {
+      this.pedidosService.adicionarComprovante(d.numPedido, d.imagem);
+      this.notificationsService.adicionar(
+        'pagamento',
+        'Comprovante Recebido',
+        `Pedido${d.numPedido} aguardando validação`,
+      );
+      this.audioService.comprovanteRecebido();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach((s) => s.unsubscribe());
+  }
+
+  // ============================================================
+  // NAVEGAÇÃO
+  // ============================================================
+  trocarPagina(pagina: string): void {
+    this.paginaAtual = pagina;
+  }
+  onOnboardingConcluido(): void {
+    this.mostrarOnboarding = false;
+  }
+
+  // ============================================================
+  // INICIALIZAÇÃO
+  // ============================================================
+  private verificarOnboarding(): void {
+    if (!this.lojaService.horarioDefinido) this.mostrarOnboarding = true;
+  }
+
+  private identificarSocket(): void {
+    this.authService.getMe().subscribe((me: any) => {
+      if (me?.id) this.socketService.identificar(me.id);
+    });
+  }
+
+  private iniciarChecagemSessao(): void {
+    setInterval(() => {
+      this.authService.getMe().subscribe({ error: () => this.deslogar() });
+    }, INTERVALO_CHECAGEM_MS);
+  }
+
+  // ============================================================
+  // EVENTOS SOCKET / LOJA
+  // ============================================================
+  private inscreverEventos(): void {
+    this.subs.push(
+      // novo pedido
+      this.socketService.on('novo_pedido').subscribe((p) => {
+        if (!this.lojaService.aberta) return;
+        this.pedidosService.adicionarPedido(p);
+        this.notificationsService.adicionar(
+          'pedido',
+          'Novo Pedido',
+          `#${p.numPedido} - ${p.nome}`,
+        );
+      }),
+
+      // comprovante pix
+      this.socketService.on('novo_comprovante').subscribe((d) => {
+        this.pedidosService.adicionarComprovante(d.numPedido, d.imagem);
+        this.notificationsService.adicionar(
+          'pagamento',
+          'Comprovante Recebido',
+          `Pedido #${d.numPedido} aguardando validação`,
+        );
+      }),
+
+      // aviso fechamento
+      this.lojaService.aviso5min$.subscribe((aviso) => {
+        if (!aviso) return;
+        this.notificationsService.adicionar(
+          'alerta',
+          'Atenção!',
+          'Sua loja fecha em 1 minuto!',
+        );
+        this.mostrarToast(
+          '⚠️ Atenção!',
+          'Sua loja fecha em 1 minuto!',
+          'warning',
+        );
+      }),
+
+      // status loja
+      this.lojaService.aberta$.subscribe((aberta) => {
+        this.notificationsService.adicionar(
+          'loja',
+          aberta ? 'Loja Aberta' : 'Loja Fechada',
+          aberta ? 'Pronto para receber pedidos!' : 'O painel foi resetado.',
+        );
+      }),
     );
   }
 
+  // ============================================================
+  // EXPIRAÇÃO
+  // ============================================================
+  private verificarExpiracao(): void {
+    const checar = () => {
+      this.authService.getMe().subscribe({
+        next: (me: any) => {
+          if (!me?.expira_em) return;
+          const minutosRestantes = Math.ceil(
+            (new Date(me.expira_em).getTime() - Date.now()) / 60_000,
+          );
+          if (
+            minutosRestantes <= MINUTOS_AVISO_EXPIRACAO &&
+            minutosRestantes > 0 &&
+            !this.jaAvisouExpiracao
+          ) {
+            this.jaAvisouExpiracao = true;
+            this.notificationsService.adicionar(
+              'alerta',
+              '⚠️ Assinatura expirando!',
+              `Expira em ${minutosRestantes} minuto(s).`,
+            );
+            this.mostrarToast(
+              '⚠️ Atenção!',
+              `Sua assinatura expira em ${minutosRestantes} minuto(s)!`,
+              'warning',
+            );
+          }
+        },
+        error: () => this.deslogar(),
+      });
+    };
+
+    checar();
+    setInterval(checar, INTERVALO_CHECAGEM_MS);
+  }
+
+  // ============================================================
+  // UTILITÁRIOS
+  // ============================================================
   private deslogar(): void {
     if (this.saindo) return;
     this.saindo = true;
@@ -51,143 +229,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       sessionStorage.removeItem('logado');
       window.location.href = '/login';
-    }, 4000);
+    }, DELAY_DESLOGAR_MS);
   }
 
-  verificarExpiracao(): void {
-    const checar = () => {
-      this.authService.getMe().subscribe({
-        next: (me: any) => {
-          if (!me?.expira_em) return;
-          const expira = new Date(me.expira_em);
-          const agora = new Date();
-          const minutosRestantes = Math.ceil(
-            (expira.getTime() - agora.getTime()) / (1000 * 60),
-          );
-
-          if (
-            minutosRestantes <= 10 &&
-            minutosRestantes > 0 &&
-            !this.jaAvisouExpiracao
-          ) {
-            this.jaAvisouExpiracao = true;
-            this.notificationsService.adicionar(
-              'alerta',
-              '⚠️ Assinatura expirando!',
-              `Sua assinatura expira em ${minutosRestantes} minuto(s). Renove para continuar.`,
-            );
-            Swal.fire({
-              title: '⚠️ Atenção!',
-              text: `Sua assinatura expira em ${minutosRestantes} minuto(s)!`,
-              icon: 'warning',
-              toast: true,
-              position: 'top-end',
-              timer: 8000,
-              timerProgressBar: true,
-              showConfirmButton: false,
-            });
-          }
-        },
-        error: () => this.deslogar(),
-      });
-    };
-
-    checar();
-    setInterval(checar, 10000);
-  }
-
-  ngOnInit(): void {
-    if (!this.lojaService.horarioDefinido) {
-      this.mostrarOnboarding = true;
-    }
-
-    this.authService.getMe().subscribe((me: any) => {
-      if (me?.id) {
-        this.socketService.identificar(me.id);
-        this.restauranteId = me.id;
-      }
+  private mostrarToast(title: string, text: string, icon: any): void {
+    Swal.fire({
+      title,
+      text,
+      icon,
+      toast: true,
+      position: 'top-end',
+      timer: 8000,
+      timerProgressBar: true,
+      showConfirmButton: false,
     });
-
-    this.lojaService.salvarRelatorio$.subscribe(() => {
-      const payload = this.montarPayloadRelatorio();
-      if (payload.total_pedidos > 0) {
-        this.relatoriosService.salvar(payload).subscribe();
-      }
-    });
-
-    this.verificarExpiracao();
-
-    setInterval(() => {
-      this.authService.getMe().subscribe({
-        error: () => this.deslogar(),
-      });
-    }, 10000);
-
-    this.subs.push(
-      this.socketService.on('novo_pedido').subscribe((p) => {
-        console.log('📦 novo_pedido recebido:', p);
-        if (this.lojaService.aberta) {
-          this.pedidosService.adicionarPedido(p);
-          this.notificationsService.adicionar(
-            'pedido',
-            'Novo Pedido',
-            `#${p.numPedido} - ${p.nome}`,
-          );
-        }
-      }),
-      this.socketService.on('novo_comprovante').subscribe((d) => {
-        
-        this.pedidosService.adicionarComprovante(d.numPedido, d.imagem);
-        this.notificationsService.adicionar(
-          'pagamento',
-          'Comprovante Recebido',
-          `Pedido #${d.numPedido} aguardando validação`,
-        );
-      }),
-      this.lojaService.aviso5min$.subscribe((aviso) => {
-        if (aviso) {
-          this.notificationsService.adicionar(
-            'alerta',
-            'Atenção!',
-            'Sua loja fecha em 1 minuto!',
-          );
-          Swal.fire({
-            title: '⚠️ Atenção!',
-            text: 'Sua loja fecha em 1 minuto!',
-            icon: 'warning',
-            timer: 8000,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            toast: true,
-            position: 'top-end',
-          });
-        }
-      }),
-      this.lojaService.aberta$.subscribe((aberta) => {
-        if (!aberta) {
-          this.notificationsService.adicionar(
-            'loja',
-            'Loja Fechada',
-            'O painel foi resetado.',
-          );
-        } else {
-          this.notificationsService.adicionar(
-            'loja',
-            'Loja Aberta',
-            'Pronto para receber pedidos!',
-          );
-        }
-      }),
-    );
-  }
-
-  trocarPagina(pagina: string): void {
-    this.paginaAtual = pagina;
-  }
-  onOnboardingConcluido(): void {
-    this.mostrarOnboarding = false;
-  }
-  ngOnDestroy(): void {
-    this.subs.forEach((s) => s.unsubscribe());
   }
 }

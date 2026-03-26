@@ -1,31 +1,71 @@
 <div class="login-page">
+  <div id="particles-js"></div>
+  <div class="login-glow"></div>
+
   <div class="login-box">
-    <div class="logo">
-      <div class="logo-icon"><i class="bi bi-hexagon-fill"></i></div>
-      SuperTech
+    <div class="logo-wrap">
+      <img src="assets/logo.png" alt="LunexIA" class="logo-img" />
+      <span class="logo-name">LunexIA</span>
     </div>
 
-    <h2>Bem-vindo de volta!</h2>
-    <p>Acesse o painel do seu restaurante</p>
+    <div class="login-header">
+      <h2>Bem-vindo a sua Dashboard!</h2>
+      <p>Acesse o painel do seu restaurante</p>
+    </div>
 
     <div class="erro" *ngIf="erro">{{ erroMsg }}</div>
 
     <form [formGroup]="form" (ngSubmit)="fazerLogin()">
       <div class="field">
         <label>Email</label>
-        <input
-          type="email"
-          formControlName="login"
-          placeholder="seu@email.com"
-        />
+        <div class="input-wrap">
+          <i class="bi bi-envelope"></i>
+          <input
+            type="email"
+            formControlName="login"
+            placeholder="seu@email.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+        <span
+          class="msg-erro"
+          *ngIf="mostrarErros && form.get('login')?.invalid"
+        >
+          Email inválido ou obrigatório
+        </span>
       </div>
+
       <div class="field">
         <label>Senha</label>
-        <input type="password" formControlName="senha" placeholder="••••••••" />
+        <div class="input-wrap">
+          <i class="bi bi-lock"></i>
+          <input
+            type="password"
+            formControlName="senha"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+        <span
+          class="msg-erro"
+          *ngIf="mostrarErros && form.get('senha')?.invalid"
+        >
+          Senha obrigatória
+        </span>
       </div>
+
       <button class="btn" type="submit" [disabled]="carregando">
-        {{ carregando ? "Entrando..." : "Entrar" }}
+        <span *ngIf="!carregando"
+          >Entrar <i class="bi bi-arrow-right"></i
+        ></span>
+        <span *ngIf="carregando"
+          ><i class="bi bi-arrow-repeat spin"></i> Entrando...</span
+        >
       </button>
     </form>
+
+    <p class="footer-text">Powered by <strong>LunexIA</strong></p>
   </div>
 </div>

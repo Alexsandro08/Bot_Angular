@@ -33,10 +33,13 @@ export class SocketService {
 
   on(event: string): Observable<any> {
     return new Observable((observer) => {
-      this.socket.on(event, (data: any) => {
+      const handler = (data: any) => {
         console.log(`📨 Evento recebido [${event}]:`, data);
         observer.next(data);
-      });
+      };
+      this.socket.off(event);
+      this.socket.on(event, handler);
+      return () => this.socket.off(event, handler);
     });
   }
 

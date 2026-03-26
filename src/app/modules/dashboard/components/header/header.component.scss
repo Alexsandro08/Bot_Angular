@@ -101,6 +101,25 @@ nav a {
 }
 
 // ============================================================
+// Button de Sons notificações
+// ============================================================
+.btn-som {
+  background: transparent;
+  border: none;
+  color: #9499a5;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: 0.2s;
+
+  &:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+// ============================================================
 // BOTÃO LOJA
 // ============================================================
 .btn-loja {
