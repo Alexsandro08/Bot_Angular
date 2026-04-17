@@ -1,0 +1,38 @@
+.admin-container {
+  padding: 2rem;
+  color: #fff;
+
+  h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    th {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+    }
+  }
+
+  .badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.ativo      { background: #1a7a4a; color: #4cff91; }
+    &.expirando  { background: #7a5a1a; color: #ffd04c; }
+    &.expirado   { background: #7a1a1a; color: #ff4c4c; }
+    &.ilimitado  { background: #1a3a7a; color: #4c8fff; }
+  }
+}

@@ -1,5 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { PedidosService } from '../../services/pedidos.service';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
+import { PedidosService } from '../../../../services/pedidos.service';
+
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -21,12 +28,85 @@ export class SidebarComponent implements OnInit {
     private http: HttpClient,
   ) {}
 
+  @ViewChild('chartPagamentos') chartPagamentos!: ElementRef<HTMLCanvasElement>;
+
+  private chartInstance: any = null;
+  private viewIniciada = false;
+
+  ngAfterViewInit(): void {
+    this.viewIniciada = true;
+    this.renderChart();
+  }
+
+  renderChart(): void {
+    if (!this.viewIniciada || !this.chartPagamentos) return;
+    const Chart = (window as any).Chart;
+    if (!Chart) return;
+
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+
+    const historico = this.pedidosService.getHistorico();
+    const total = historico.length;
+
+    const pix = total
+      ? historico.filter((p) => p.pagamento === 'Pix').length
+      : 0;
+    const dinheiro = total
+      ? historico.filter((p) => p.pagamento === 'Dinheiro').length
+      : 0;
+    const cartao = total - pix - dinheiro;
+
+    this.chartInstance = new Chart(this.chartPagamentos.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels: ['Pix', 'Dinheiro', 'Cartão'],
+        datasets: [
+          {
+            data: total ? [pix, dinheiro, cartao] : [1, 1, 1],
+            backgroundColor: total
+              ? [
+                  'rgba(74,176,167,0.8)',
+                  'rgba(241,196,15,0.8)',
+                  'rgba(162,155,254,0.8)',
+                ]
+              : [
+                  'rgba(255,255,255,0.08)',
+                  'rgba(255,255,255,0.08)',
+                  'rgba(255,255,255,0.08)',
+                ],
+            borderColor: total
+              ? ['#4ab0a7', '#f1c40f', '#a29bfe']
+              : [
+                  'rgba(255,255,255,0.1)',
+                  'rgba(255,255,255,0.1)',
+                  'rgba(255,255,255,0.1)',
+                ],
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: total > 0 },
+        },
+      },
+    });
+  }
+
   ngOnInit(): void {
+    this.pedidosService.pedidos$.subscribe(() => {
+      this.calcular();
+      this.carregarImagens();
+    });
     this.pedidosService.historico$.subscribe(() => {
       this.calcular();
       this.carregarImagens();
     });
-
     setTimeout(() => this.carregarImagens(), 500);
   }
 
@@ -52,6 +132,7 @@ export class SidebarComponent implements OnInit {
     const p1 = this.percPix;
     const p2 = p1 + this.percDinheiro;
 
+    this.renderChart();
     this.gradiente = `conic-gradient(#4ab0a7 0% ${p1}%, #f1c40f ${p1}% ${p2}%, #a29bfe ${p2}% 100%)`;
   }
 
@@ -63,10 +144,20 @@ export class SidebarComponent implements OnInit {
   }
 
   get maisVendidos(): { nome: string; quantidade: number }[] {
-    const historico = this.pedidosService.getHistorico();
-    const contagem: Record<string, number> = {};
+    const todos = [
+      ...this.pedidosService
+        .getPedidos()
+        .filter(
+          (p) =>
+            p.pagamento !== 'Pix' ||
+            p.status === 'em_preparo' ||
+            p.status === 'finalizado',
+        ),
+      ...this.pedidosService.getHistorico(),
+    ];
 
-    historico.forEach((pedido) => {
+    const contagem: Record<string, number> = {};
+    todos.forEach((pedido) => {
       pedido.carrinho.forEach((item) => {
         const nome = item
           .replace(/^\d+x\s*/i, '')

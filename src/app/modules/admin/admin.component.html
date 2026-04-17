@@ -1,0 +1,35 @@
+<div class="admin-container">
+  <h1>Painel Admin</h1>
+
+  <div *ngIf="carregando" class="carregando">Carregando...</div>
+
+  <table *ngIf="!carregando">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Login</th>
+        <th>WhatsApp</th>
+        <th>Assinatura</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of restaurantes">
+        <td>{{ r.nome }}</td>
+        <td>{{ r.login }}</td>
+        <td>{{ r.whatsapp }}</td>
+        <td>
+          <span *ngIf="!r.expira_em">Ilimitado</span>
+          <span *ngIf="r.expira_em">
+            {{ diasRestantes(r.expira_em) }} dias
+          </span>
+        </td>
+        <td>
+          <span class="badge" [ngClass]="statusAssinatura(r.expira_em)">
+            {{ statusAssinatura(r.expira_em) }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

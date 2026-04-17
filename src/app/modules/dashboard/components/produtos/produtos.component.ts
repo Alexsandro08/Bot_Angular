@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { ProdutosService, Produto } from '../../services/produtos.service';
+import { ProdutosService, Produto } from '../../../../services/produtos.service';
 import Swal from 'sweetalert2';
 
 const CATEGORIAS = [
@@ -25,7 +25,7 @@ export class ProdutosComponent implements OnInit {
   filtroCategoria = '';
   busca = '';
 
-  indexAtual: number | null = null;
+  indexAtual: string  | null = null;
 
   categorias = CATEGORIAS;
 
@@ -33,14 +33,14 @@ export class ProdutosComponent implements OnInit {
   dropdownAberto = false;
 
   form: Partial<Produto> = {
-    nome: '',
-    preco: '',
-    quantidade: '',
-    status: 'Disponível',
-    categoria: '',
-    tempoPreparo: '',
-  };
-
+  nome: '',
+  preco: 0,       
+  quantidade: 0,
+  status: 'Disponível',
+  categoria: '',
+  tempoPreparo: 0, 
+  descricao: '',
+};
   constructor(private produtosService: ProdutosService) {}
 
   ngOnInit(): void {
@@ -51,45 +51,39 @@ export class ProdutosComponent implements OnInit {
     this.produtosService.listar().subscribe((p) => (this.produtos = p));
   }
 
-  abrirModal(rowIndex: number | null): void {
-    console.log('abrirModal chamado', rowIndex);
-    this.indexAtual = rowIndex;
-    this.editando = rowIndex !== null;
+  abrirModal(id: string | null): void {
+    this.indexAtual = id;
+    this.editando = id !== null;
 
-    if (rowIndex !== null) {
-      const p = this.produtos.find((p) => p.rowIndex === rowIndex);
-
+    if (id !== null) {
+      const p = this.produtos.find((p) => p._id === id);
       if (!p) return;
-
       this.form = {
         nome: p.nome,
         preco: p.preco,
         quantidade: p.quantidade,
         status: p.status,
         categoria: p.categoria || '',
-        tempoPreparo: p.tempoPreparo || '',
+        tempoPreparo: p.tempoPreparo || 0,
+        descricao: p.descricao || '',
       };
     } else {
       this.form = {
         nome: '',
-        preco: '',
-        quantidade: '',
+        preco: 0,
+        quantidade: 0,
         status: 'Disponível',
         categoria: '',
-        tempoPreparo: '',
+        tempoPreparo: 0,
+        descricao: '',
       };
     }
-
     this.modalAberto = true;
-  }
-
-  fecharModal(): void {
-    this.modalAberto = false;
   }
 
   salvar(): void {
     const obs =
-      this.editando && this.indexAtual !== null
+      this.editando && this.indexAtual
         ? this.produtosService.editar(this.indexAtual, this.form)
         : this.produtosService.adicionar(this.form);
 
@@ -97,7 +91,6 @@ export class ProdutosComponent implements OnInit {
       if (res.ok) {
         this.fecharModal();
         this.carregar();
-
         Swal.fire({
           title: 'Salvo!',
           icon: 'success',
@@ -107,11 +100,13 @@ export class ProdutosComponent implements OnInit {
       }
     });
   }
+  fecharModal() {
+    this.modalAberto = false;
+  }
 
-  deletar(index: number): void {
+  deletar(id: string): void {
     Swal.fire({
       title: 'Remover produto?',
-      text: 'Isso também removerá da planilha.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sim, remover',
@@ -119,9 +114,8 @@ export class ProdutosComponent implements OnInit {
       confirmButtonColor: '#ff4757',
     }).then((r: any) => {
       if (r.isConfirmed) {
-        this.produtosService.deletar(index).subscribe(() => {
+        this.produtosService.deletar(id).subscribe(() => {
           this.carregar();
-
           Swal.fire({
             title: 'Removido!',
             icon: 'success',

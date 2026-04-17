@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { PedidosService, Pedido } from '../../services/pedidos.service';
-import { SocketService } from '../../services/socket.service';
-import { AuthService } from '../../../auth/auth.service';
+import { PedidosService, Pedido } from '../../../../services/pedidos.service';
+import { SocketService } from '../../../../services/socket.service';
+import { AuthService } from '../../../../services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,7 +14,8 @@ export class OrdersPanelComponent implements OnInit {
   filtro = 'todos';
   pedidos: Pedido[] = [];
   historico: Pedido[] = [];
-  private restauranteId: number = 0;
+  cancelados: Pedido[] = [];
+  private restauranteId: string = '';
 
   constructor(
     private pedidosService: PedidosService,
@@ -24,21 +25,43 @@ export class OrdersPanelComponent implements OnInit {
 
   ngOnInit(): void {
     this.pedidosService.pedidos$.subscribe((p) => (this.pedidos = p));
-    this.pedidosService.historico$.subscribe((h) => (this.historico = h));
-    this.authService.getMe().subscribe((me: any) => {
-      if (me?.id) this.restauranteId = me.id;
+    this.pedidosService.historico$.subscribe((h) => {
+      this.historico = h.filter((p) => p.status === 'finalizado');
+      this.cancelados = h.filter(
+        (p) => p.status === 'cancelado' || p.status === 'cancelado_timeout',
+      );
     });
+    this.authService.getMe().subscribe((me: any) => {
+      if (me?.id || me?._id) this.restauranteId = me.id || me._id;
+    });
+  }
+
+  get countAguardando(): number {
+    return this.pedidos.filter(
+      (p) =>
+        p.status === 'pendente' ||
+        p.status === 'aguardando_pix' ||
+        p.status === 'validacao_pendente',
+    ).length;
+  }
+
+  get countPreparo(): number {
+    return this.pedidos.filter((p) => p.status === 'preparo').length;
   }
 
   get lista(): Pedido[] {
     if (this.filtro === 'finalizados') return this.historico;
+    if (this.filtro === 'cancelados') return this.cancelados;
     if (this.filtro === 'aguardando')
       return this.pedidos.filter(
-        (p) => p.status === 'pendente' || p.status === 'validacao_pendente',
+        (p) =>
+          p.status === 'pendente' ||
+          p.status === 'validacao_pendente' ||
+          p.status === 'aguardando_pix',
       );
     if (this.filtro === 'preparo')
       return this.pedidos.filter((p) => p.status === 'preparo');
-    return this.pedidos;
+    return [...this.pedidos];
   }
 
   filtrar(filtro: string): void {
@@ -52,19 +75,33 @@ export class OrdersPanelComponent implements OnInit {
       total: p.total,
       restauranteId: this.restauranteId,
     });
-    this.pedidosService.atualizarStatus(
-      p.numPedido,
-      p.pagamento === 'Pix' ? 'aguardando_pix' : 'preparo',
-    );
+    const novoStatus = p.pagamento === 'Pix' ? 'aguardando_pix' : 'preparo';
+    this.pedidosService.atualizarStatus(p.numPedido, novoStatus);
+
+    if (p.pagamento === 'Pix') {
+      this.pedidosService.iniciarTimeoutPix(p.numPedido); // ← inicia timer 10min
+    }
   }
 
   recusar(p: Pedido): void {
-    this.socketService.emit('recusar_pedido', {
-      userId: p.userId,
-      numPedido: p.numPedido,
-      restauranteId: this.restauranteId,
+    Swal.fire({
+      title: 'Recusar pedido?',
+      text: `Pedido #${p.numPedido} de ${p.nome} será cancelado.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, recusar',
+      cancelButtonText: 'Voltar',
+      confirmButtonColor: '#ff4757',
+    }).then((r: any) => {
+      if (r.isConfirmed) {
+        this.socketService.emit('recusar_pedido', {
+          userId: p.userId,
+          numPedido: p.numPedido,
+          restauranteId: this.restauranteId,
+        });
+        this.pedidosService.cancelarPedido(p.numPedido, 'cancelado');
+      }
     });
-    this.pedidosService.removerPedido(p.numPedido);
   }
 
   confirmarPreparo(p: Pedido): void {

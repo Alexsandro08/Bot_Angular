@@ -3,18 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Produto {
-  rowIndex: number;
+  _id?: string;
   nome: string;
-  preco: string;
-  quantidade: string;
+  preco: number;
+  quantidade: number;
   status: string;
   categoria?: string;
-  tempoPreparo?: string;
+  tempoPreparo?: number;
+  descricao?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class ProdutosService {
-  private apiUrl = 'http://localhost:3000/api/produtos';
+  private apiUrl = '/api/produtos';
 
   constructor(private http: HttpClient) {}
 
@@ -26,15 +27,11 @@ export class ProdutosService {
     return this.http.post(this.apiUrl, produto, { withCredentials: true });
   }
 
-  editar(index: number, produto: Partial<Produto>): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${index}`, produto, {
-      withCredentials: true,
-    });
+  editar(id: string, produto: Partial<Produto>): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, produto, { withCredentials: true });
   }
 
-  deletar(index: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${index}`, {
-      withCredentials: true,
-    });
+  deletar(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
 }

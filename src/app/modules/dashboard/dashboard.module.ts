@@ -16,6 +16,7 @@ import { HorarioPipe } from '../../pipes/horario.pipe';
 import { OnboardingComponent } from './components/onboarding/onboarding.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { RelatoriosComponent } from './components/relatorios/relatorios.component';
+import { SuporteComponent } from './components/suporte/suporte.component';
 
 const routes: Routes = [{ path: '', component: DashboardComponent }];
 
@@ -33,6 +34,7 @@ const routes: Routes = [{ path: '', component: DashboardComponent }];
     OnboardingComponent,
     NotificationsComponent,
     RelatoriosComponent,
+    SuporteComponent,
   ],
   imports: [
     CommonModule,

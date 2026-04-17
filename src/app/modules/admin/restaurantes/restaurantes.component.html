@@ -1,0 +1,155 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Restaurantes</h1>
+    <button class="btn-novo" (click)="abrirCadastro()">
+      <i class="bi bi-plus-lg"></i> Novo Restaurante
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        placeholder="Buscar por nome ou login..."
+        [(ngModel)]="busca"
+        (input)="filtrar()"
+      />
+    </div>
+    <span class="total-label">{{ filtrados.length }} restaurante(s)</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Login</th>
+          <th>WhatsApp</th>
+          <th>Assinatura</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of filtrados">
+          <td>{{ r.nome }}</td>
+          <td class="muted">{{ r.login }}</td>
+          <td class="muted">{{ r.whatsapp || "—" }}</td>
+          <td>
+            <span *ngIf="!r.expira_em">Ilimitado</span>
+            <span *ngIf="r.expira_em"
+              >{{ diasRestantes(r.expira_em) }} dias</span
+            >
+          </td>
+          <td>
+            <span class="badge" [ngClass]="getStatus(r.expira_em)">
+              {{ getStatusLabel(r.expira_em) }}
+            </span>
+          </td>
+          <td class="acoes">
+            <button
+              class="btn-icon edit"
+              title="Editar"
+              (click)="abrirEdicao(r)"
+            >
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <button
+              class="btn-icon renovar"
+              title="Renovar 30 dias"
+              (click)="renovar(r._id)"
+            >
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button
+              class="btn-icon reembolso"
+              title="Reembolso"
+              (click)="reembolso(r._id, r.nome)"
+            >
+              <i class="bi bi-cash-stack"></i>
+            </button>
+            <button
+              class="btn-icon ilimitado"
+              title="Ilimitado"
+              (click)="ilimitado(r._id)"
+            >
+              <i class="bi bi-infinity"></i>
+            </button>
+            <button
+              class="btn-icon bloquear"
+              title="Bloquear"
+              (click)="bloquear(r._id)"
+            >
+              <i class="bi bi-slash-circle-fill"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" *ngIf="modalAberto" (click)="fecharModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editando ? "Editar Restaurante" : "Novo Restaurante" }}</h2>
+      <button class="modal-close" (click)="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Nome</label>
+        <input
+          type="text"
+          [(ngModel)]="form.nome"
+          placeholder="Nome do restaurante"
+        />
+      </div>
+      <div class="field">
+        <label>Login (email)</label>
+        <input
+          type="email"
+          [(ngModel)]="form.login"
+          placeholder="email@exemplo.com"
+        />
+      </div>
+      <div class="field" *ngIf="!editando">
+        <label>Senha</label>
+        <input
+          type="password"
+          [(ngModel)]="form['senha']"
+          placeholder="Senha"
+        />
+      </div>
+      <div class="field">
+        <label>WhatsApp</label>
+        <input
+          type="text"
+          [(ngModel)]="form.whatsapp"
+          placeholder="5583999999999"
+        />
+      </div>
+      <div class="field">
+        <label>Chave PIX</label>
+        <input
+          type="text"
+          [(ngModel)]="form.chave_pix"
+          placeholder="Chave PIX"
+        />
+      </div>
+      <div class="field">
+        <label>Tipo de Cozinha</label>
+        <input
+          type="text"
+          [(ngModel)]="form.tipo_cozinha"
+          placeholder="Ex: Hambúrgueres"
+        />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+      <button class="btn-save" (click)="salvar()">Salvar</button>
+    </div>
+  </div>
+</div>

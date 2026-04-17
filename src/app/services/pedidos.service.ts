@@ -13,52 +13,48 @@ export interface Pedido {
   comprovante?: string;
   observacao?: string;
   horario?: string;
-  criadoEm?: string; // ← adiciona
+  criadoEm?: string;
+  troco?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class PedidosService {
   private pedidosSubject = new BehaviorSubject<Pedido[]>(
-    this.carregarStorage('pedidos_v4'),
+    this.carregar('pedidos'),
   );
   private historicoSubject = new BehaviorSubject<Pedido[]>(
-    this.carregarStorage('historico_vendas'),
+    this.carregar('historico'),
   );
 
   pedidos$ = this.pedidosSubject.asObservable();
   historico$ = this.historicoSubject.asObservable();
 
-  private carregarStorage(key: string): Pedido[] {
+  private carregar(chave: string): Pedido[] {
     try {
-      return JSON.parse(localStorage.getItem(key) || '[]');
+      return JSON.parse(sessionStorage.getItem(chave) || '[]');
     } catch {
       return [];
     }
   }
 
-  private salvarStorage(): void {
-    localStorage.setItem(
-      'pedidos_v4',
-      JSON.stringify(this.pedidosSubject.value),
-    );
-    localStorage.setItem(
-      'historico_vendas',
-      JSON.stringify(this.historicoSubject.value),
-    );
+  private salvar(chave: string, dados: Pedido[]): void {
+    sessionStorage.setItem(chave, JSON.stringify(dados));
   }
 
   adicionarPedido(pedido: Pedido): void {
     pedido.status = 'pendente';
     pedido.criadoEm = new Date().toISOString();
-    this.pedidosSubject.next([...this.pedidosSubject.value, pedido]);
-    this.salvarStorage();
+    const atualizados = [...this.pedidosSubject.value, pedido];
+    this.pedidosSubject.next(atualizados);
+    this.salvar('pedidos', atualizados);
   }
+
   atualizarStatus(numPedido: number, status: string): void {
     const pedidos = this.pedidosSubject.value.map((p) =>
       p.numPedido == numPedido ? { ...p, status } : p,
     );
     this.pedidosSubject.next(pedidos);
-    this.salvarStorage();
+    this.salvar('pedidos', pedidos);
   }
 
   adicionarComprovante(numPedido: number, imagem: string): void {
@@ -68,14 +64,15 @@ export class PedidosService {
         : p,
     );
     this.pedidosSubject.next(pedidos);
-    this.salvarStorage();
+    this.salvar('pedidos', pedidos);
   }
 
   removerPedido(numPedido: number): void {
-    this.pedidosSubject.next(
-      this.pedidosSubject.value.filter((p) => p.numPedido != numPedido),
+    const pedidos = this.pedidosSubject.value.filter(
+      (p) => p.numPedido != numPedido,
     );
-    this.salvarStorage();
+    this.pedidosSubject.next(pedidos);
+    this.salvar('pedidos', pedidos);
   }
 
   finalizarPedido(numPedido: number): void {
@@ -84,10 +81,11 @@ export class PedidosService {
     );
     if (pedido) {
       pedido.status = 'finalizado';
-      this.historicoSubject.next([...this.historicoSubject.value, pedido]);
+      const historico = [...this.historicoSubject.value, pedido];
+      this.historicoSubject.next(historico);
+      this.salvar('historico', historico);
       this.removerPedido(numPedido);
     }
-    this.salvarStorage();
   }
 
   getPedidos(): Pedido[] {
@@ -97,17 +95,48 @@ export class PedidosService {
     return this.historicoSubject.value;
   }
 
+  cancelarPedido(numPedido: number, motivo = 'cancelado'): void {
+    const pedido = this.pedidosSubject.value.find(
+      (p) => p.numPedido == numPedido,
+    );
+    if (pedido) {
+      const cancelado = { ...pedido, status: motivo };
+      const historico = [...this.historicoSubject.value, cancelado];
+      this.historicoSubject.next(historico);
+      this.salvar('historico', historico);
+      this.removerPedido(numPedido);
+    }
+  }
+
+  iniciarTimeoutPix(numPedido: number): void {
+    setTimeout(
+      () => {
+        const pedido = this.pedidosSubject.value.find(
+          (p) => p.numPedido == numPedido,
+        );
+        if (
+          pedido &&
+          (pedido.status === 'aguardando_pix' ||
+            pedido.status === 'validacao_pendente')
+        ) {
+          this.cancelarPedido(numPedido, 'cancelado_timeout');
+        }
+      },
+      10 * 60 * 1000,
+    ); 
+  }
+
   limparPendentes(): void {
     const pendentes = this.pedidosSubject.value.filter(
       (p) => p.status === 'pendente' || p.status === 'validacao_pendente',
     );
     pendentes.forEach((p) => this.removerPedido(p.numPedido));
   }
+
   zerarHistorico(): void {
     this.historicoSubject.next([]);
-    localStorage.removeItem('historico_vendas');
-    localStorage.removeItem('pedidos_v4');
     this.pedidosSubject.next([]);
-    this.salvarStorage();
+    sessionStorage.removeItem('pedidos');
+    sessionStorage.removeItem('historico');
   }
 }

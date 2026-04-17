@@ -12,6 +12,9 @@
         <p *ngIf="pedido.observacao">
           <strong>📝 Obs:</strong> {{ pedido.observacao }}
         </p>
+        <p *ngIf="pedido.troco">
+          <strong>💵 Troco para:</strong> {{ pedido.troco }}
+        </p>
         <p>
           <strong>📍Endereço:</strong>
           {{ pedido.endereco || "Retirada no Local" }}

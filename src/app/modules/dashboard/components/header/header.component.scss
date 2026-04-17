@@ -1,25 +1,40 @@
 // ============================================================
-// HEADER
+// SIDEBAR
 // ============================================================
-.header {
-  display: flex;
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
   background: linear-gradient(180deg, #323c50, #4e5366);
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+  box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.432);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  transition: transform 0.3s ease;
 }
 
 // ============================================================
-// LOGO BOX
+// LOGO
 // ============================================================
-.logo-box {
+.sidebar-logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  font-size: 22px;
+  gap: 10px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 16px;
+}
+
+.sidebar-nome {
+  font-size: 16px;
   font-weight: 700;
+  color: white;
+  text-align: center;
 }
 
 .logo-icon {
@@ -48,7 +63,7 @@
   .logo-edit-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0,0,0,0.55);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -59,9 +74,7 @@
     color: white;
   }
 
-  &:hover .logo-edit-overlay {
-    opacity: 1;
-  }
+  &:hover .logo-edit-overlay { opacity: 1; }
 }
 
 .logo-skeleton {
@@ -76,46 +89,96 @@
 // ============================================================
 // NAV
 // ============================================================
-nav a {
-  margin-left: 25px;
-  color: #9499a5;
-  text-decoration: none;
-  font-size: 14px;
-  cursor: pointer;
-  transition: color 0.2s;
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 
-  &.active {
-    color: white;
-    border-bottom: 2px solid #4f8cff;
-    padding-bottom: 5px;
+  a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: #9499a5;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+
+    i { font-size: 16px; }
+
+    &:hover {
+      background: rgba(255,255,255,0.05);
+      color: white;
+    }
+
+    &.active {
+      background: #4f8cff;
+      color: white;
+      font-weight: 600;
+
+      i { color: white; }
+    }
   }
 }
 
-// ============================================================
-// HEADER RIGHT
-// ============================================================
-.header-right {
+.nav-suporte { position: relative; }
+
+.badge-suporte {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: #ff4757;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  animation: popIn 0.3s ease;
 }
 
 // ============================================================
-// Button de Sons notificações
+// FOOTER DA SIDEBAR
 // ============================================================
-.btn-som {
-  background: transparent;
-  border: none;
-  color: #9499a5;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  transition: 0.2s;
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
 
-  &:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.05);
+// ============================================================
+// TOPBAR ACTIONS (canto superior direito)
+// ============================================================
+.topbar-actions {
+  position: fixed;
+  top: 40px;
+  right: 40px;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .avatar-popup {
+    bottom: auto;
+    top: calc(100% + 12px);
+    right: 0;
+    animation: popDown 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar-actions {
+    top: 12px;
+    right: 12px;
+    padding: 6px 10px;
   }
 }
 
@@ -126,30 +189,30 @@ nav a {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 20px;
   border: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: 0.2s;
+  width: 100%;
+  justify-content: center;
 
   &.aberta {
-    background: rgba(46, 213, 115, 0.12);
+    background: rgba(46,213,115,0.12);
     color: #2ed573;
-    border: 1px solid rgba(46, 213, 115, 0.2);
+    border: 1px solid rgba(46,213,115,0.2);
   }
-
   &.fechada {
-    background: rgba(255, 71, 87, 0.12);
+    background: rgba(255,71,87,0.12);
     color: #ff4757;
-    border: 1px solid rgba(255, 71, 87, 0.2);
+    border: 1px solid rgba(255,71,87,0.2);
   }
-
   &.alerta {
-    background: rgba(241, 196, 15, 0.15);
+    background: rgba(241,196,15,0.15);
     color: #f1c40f;
-    border: 1px solid rgba(241, 196, 15, 0.3);
+    border: 1px solid rgba(241,196,15,0.3);
     animation: alertaPulse 1s ease-in-out infinite;
   }
 }
@@ -158,44 +221,41 @@ nav a {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-
-  &.dot-online {
-    background: #2ed573;
-    box-shadow: 0 0 8px #2ed573;
-    animation: pulse 2s infinite;
-  }
-
-  &.dot-offline {
-    background: #ff4757;
-    box-shadow: 0 0 8px #ff4757;
-  }
+  &.dot-online { background: #2ed573; box-shadow: 0 0 8px #2ed573; animation: pulse 2s infinite; }
+  &.dot-offline { background: #ff4757; box-shadow: 0 0 8px #ff4757; }
 }
 
-.horario-label {
-  font-size: 11px;
-  opacity: 0.7;
-  font-weight: 400;
-}
+.horario-label { font-size: 10px; opacity: 0.7; font-weight: 400; }
 
 // ============================================================
-// CONFIG / ENGRENAGEM
+// BOTÕES DE AÇÃO
 // ============================================================
-.config-wrapper {
-  position: relative;
+.btn-som {
+  background: transparent;
+  border: none;
+  color: #9499a5;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: 0.2s;
+  &:hover { color: white; background: rgba(255,255,255,0.05); }
 }
+
+.config-wrapper { position: relative; }
 
 .config-menu {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
   background: #1e2536;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255,255,255,0.07);
   border-radius: 12px;
   padding: 6px;
   min-width: 200px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
   z-index: 999;
-  animation: popDown 0.2s ease;
+  animation: popUp 0.2s ease;
 
   button {
     width: 100%;
@@ -210,11 +270,7 @@ nav a {
     align-items: center;
     gap: 8px;
     transition: 0.2s;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: white;
-    }
+    &:hover { background: rgba(255,255,255,0.05); color: white; }
   }
 }
 
@@ -227,19 +283,8 @@ nav a {
   padding: 6px;
   border-radius: 8px;
   transition: 0.2s;
-
-  i {
-    display: inline-block;
-    transition: transform 0.6s ease;
-  }
-
-  &:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.05);
-    i {
-      transform: rotate(60deg);
-    }
-  }
+  i { display: inline-block; transition: transform 0.6s ease; }
+  &:hover { color: white; background: rgba(255,255,255,0.05); i { transform: rotate(60deg); } }
 }
 
 // ============================================================
@@ -259,17 +304,8 @@ nav a {
   cursor: pointer;
   transition: 0.2s;
   color: #9499a5;
-
-  &:hover {
-    border-color: #4f8cff;
-    color: white;
-  }
-
-  &.online {
-    border-color: #2ed573;
-    color: #2ed573;
-    animation: avatarPulse 2.5s ease-in-out infinite;
-  }
+  &:hover { border-color: #4f8cff; color: white; }
+  &.online { border-color: #2ed573; color: #2ed573; animation: avatarPulse 2.5s ease-in-out infinite; }
 }
 
 .avatar-dot {
@@ -280,44 +316,30 @@ nav a {
   height: 10px;
   border-radius: 50%;
   border: 2px solid #151929;
-
-  &.dot-online {
-    background: #2ed573;
-  }
-  &.dot-offline {
-    background: #ff4757;
-  }
+  &.dot-online { background: #2ed573; }
+  &.dot-offline { background: #ff4757; }
 }
 
 .avatar-popup {
   position: absolute;
-  top: calc(100% + 12px);
+  bottom: calc(100% + 12px);
   right: 0;
   background: #1e2536;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255,255,255,0.07);
   border-radius: 16px;
   padding: 20px;
   min-width: 180px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-  animation: popDown 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  animation: popUp 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
   z-index: 999;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-
-  &.online {
-    border-color: rgba(46, 213, 115, 0.2);
-  }
-  strong {
-    font-size: 14px;
-    color: white;
-  }
-  small {
-    font-size: 11px;
-    color: #8892a4;
-  }
+  &.online { border-color: rgba(46,213,115,0.2); }
+  strong { font-size: 14px; color: white; }
+  small { font-size: 11px; color: #8892a4; }
 }
 
 .logo {
@@ -346,35 +368,50 @@ nav a {
   animation: pulseRing 1.5s ease-out infinite;
 }
 
-.btn-sair {
-  margin-top: 10px;
-  background: rgba(255, 71, 87, 0.1);
-  color: #ff4757;
-  border: 1px solid rgba(255, 71, 87, 0.2);
-  padding: 7px 16px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: 0.2s;
-  width: 100%;
+// ============================================================
+// HAMBURGUER (só mobile)
+// ============================================================
+.btn-hamburger {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  flex-direction: column;
   justify-content: center;
+  gap: 5px;
+  background: #323c50;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
 
-  &:hover {
-    background: rgba(255, 71, 87, 0.2);
+  span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #9499a5;
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: center;
+  }
+
+  &:hover span { background: #fff; }
+
+  &.open {
+    span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #4f8cff; }
+    span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #4f8cff; }
   }
 }
 
 // ============================================================
-// MODAL DE CROP
+// MODAL CROP
 // ============================================================
 .crop-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 12, 20, 0.95);
+  background: rgba(10,12,20,0.95);
   z-index: 999999;
   display: flex;
   align-items: center;
@@ -384,21 +421,14 @@ nav a {
 
 .crop-box {
   background: #1e2536;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255,255,255,0.07);
   border-radius: 24px;
   padding: 32px;
   width: 420px;
   max-width: calc(100vw - 32px);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-  h3 {
-    color: white;
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-align: center;
-  }
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  animation: popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+  h3 { color: white; font-size: 18px; font-weight: 700; margin-bottom: 20px; text-align: center; }
 }
 
 .crop-container {
@@ -407,320 +437,78 @@ nav a {
   border-radius: 12px;
   overflow: hidden;
   background: #151929;
-
-  canvas {
-    width: 100%;
-    height: 100%;
-    cursor: grab;
-    &:active {
-      cursor: grabbing;
-    }
-  }
+  canvas { width: 100%; height: 100%; cursor: grab; &:active { cursor: grabbing; } }
 }
 
 .crop-actions {
   display: flex;
   gap: 10px;
   margin-top: 20px;
-
   button {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    flex: 1; padding: 12px; border-radius: 10px; border: none;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
   }
-
-  .btn-cancelar {
-    background: #2a2f45;
-    color: #9499a5;
-    &:hover {
-      background: #363b54;
-      color: white;
-    }
-  }
-
-  .btn-confirmar {
-    background: #4f8cff;
-    color: white;
-    &:hover {
-      background: #3a7bd5;
-    }
-  }
+  .btn-cancelar { background: #2a2f45; color: #9499a5; &:hover { background: #363b54; color: white; } }
+  .btn-confirmar { background: #4f8cff; color: white; &:hover { background: #3a7bd5; } }
 }
 
 .spinner-btn {
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
   border-top-color: white;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 6px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-// ============================================================
-// HAMBURGUER
-// ============================================================
-.btn-hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  transition: background 0.2s;
-  z-index: 1001;
-
-  span {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: #9499a5;
-    border-radius: 2px;
-    transition:
-      transform 0.3s ease,
-      opacity 0.3s ease,
-      background 0.2s;
-    transform-origin: center;
-  }
-
-  &:hover span {
-    background: #fff;
-  }
-
-  &.open {
-    span:nth-child(1) {
-      transform: translateY(7px) rotate(45deg);
-      background: #4f8cff;
-    }
-    span:nth-child(2) {
-      opacity: 0;
-      transform: scaleX(0);
-    }
-    span:nth-child(3) {
-      transform: translateY(-7px) rotate(-45deg);
-      background: #4f8cff;
-    }
-  }
-}
-
-// ============================================================
-// ANIMAÇÕES
-// ============================================================
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes alertaPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes avatarPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(46, 213, 115, 0);
-  }
-}
-
-@keyframes pulseRing {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
-
-@keyframes popDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: scale(0.85);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-// ============================================================
-// RESPONSIVO — TABLET
-// ============================================================
-@media (min-width: 769px) and (max-width: 1024px) {
-  .header {
-    padding: 12px 20px;
-  }
-  .logo-box {
-    font-size: 16px;
-    gap: 8px;
-    white-space: nowrap;
-  }
-  nav a {
-    margin-left: 14px;
-    font-size: 13px;
-  }
-  .btn-loja {
-    font-size: 11px;
-    padding: 6px 10px;
-    .horario-label {
-      display: none;
-    }
-  }
+  display: inline-block; vertical-align: middle; margin-right: 6px;
 }
 
 // ============================================================
 // RESPONSIVO — MOBILE
 // ============================================================
 @media (max-width: 768px) {
-  .header {
-    padding: 12px 16px;
-    flex-wrap: wrap;
-    gap: 8px;
+  .sidebar {
+    transform: translateX(-100%);
     border-radius: 0;
-    position: relative;
+    &.open { transform: translateX(0); }
   }
-  .logo-box {
-    font-size: 15px;
-    gap: 8px;
-    flex: 1;
-  }
-  .btn-hamburger {
-    display: flex;
-    order: 3;
-  }
-  .header-right {
-    order: 2;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .btn-loja {
-    font-size: 11px;
-    padding: 5px 8px;
-  }
-  .btn-config {
-    display: flex;
-    font-size: 16px;
-    padding: 4px;
-  }
-  .avatar-bot {
-    width: 34px;
-    height: 34px;
-    font-size: 16px;
-  }
-  .logo-icon {
-    &:not(:has(img)) {
-      padding: 8px;
-    }
-  }
+  .btn-hamburger { display: flex; }
+}
 
-  .logo-upload {
-    .logo-img {
-      width: 42px;
-      height: 42px;
-      border-radius: 8px;
-    }
-  }
-
-  .logo-skeleton {
-    width: 42px;
-    height: 42px;
-  }
-
-  nav {
-    order: 10;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
-    transition:
-      max-height 0.35s ease,
-      opacity 0.25s ease;
-    border-top: 1px solid transparent;
-
-    &.open {
-      max-height: 200px;
-      opacity: 1;
-      border-top-color: #363b4a;
-      padding-top: 8px;
-      padding-bottom: 8px;
-    }
-
-    a {
-      margin: 0;
-      padding: 10px 4px;
-      font-size: 14px;
-      border-bottom: 1px solid #1e2336;
-      display: block;
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      &.active {
-        color: #4f8cff;
-        border-bottom-color: #1e2336;
-        padding-bottom: 10px;
-        border-left: 3px solid #4f8cff;
-        padding-left: 8px;
-      }
-    }
-  }
+// ============================================================
+// ANIMAÇÕES
+// ============================================================
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes alertaPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+@keyframes avatarPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46,213,115,0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(46,213,115,0); }
+}
+@keyframes pulseRing {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes popDown {
+  from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes popUp {
+  from { opacity: 0; transform: translateY(8px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

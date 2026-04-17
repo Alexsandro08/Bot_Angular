@@ -1,31 +1,41 @@
 <div class="dashboard-container">
-  <app-onboarding
-    *ngIf="mostrarOnboarding"
-    (concluido)="onOnboardingConcluido()"
-  ></app-onboarding>
-
+  <div id="particles-js"></div>
+  <ng-container *ngIf="!carregando">
+    <app-onboarding
+      *ngIf="mostrarOnboarding"
+      (concluido)="onOnboardingConcluido()"
+    ></app-onboarding>
+  </ng-container>
   <app-qr-modal></app-qr-modal>
 
-  <app-header [paginaAtual]="paginaAtual" (paginaMudou)="trocarPagina($event)">
-  </app-header>
-
   <div class="dashboard-wrapper">
+    <div class="header-row">
+      <app-header
+        [paginaAtual]="paginaAtual"
+        (paginaMudou)="trocarPagina($event)"
+      ></app-header>
+    </div>
+
     <ng-container [ngSwitch]="paginaAtual">
-      <ng-container *ngSwitchCase="'dashboard'">
+      <div *ngSwitchCase="'dashboard'" class="page-view">
         <app-stats-grid></app-stats-grid>
         <div class="main-layout">
           <app-orders-panel></app-orders-panel>
           <app-sidebar></app-sidebar>
         </div>
-      </ng-container>
+      </div>
 
-      <ng-container *ngSwitchCase="'produtos'">
+      <div *ngSwitchCase="'produtos'" class="page-view">
         <app-produtos></app-produtos>
-      </ng-container>
+      </div>
 
-      <ng-container *ngSwitchCase="'relatorios'">
+      <div *ngSwitchCase="'relatorios'" class="page-view">
         <app-relatorios></app-relatorios>
-      </ng-container>
+      </div>
+
+      <div *ngSwitchCase="'suporte'" class="page-view">
+        <app-suporte></app-suporte>
+      </div>
     </ng-container>
   </div>
 

@@ -1,33 +1,28 @@
 <section class="orders-panel">
   <div class="tabs">
-    <div
-      class="tab"
-      [class.active]="filtro === 'todos'"
-      (click)="filtrar('todos')"
-    >
+    <div class="tab" [class.active]="filtro === 'todos'" (click)="filtrar('todos')">
       Todos
+      <span class="tab-badge" *ngIf="pedidos.length > 0">{{ pedidos.length }}</span>
     </div>
-    <div
-      class="tab"
-      [class.active]="filtro === 'aguardando'"
-      (click)="filtrar('aguardando')"
-    >
+    <div class="tab" [class.active]="filtro === 'aguardando'" (click)="filtrar('aguardando')">
       Aguardando Pagamento
+      <span class="tab-badge azul" *ngIf="countAguardando > 0">{{ countAguardando }}</span>
     </div>
-    <div
-      class="tab"
-      [class.active]="filtro === 'preparo'"
-      (click)="filtrar('preparo')"
-    >
+    <div class="tab" [class.active]="filtro === 'preparo'" (click)="filtrar('preparo')">
       Em Preparo
+      <span class="tab-badge azul" *ngIf="countPreparo > 0">{{ countPreparo }}</span>
     </div>
-    <div
-      class="tab"
-      [class.active]="filtro === 'finalizados'"
-      (click)="filtrar('finalizados')"
-    >
+    <div class="tab" [class.active]="filtro === 'finalizados'" (click)="filtrar('finalizados')">
       Finalizados
     </div>
+    <div class="tab" [class.active]="filtro === 'cancelados'" (click)="filtrar('cancelados')">
+      Cancelados
+    </div>
+  </div>
+
+  <div class="sem-pedidos" *ngIf="lista.length === 0">
+    <i class="bi bi-inbox"></i>
+    <p>Nenhum pedido aqui</p>
   </div>
 
   <app-order-card
@@ -37,6 +32,5 @@
     (onRecusar)="recusar($event)"
     (onConfirmarPreparo)="confirmarPreparo($event)"
     (onEntrega)="entrega($event)"
-  >
-  </app-order-card>
+  />
 </section>

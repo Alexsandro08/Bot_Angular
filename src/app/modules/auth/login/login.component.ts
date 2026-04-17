@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../../services/auth.service';
 
 declare var particlesJS: any;
 
@@ -77,7 +77,13 @@ export class LoginComponent {
     this.authService.login(login, senha).subscribe({
       next: (res) => {
         if (res.ok) {
-          this.router.navigate(['/dashboard']);
+          const token = this.authService.getToken();
+          const payload = JSON.parse(atob(token!.split('.')[1]));
+          if (payload.isAdmin) {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         } else {
           this.erro = true;
           this.erroMsg =

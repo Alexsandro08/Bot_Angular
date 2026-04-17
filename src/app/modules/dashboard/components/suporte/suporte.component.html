@@ -1,0 +1,91 @@
+<div class="suporte-container">
+
+  <!-- LISTA DE CHAMADOS -->
+  <div class="chamados-lista">
+    <div class="chamados-header">
+      <h3><i class="bi bi-headset"></i> Suporte</h3>
+      <span class="total-badge" *ngIf="chamados.length > 0">{{ chamados.length }}</span>
+    </div>
+
+    <div class="chamados-vazio" *ngIf="chamados.length === 0">
+      <i class="bi bi-chat-dots"></i>
+      <p>Nenhum chamado aberto</p>
+    </div>
+
+    <div
+      class="chamado-item"
+      *ngFor="let c of chamados"
+      [class.ativo]="chamadoAtivo?.userId === c.userId"
+      [class.aguardando]="c.status === 'aguardando'"
+      (click)="selecionarChamado(c)"
+    >
+      <div class="chamado-avatar">
+        {{ c.nome.charAt(0).toUpperCase() }}
+      </div>
+      <div class="chamado-info">
+        <strong>{{ c.nome }}</strong>
+        <small>{{ c.motivo }}</small>
+        <span class="chamado-status">{{ getStatusLabel(c.status) }}</span>
+      </div>
+      <div class="chamado-meta">
+        <span class="chamado-hora">{{ c.hora | date: 'HH:mm' }}</span>
+        <span class="dot-novo" *ngIf="c.status === 'aguardando'"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-area" *ngIf="chamadoAtivo; else semChamado">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar">{{ chamadoAtivo.nome.charAt(0).toUpperCase() }}</div>
+        <div>
+          <strong>{{ chamadoAtivo.nome }}</strong>
+          <small>{{ chamadoAtivo.motivo }}</small>
+        </div>
+      </div>
+      <div class="chat-acoes">
+        <button class="btn-entrar" *ngIf="chamadoAtivo.status === 'aguardando'" (click)="entrarAtendimento()">
+          <i class="bi bi-person-check-fill"></i> Entrar no atendimento
+        </button>
+        <button class="btn-encerrar" *ngIf="chamadoAtivo.status === 'em_atendimento'" (click)="encerrarAtendimento()">
+          <i class="bi bi-x-circle-fill"></i> Encerrar atendimento
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-msgs" #msgContainer>
+      <div class="msg-aviso" *ngIf="chamadoAtivo.status === 'aguardando'">
+        <i class="bi bi-info-circle"></i> Clique em <strong>Entrar no atendimento</strong> para começar.
+      </div>
+      <div
+        class="msg-item"
+        *ngFor="let m of chamadoAtivo.mensagens"
+        [class.msg-atendente]="m.deAtendente"
+      >
+        <span class="msg-texto">{{ m.texto }}</span>
+        <span class="msg-hora">{{ m.hora | date: 'HH:mm' }}</span>
+      </div>
+    </div>
+
+    <div class="chat-input" *ngIf="chamadoAtivo.status === 'em_atendimento'">
+      <input
+        type="text"
+        [(ngModel)]="mensagemDigitada"
+        placeholder="Digite sua mensagem..."
+        (keyup.enter)="enviarMensagem()"
+      />
+      <button (click)="enviarMensagem()">
+        <i class="bi bi-send-fill"></i>
+      </button>
+    </div>
+  </div>
+
+  <ng-template #semChamado>
+    <div class="chat-vazio">
+      <i class="bi bi-chat-square-dots"></i>
+      <p>Selecione um chamado para iniciar o atendimento</p>
+    </div>
+  </ng-template>
+
+</div>

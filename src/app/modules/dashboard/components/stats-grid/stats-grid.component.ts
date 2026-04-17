@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PedidosService } from '../../services/pedidos.service';
+import { PedidosService } from '../../../../services/pedidos.service';
 
 @Component({
   selector: 'app-stats-grid',

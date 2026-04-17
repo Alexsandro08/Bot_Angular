@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { LojaService, HorarioLoja } from '../../services/loja.service';
+import { LojaService, HorarioLoja } from '../../../../services/loja.service';
 
 @Component({
   selector: 'app-onboarding',
@@ -23,7 +23,7 @@ export class OnboardingComponent {
     { label: 'Sáb', valor: 'sab' },
   ];
 
-  diasSelecionados: string[] = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom']; // padrão seg-sex
+  diasSelecionados: string[] = ['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'];
 
   constructor(private lojaService: LojaService) {}
 

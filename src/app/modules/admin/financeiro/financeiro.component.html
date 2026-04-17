@@ -1,0 +1,52 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Financeiro</h1>
+    <span class="mock-tag">🔧 Dados simulados</span>
+  </div>
+
+  <div class="resumo-cards">
+    <div class="rcard">
+      <span class="rcard-icon">💰</span>
+      <div class="rcard-info">
+        <span class="rcard-value">R$ {{ resumo.faturamentoMes | number:'1.0-0' }}</span>
+        <span class="rcard-label">Faturamento do Mês</span>
+      </div>
+    </div>
+    <div class="rcard">
+      <span class="rcard-icon">📈</span>
+      <div class="rcard-info">
+        <span class="rcard-value">R$ {{ resumo.faturamentoTotal | number:'1.0-0' }}</span>
+        <span class="rcard-label">Faturamento Total</span>
+      </div>
+    </div>
+    <div class="rcard">
+      <span class="rcard-icon">💼</span>
+      <div class="rcard-info">
+        <span class="rcard-value">{{ resumo.assinantesAtivos }}</span>
+        <span class="rcard-label">Assinantes Ativos</span>
+      </div>
+    </div>
+    <div class="rcard">
+      <span class="rcard-icon">🎯</span>
+      <div class="rcard-info">
+        <span class="rcard-value">R$ {{ resumo.ticketMedio | number:'1.0-0' }}</span>
+        <span class="rcard-label">Ticket Médio</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-box wide">
+      <div class="chart-title">Faturamento Mensal</div>
+      <canvas #chartFaturamento></canvas>
+    </div>
+    <div class="chart-box wide">
+      <div class="chart-title">Crescimento de Clientes</div>
+      <canvas #chartClientes></canvas>
+    </div>
+    <div class="chart-box small">
+      <div class="chart-title">Distribuição de Planos</div>
+      <canvas #chartPlanos></canvas>
+    </div>
+  </div>
+</div>

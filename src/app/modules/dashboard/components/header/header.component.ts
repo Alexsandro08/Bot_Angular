@@ -11,11 +11,11 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import Cropper from 'cropperjs';
-import { SocketService } from '../../services/socket.service';
-import { AuthService } from '../../../auth/auth.service';
-import { LojaService } from '../../services/loja.service';
-import { AudioService } from '../../services/audio.service';
+import { SocketService } from '../../../../services/socket.service';
+import { AuthService } from '../../../../services/auth.service';
+import { LojaService } from '../../../../services/loja.service';
+import { AudioService } from '../../../../services/audio.service';
+import { SuporteService } from '../../../../services/suporte.service';
 
 declare var Swal: any;
 
@@ -96,13 +96,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private lojaService: LojaService,
     private http: HttpClient,
-    private audioService: AudioService
+    private audioService: AudioService,
+    private suporteService: SuporteService,
   ) {}
 
-  
-  // Sons de notificação 
+  // Sons de notificação
   get somAtivo(): boolean {
     return this.audioService.somAtivo;
+  }
+
+  get chamadosAberto(): number {
+    return this.suporteService.chamadosAbertos;
   }
 
   toggleSom(): void {
@@ -133,6 +137,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.lojaService.alertaAmarelo$.subscribe(
         (a) => (this.alertaFechamento = a),
       ),
+      this.socketService.on('chamar_atendente').subscribe(() => {
+      }),
     );
   }
 
@@ -146,7 +152,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navegar(pagina: string): void {
     this.paginaMudou.emit(pagina);
   }
-
   toggleMenu(): void {
     this.menuAberto = !this.menuAberto;
   }
@@ -179,119 +184,133 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-// novas propriedades
-canvasRef!: ElementRef<HTMLCanvasElement>;
-private img = new Image();
-private scale = 1;
-private offsetX = 0;
-private offsetY = 0;
-private isDragging = false;
-private lastX = 0;
-private lastY = 0;
-private canvas!: HTMLCanvasElement;
-private ctx!: CanvasRenderingContext2D;
+  // novas propriedades
+  canvasRef!: ElementRef<HTMLCanvasElement>;
+  private img = new Image();
+  private scale = 1;
+  private offsetX = 0;
+  private offsetY = 0;
+  private isDragging = false;
+  private lastX = 0;
+  private lastY = 0;
+  private canvas!: HTMLCanvasElement;
+  private ctx!: CanvasRenderingContext2D;
 
-uploadLogo(event: Event): void {
-  const file = (event.target as HTMLInputElement).files?.[0];
-  if (!file) return;
+  uploadLogo(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    this.imagemParaCrop = e.target?.result as string;
-    this.cropModalAberto = true;
-    setTimeout(() => this.iniciarCanvas(), 50);
-  };
-  reader.readAsDataURL(file);
-  (event.target as HTMLInputElement).value = '';
-}
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.imagemParaCrop = e.target?.result as string;
+      this.cropModalAberto = true;
+      setTimeout(() => this.iniciarCanvas(), 50);
+    };
+    reader.readAsDataURL(file);
+    (event.target as HTMLInputElement).value = '';
+  }
 
-private iniciarCanvas(): void {
-  this.canvas = document.getElementById('crop-canvas') as HTMLCanvasElement;
-  
-  // ajusta o canvas ao container
-  const container = this.canvas.parentElement!;
-  const size = container.offsetWidth;
-  this.canvas.width = size;
-  this.canvas.height = size;
-  
-  this.ctx = this.canvas.getContext('2d')!;
+  private iniciarCanvas(): void {
+    this.canvas = document.getElementById('crop-canvas') as HTMLCanvasElement;
 
-  this.img.onload = () => {
-    const scaleX = size / this.img.width;
-    const scaleY = size / this.img.height;
-    this.scale = Math.max(scaleX, scaleY);
-    this.offsetX = (size - this.img.width * this.scale) / 2;
-    this.offsetY = (size - this.img.height * this.scale) / 2;
-    this.desenhar();
-    this.bindEventos();
-  };
-  this.img.src = this.imagemParaCrop!;
-}
+    // ajusta o canvas ao container
+    const container = this.canvas.parentElement!;
+    const size = container.offsetWidth;
+    this.canvas.width = size;
+    this.canvas.height = size;
 
-private desenhar(): void {
-  const size = this.canvas.width;
-  this.ctx.fillStyle = '#151929';
-  this.ctx.fillRect(0, 0, size, size);
-  this.ctx.drawImage(
-    this.img,
-    this.offsetX,
-    this.offsetY,
-    this.img.width * this.scale,
-    this.img.height * this.scale
-  );
-}
+    this.ctx = this.canvas.getContext('2d')!;
 
-private bindEventos(): void {
-  this.canvas.onmousedown = (e) => { this.isDragging = true; this.lastX = e.clientX; this.lastY = e.clientY; };
-  this.canvas.onmousemove = (e) => {
-    if (!this.isDragging) return;
-    this.offsetX += e.clientX - this.lastX;
-    this.offsetY += e.clientY - this.lastY;
-    this.lastX = e.clientX;
-    this.lastY = e.clientY;
-    this.desenhar();
-  };
-  this.canvas.onmouseup = () => (this.isDragging = false);
-  this.canvas.onwheel = (e) => {
-    e.preventDefault();
-    this.scale *= e.deltaY < 0 ? 1.1 : 0.9;
-    this.desenhar();
-  };
+    this.img.onload = () => {
+      const scaleX = size / this.img.width;
+      const scaleY = size / this.img.height;
+      this.scale = Math.max(scaleX, scaleY);
+      this.offsetX = (size - this.img.width * this.scale) / 2;
+      this.offsetY = (size - this.img.height * this.scale) / 2;
+      this.desenhar();
+      this.bindEventos();
+    };
+    this.img.src = this.imagemParaCrop!;
+  }
 
-  // touch
-  this.canvas.ontouchstart = (e) => { this.lastX = e.touches[0].clientX; this.lastY = e.touches[0].clientY; };
-  this.canvas.ontouchmove = (e) => {
-    e.preventDefault();
-    this.offsetX += e.touches[0].clientX - this.lastX;
-    this.offsetY += e.touches[0].clientY - this.lastY;
-    this.lastX = e.touches[0].clientX;
-    this.lastY = e.touches[0].clientY;
-    this.desenhar();
-  };
-}
+  private desenhar(): void {
+    const size = this.canvas.width;
+    this.ctx.fillStyle = '#151929';
+    this.ctx.fillRect(0, 0, size, size);
+    this.ctx.drawImage(
+      this.img,
+      this.offsetX,
+      this.offsetY,
+      this.img.width * this.scale,
+      this.img.height * this.scale,
+    );
+  }
 
-confirmarCrop(): void {
-  this.salvandoLogo = true;
-  this.canvas.toBlob((blob) => {
-    if (!blob) return;
-    const formData = new FormData();
-    formData.append('logo', blob, 'logo.png');
-    this.http.post<{ ok: boolean; url: string }>('/api/logo', formData).subscribe((res) => {
-      if (res.ok) {
-        this.logoUrl = res.url;
-        this.fecharCrop();
-        Swal.fire({ title: 'Logo atualizada!', icon: 'success', timer: 1500, showConfirmButton: false });
-      }
-      this.salvandoLogo = false;
-    });
-  }, 'image/png');
-}
+  private bindEventos(): void {
+    this.canvas.onmousedown = (e) => {
+      this.isDragging = true;
+      this.lastX = e.clientX;
+      this.lastY = e.clientY;
+    };
+    this.canvas.onmousemove = (e) => {
+      if (!this.isDragging) return;
+      this.offsetX += e.clientX - this.lastX;
+      this.offsetY += e.clientY - this.lastY;
+      this.lastX = e.clientX;
+      this.lastY = e.clientY;
+      this.desenhar();
+    };
+    this.canvas.onmouseup = () => (this.isDragging = false);
+    this.canvas.onwheel = (e) => {
+      e.preventDefault();
+      this.scale *= e.deltaY < 0 ? 1.1 : 0.9;
+      this.desenhar();
+    };
 
-fecharCrop(): void {
-  this.cropModalAberto = false;
-  this.imagemParaCrop = null;
-  this.salvandoLogo = false;
-}
+    // touch
+    this.canvas.ontouchstart = (e) => {
+      this.lastX = e.touches[0].clientX;
+      this.lastY = e.touches[0].clientY;
+    };
+    this.canvas.ontouchmove = (e) => {
+      e.preventDefault();
+      this.offsetX += e.touches[0].clientX - this.lastX;
+      this.offsetY += e.touches[0].clientY - this.lastY;
+      this.lastX = e.touches[0].clientX;
+      this.lastY = e.touches[0].clientY;
+      this.desenhar();
+    };
+  }
+
+  confirmarCrop(): void {
+    this.salvandoLogo = true;
+    this.canvas.toBlob((blob) => {
+      if (!blob) return;
+      const formData = new FormData();
+      formData.append('logo', blob, 'logo.png');
+      this.http
+        .post<{ ok: boolean; url: string }>('/api/logo', formData)
+        .subscribe((res) => {
+          if (res.ok) {
+            this.logoUrl = res.url;
+            this.fecharCrop();
+            Swal.fire({
+              title: 'Logo atualizada!',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          }
+          this.salvandoLogo = false;
+        });
+    }, 'image/png');
+  }
+
+  fecharCrop(): void {
+    this.cropModalAberto = false;
+    this.imagemParaCrop = null;
+    this.salvandoLogo = false;
+  }
   // ============================================================
   // LOJA
   // ============================================================

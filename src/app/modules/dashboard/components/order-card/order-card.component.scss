@@ -78,8 +78,8 @@
 }
 
 .status-badge-top {
-  background: rgba(241, 196, 15, 0.15);
-  color: #f1c40f;
+  background: #4f8dff33;
+  color: #4f8cff;
   font-size: 11px;
   padding: 4px 12px;
   border-radius: 20px 20px 0 0;
@@ -87,11 +87,6 @@
   align-items: center;
   gap: 6px;
   font-weight: 600;
-
-  &.preparo {
-    background: rgba(79, 140, 255, 0.15);
-    color: #4f8cff;
-  }
 
   .dot-pulse {
     width: 7px;

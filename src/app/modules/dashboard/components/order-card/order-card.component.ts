@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { Pedido } from '../../services/pedidos.service';
+import { Pedido } from '../../../../services/pedidos.service';
 
 declare var Swal: any;
 
@@ -20,8 +20,11 @@ export class OrderCardComponent {
     if (this.pedido.status === 'preparo') return 'Em Preparo...';
     if (this.pedido.status === 'validacao_pendente')
       return 'Comprovante Enviado!';
-    if (this.pedido.status === 'finalizado') return 'Concluído';
-    return 'Aguardando Pagamento...';
+    if (this.pedido.status === 'aguardando_pix') return 'Aguardando Pix...';
+    if (this.pedido.status === 'finalizado') return 'Concluído ✅';
+    if (this.pedido.status === 'cancelado') return 'Cancelado ❌';
+    if (this.pedido.status === 'cancelado_timeout') return 'Expirado ⏱️';
+    return 'Aguardando Confirmação...';
   }
 
   get pgColor(): string {

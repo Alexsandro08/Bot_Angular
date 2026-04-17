@@ -2,11 +2,25 @@
   <div class="relatorios-header">
     <h2><i class="bi bi-bar-chart-line"></i> Relatórios</h2>
     <div class="header-actions">
-      <button class="btn-salvar" (click)="salvarManual()" [disabled]="salvando || jaExisteHoje">
+      <button
+        class="btn-salvar"
+        (click)="salvarManual()"
+        [disabled]="salvando || jaExisteHoje"
+      >
         <i class="bi bi-floppy"></i>
-        {{ jaExisteHoje ? "Já salvo hoje" : salvando ? "Salvando..." : "Salvar hoje" }}
+        {{
+          jaExisteHoje
+            ? "Já salvo hoje"
+            : salvando
+              ? "Salvando..."
+              : "Salvar hoje"
+        }}
       </button>
-      <button class="btn-pdf" (click)="exportarPDF()" [disabled]="relatorios.length === 0">
+      <button
+        class="btn-pdf"
+        (click)="exportarPDF()"
+        [disabled]="relatorios.length === 0"
+      >
         <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
       </button>
     </div>
@@ -36,7 +50,61 @@
     </div>
   </div>
 
-  <div class="relatorios-body">
+  <!-- TABS -->
+  <div class="tabs-relatorio">
+    <button
+      [class.ativo]="abaAtiva === 'historico'"
+      (click)="abaAtiva = 'historico'"
+    >
+      <i class="bi bi-calendar3"></i> Histórico
+    </button>
+    <button
+      [class.ativo]="abaAtiva === 'comprovantes'"
+      (click)="abaAtiva = 'comprovantes'; carregarComprovantes()"
+    >
+      <i class="bi bi-receipt-cutoff"></i> Comprovantes de Pix
+    </button>
+    <!-- <button
+      [class.ativo]="abaAtiva === 'graficos'"
+      (click)="abaAtiva = 'graficos'; renderGraficos()"
+    >
+      <i class="bi bi-cash-coin"></i> Financeiro
+    </button>
+     -->
+  </div>
+
+  <!-- ABA GRÁFICOS -->
+   <!--<div class="graficos-wrap" *ngIf="abaAtiva === 'graficos'">
+    <div class="grafico-box">
+      <h3>Faturamento Mensal</h3>
+      <canvas #chartFaturamento></canvas>
+    </div>
+    <div class="grafico-box">
+      <div class="grafico-header">
+        <h3>Pedidos por Dia</h3>
+        <div class="filtros-grafico">
+         <select [(ngModel)]="modoGrafico" (change)="renderGraficos()">
+            <option value="recentes">Últimos 7 registros</option>
+            <option value="mes">Por mês</option>
+          </select>
+          <select
+            *ngIf="modoGrafico === 'mes'"
+            [(ngModel)]="filtroGraficoMes"
+            (change)="renderGraficos()"
+          >
+            <option value="">Selecione o mês</option>
+            <option *ngFor="let m of mesesDisponiveis" [value]="m">
+              {{ m }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <canvas #chartPagamentos></canvas>
+    </div>
+  </div> -->
+
+  <!-- ABA HISTÓRICO -->
+  <div class="relatorios-body" *ngIf="abaAtiva === 'historico'">
     <div class="tabela-box">
       <h3>Histórico por dia</h3>
       <div class="loading" *ngIf="carregando">Carregando...</div>
@@ -76,13 +144,82 @@
     <div class="ranking-box">
       <h3>🏆 Produtos mais vendidos</h3>
       <div class="ranking-list">
-        <div class="ranking-item" *ngFor="let p of rankingProdutos; let i = index">
+        <div
+          class="ranking-item"
+          *ngFor="let p of rankingProdutos; let i = index"
+        >
           <span class="posicao">{{ i + 1 }}º</span>
           <span class="nome">{{ p.nome }}</span>
           <span class="qtd">{{ p.quantidade }}x</span>
         </div>
-        <p class="vazio" *ngIf="rankingProdutos.length === 0">Sem dados ainda.</p>
+        <p class="vazio" *ngIf="rankingProdutos.length === 0">
+          Sem dados ainda.
+        </p>
       </div>
     </div>
+  </div>
+
+  <!-- ABA COMPROVANTES -->
+  <div class="comprovantes-box" *ngIf="abaAtiva === 'comprovantes'">
+    <div class="filtros-comp">
+      <input type="date" [(ngModel)]="filtroCompInicio" />
+      <input type="date" [(ngModel)]="filtroCompFim" />
+      <button (click)="carregarComprovantes()">Filtrar</button>
+      <button (click)="limparFiltroComp()">Limpar</button>
+      <div class="search-comp">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchComp"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Nº do pedido"
+        />
+      </div>
+    </div>
+
+    <!-- loading -->
+    <div class="loading-search" *ngIf="carregandoComp">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <table *ngIf="!carregandoComp && comprovantesFiltrados.length > 0">
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Data</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of comprovantesFiltrados">
+          <td>
+            <strong style="color: white">#{{ c.num_pedido || "—" }}</strong>
+          </td>
+          <td>{{ c.criado_em | date: "dd/MM/yyyy HH:mm" }}</td>
+          <td>
+            <div style="display: flex; gap: 8px; align-items: center">
+              <button class="btn-ver" (click)="verComprovante(c.url)">
+                <i class="bi bi-eye"></i> Ver
+              </button>
+              <button
+                class="btn-baixar"
+                (click)="baixarComprovante(c.url, c.num_pedido)"
+              >
+                <i class="bi bi-download"></i> Baixar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p
+      class="vazio"
+      *ngIf="!carregandoComp && comprovantesFiltrados.length === 0"
+    >
+      Nenhum comprovante encontrado nesse período.
+    </p>
   </div>
 </div>

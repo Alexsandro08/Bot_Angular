@@ -14,22 +14,31 @@ export class AuthService {
 
   login(login: string, senha: string): Observable<any> {
     return this.http
-      .post(
-        `${this.apiUrl}/auth/login`,
-        { login, senha },
-        { withCredentials: true },
-      )
+      .post(`${this.apiUrl}/auth/login`, { login, senha }, { withCredentials: true })
       .pipe(
         tap((res: any) => {
           if (res.ok) {
-            sessionStorage.setItem('logado', 'true');
+            sessionStorage.setItem('accessToken', res.accessToken);
+          }
+        }),
+      );
+  }
+
+  refresh(): Observable<any> {
+    return this.http
+      .post(`${this.apiUrl}/auth/refresh`, {}, { withCredentials: true })
+      .pipe(
+        tap((res: any) => {
+          if (res.accessToken) {
+            sessionStorage.setItem('accessToken', res.accessToken);
           }
         }),
       );
   }
 
   logout(): void {
-    sessionStorage.removeItem('logado');
+    this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe();
+    sessionStorage.removeItem('accessToken');
     this.router.navigate(['/login']);
   }
 
@@ -37,7 +46,11 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/api/me`, { withCredentials: true });
   }
 
+  getToken(): string | null {
+    return sessionStorage.getItem('accessToken');
+  }
+
   isLoggedIn(): boolean {
-    return sessionStorage.getItem('logado') === 'true';
+    return !!this.getToken();
   }
 }

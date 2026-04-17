@@ -37,7 +37,7 @@ export class SocketService {
         console.log(`📨 Evento recebido [${event}]:`, data);
         observer.next(data);
       };
-      this.socket.off(event);
+      // REMOVIDO: this.socket.off(event) ← apagava listeners de outros componentes
       this.socket.on(event, handler);
       return () => this.socket.off(event, handler);
     });

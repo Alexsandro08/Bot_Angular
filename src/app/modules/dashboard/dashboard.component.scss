@@ -2,11 +2,16 @@
 // CONTAINER PRINCIPAL
 // ============================================================
 .dashboard-container {
+  margin-left: 200px;
   position: relative;
   z-index: 1;
   padding: 30px;
   background: #1b2130d5;
   min-height: 100vh;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
 }
 
 // ============================================================
@@ -16,11 +21,23 @@
   background: #555b6b;
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
+  border-top-right-radius: 15px;
   padding: 25px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 2;
 }
 
-app-header { margin-bottom: 0; }
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.page-view {
+  animation: pageEnter 0.3s ease;
+}
 
 // ============================================================
 // LAYOUT PRINCIPAL
@@ -56,25 +73,74 @@ app-header { margin-bottom: 0; }
   gap: 12px;
   animation: fadeIn 0.4s ease;
 
-  .emoji { font-size: 64px; }
-  h2 { color: #fff; font-size: 28px; margin: 0; }
-  p { color: #ccc; font-size: 16px; margin: 0; }
-  small { color: #666; font-size: 13px; }
+  .emoji {
+    font-size: 64px;
+  }
+  h2 {
+    color: #fff;
+    font-size: 28px;
+    margin: 0;
+  }
+  p {
+    color: #ccc;
+    font-size: 16px;
+    margin: 0;
+  }
+  small {
+    color: #666;
+    font-size: 13px;
+  }
 }
 
 // ============================================================
 // ANIMAÇÕES
 // ============================================================
+
+#particles-js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ============================================================
 // RESPONSIVO — MOBILE
 // ============================================================
 @media (max-width: 768px) {
-  .dashboard-container { padding: 0; }
-  .dashboard-wrapper { padding: 16px; border-radius: 0; }
-  .main-layout { grid-template-columns: 1fr; gap: 16px; }
+  .dashboard-container {
+    padding: 0;
+  }
+  .dashboard-wrapper {
+    padding: 16px;
+    border-radius: 0;
+  }
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }

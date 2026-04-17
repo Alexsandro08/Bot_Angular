@@ -6,9 +6,10 @@ import { AppComponent } from './app.component';
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/auth.interceptor';
+import { AdminComponent } from './modules/admin/admin.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, AdminComponent],
   imports: [BrowserModule, CommonModule, HttpClientModule, AppRoutingModule],
   providers: [
     {
