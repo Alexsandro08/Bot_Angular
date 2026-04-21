@@ -137,8 +137,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.lojaService.alertaAmarelo$.subscribe(
         (a) => (this.alertaFechamento = a),
       ),
-      this.socketService.on('chamar_atendente').subscribe(() => {
-      }),
+      this.socketService.on('chamar_atendente').subscribe(() => {}),
     );
   }
 
@@ -321,11 +320,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
         'Selecione o motivo do fechamento:',
         MOTIVOS_FECHAMENTO,
         (motivo) => {
-          this.http.post('/api/loja/motivo', { motivo }).subscribe();
-          this.lojaService.fecharLoja();
+          this.http.post('/api/loja/motivo', { motivo }).subscribe({
+            next: () => {
+              console.log('✅ motivo salvo, fechando loja');
+              this.lojaService.fecharLoja();
+            },
+            error: (err) => {
+              console.error('❌ erro ao salvar motivo:', err);
+              this.lojaService.fecharLoja(); // fecha mesmo se falhar
+            },
+          });
         },
       );
     } else {
+      this.http.delete('/api/loja/motivo').subscribe();
       this.lojaService.abrirLoja();
     }
   }

@@ -74,37 +74,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // no ngOnInit, após o código atual:
     particlesJS('particles-js', {
       particles: {
-        number: { value: 350, density: { enable: true, value_area: 800 } },
-        color: { value: '#ffffff' },
+        number: { value: 60, density: { enable: true, value_area: 800 } },
+        color: { value: '#4f8cff' },
         shape: { type: 'circle' },
-        opacity: {
-          value: 0.5,
-          random: true,
-          anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
-        },
-        size: {
-          value: 2,
-          random: true,
-          anim: { enable: false },
-        },
+        opacity: { value: 0.15, random: true },
+        size: { value: 3, random: true },
         line_linked: {
-          enable: false, // ← sem linhas
+          enable: true,
+          distance: 150,
+          color: '#4f8cff',
+          opacity: 0.08,
+          width: 1,
         },
         move: {
           enable: true,
-          speed: 0.2,
+          speed: 1.2,
           direction: 'none',
           random: true,
-          straight: false,
           out_mode: 'out',
-          bounce: false,
         },
       },
       interactivity: {
         detect_on: 'canvas',
         events: {
-          onhover: { enable: false },
-          onclick: { enable: false },
+          onhover: { enable: false, mode: 'repulse' },
+          resize: true,
+        },
+        modes: {
+          repulse: { distance: 80, duration: 0.4 },
         },
       },
       retina_detect: true,
@@ -124,9 +121,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  private intervalSessao: any;
+  private intervalExpiracao: any;
+
   ngOnDestroy(): void {
     this.subs.forEach((s) => s.unsubscribe());
     if (this.vantaEffect) this.vantaEffect.destroy();
+    clearInterval(this.intervalSessao);
+    clearInterval(this.intervalExpiracao);
   }
 
   // ============================================================
@@ -194,7 +196,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private iniciarChecagemSessao(): void {
-    setInterval(() => {
+    this.intervalSessao = setInterval(() => {
       this.authService.getMe().subscribe({ error: () => this.deslogar() });
     }, INTERVALO_CHECAGEM_MS);
   }
@@ -214,6 +216,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
           `#${p.numPedido} - ${p.nome}`,
         );
         this.audioService.novoPedido();
+
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'info',
+          title: '🛍️ Novo Pedido!',
+          text: `#${p.numPedido} - ${p.nome}`,
+          showConfirmButton: true,
+          confirmButtonText: 'Ver pedido',
+          confirmButtonColor: '#4f8cff',
+          timer: 10000,
+          timerProgressBar: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.trocarPagina('dashboard');
+          }
+        });
       }),
 
       this.socketService.on('chamar_atendente').subscribe((d) => {
@@ -233,6 +252,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           text: `${d.nome} — ${d.motivo}`,
           showConfirmButton: true,
           confirmButtonText: 'Ver chamado',
+          confirmButtonColor: '#4f8cff',
           timer: 10000,
           timerProgressBar: true,
         }).then((result) => {
@@ -343,7 +363,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
 
     checar();
-    setInterval(checar, INTERVALO_CHECAGEM_MS);
+    this.intervalExpiracao = setInterval(checar, INTERVALO_CHECAGEM_MS); // ← troca essa linha
   }
 
   // ============================================================

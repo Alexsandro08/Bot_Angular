@@ -23,6 +23,7 @@ export class LojaService {
   private aviso5minSubject = new BehaviorSubject<boolean>(false);
   private aviso1minSubject = new BehaviorSubject<boolean>(false);
   private alertaAmareloSubject = new BehaviorSubject<boolean>(false);
+  private fechadoManualmente = false;
 
   aviso10min$ = this.aviso10minSubject.asObservable();
   aviso5min$ = this.aviso5minSubject.asObservable();
@@ -48,6 +49,8 @@ export class LojaService {
   // ============================================================
   inicializarComDados(me: any): Promise<void> {
     return new Promise((resolve) => {
+      this.fechadoManualmente = !!sessionStorage.getItem('fechado_manualmente');
+
       const horarioValido = me.horario_abertura && me.horario_fechamento;
 
       const horario: HorarioLoja | null = horarioValido
@@ -63,7 +66,7 @@ export class LojaService {
       if (horario) this.iniciarTimer();
       setTimeout(() => {
         this.inicializado = true;
-      }, 1000); // ← ADICIONA
+      }, 1000); 
       resolve();
     });
   }
@@ -91,13 +94,17 @@ export class LojaService {
   }
 
   abrirLoja(): void {
-    if (this.abertaSubject.value === true) return; // ← não emite se já estava aberta
+    if (this.abertaSubject.value === true) return; 
+    this.fechadoManualmente = false;
+    sessionStorage.removeItem('fechado_manualmente');
     this.abertaSubject.next(true);
     this.sincronizar(true);
   }
 
   fecharLoja(): void {
-    if (this.abertaSubject.value === false) return; // ← não emite se já estava fechada
+    if (this.abertaSubject.value === false) return;
+    this.fechadoManualmente = true;
+    sessionStorage.setItem('fechado_manualmente', '1');
     this.salvarRelatorioSubject.next();
     this.abertaSubject.next(false);
     this.alertaAmareloSubject.next(false);
@@ -199,8 +206,10 @@ export class LojaService {
     }
 
     if (deveEstarAberta && !this.aberta) {
-      this.abrirLoja();
+      if(!this.fechadoManualmente) this.abrirLoja();
     } else if (!deveEstarAberta && this.aberta) {
+      this.fechadoManualmente = false;
+      sessionStorage.removeItem('fechar_manualmente');
       this.fecharLoja();
     }
   }

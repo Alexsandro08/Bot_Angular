@@ -97,18 +97,53 @@ export class SidebarComponent implements OnInit {
       },
     });
   }
+  maisVendidosLista: { nome: string; quantidade: number }[] = [];
 
   ngOnInit(): void {
     this.pedidosService.pedidos$.subscribe(() => {
       this.calcular();
-      this.carregarImagens();
+      this.atualizarMaisVendidos();
     });
     this.pedidosService.historico$.subscribe(() => {
       this.calcular();
-      this.carregarImagens();
+      this.atualizarMaisVendidos();
     });
     setTimeout(() => this.carregarImagens(), 500);
   }
+
+  atualizarMaisVendidos(): void {
+    const todos = [
+      ...this.pedidosService
+        .getPedidos()
+        .filter(
+          (p) =>
+            p.pagamento !== 'Pix' ||
+            p.status === 'em_preparo' ||
+            p.status === 'finalizado',
+        ),
+      ...this.pedidosService.getHistorico(),
+    ];
+
+    const contagem: Record<string, number> = {};
+    todos.forEach((pedido) => {
+      pedido.carrinho.forEach((item) => {
+        const nome = item
+          .replace(/^\d+x\s*/i, '')
+          .replace(/\s*\(R\$.*?\)/g, '')
+          .trim();
+        contagem[nome] = (contagem[nome] || 0) + 1;
+      });
+    });
+
+    this.maisVendidosLista = Object.entries(contagem)
+      .map(([nome, quantidade]) => ({ nome, quantidade }))
+      .sort((a, b) => b.quantidade - a.quantidade)
+      .slice(0, 5);
+
+    this.carregarImagens();
+  }
+
+  // remove o get maisVendidos() inteiro
 
   calcular(): void {
     const historico = this.pedidosService.getHistorico();
@@ -143,42 +178,10 @@ export class SidebarComponent implements OnInit {
     return `R$ ${(total / historico.length).toFixed(2).replace('.', ',')}`;
   }
 
-  get maisVendidos(): { nome: string; quantidade: number }[] {
-    const todos = [
-      ...this.pedidosService
-        .getPedidos()
-        .filter(
-          (p) =>
-            p.pagamento !== 'Pix' ||
-            p.status === 'em_preparo' ||
-            p.status === 'finalizado',
-        ),
-      ...this.pedidosService.getHistorico(),
-    ];
-
-    const contagem: Record<string, number> = {};
-    todos.forEach((pedido) => {
-      pedido.carrinho.forEach((item) => {
-        const nome = item
-          .replace(/^\d+x\s*/i, '')
-          .replace(/\s*\(R\$.*?\)/g, '')
-          .trim();
-        contagem[nome] = (contagem[nome] || 0) + 1;
-      });
-    });
-
-    return Object.entries(contagem)
-      .map(([nome, quantidade]) => ({ nome, quantidade }))
-      .sort((a, b) => b.quantidade - a.quantidade)
-      .slice(0, 5);
-  }
-
   imagensCache: Record<string, string> = {};
 
   carregarImagens(): void {
-    console.log('carregarImagens chamado, maisVendidos:', this.maisVendidos);
-    this.maisVendidos.forEach((item) => {
-      console.log('buscando imagem para:', item.nome);
+    this.maisVendidosLista.forEach((item) => {
       if (!this.imagensCache[item.nome]) {
         this.imagensCache[item.nome] = 'assets/default.png';
         this.http
@@ -186,7 +189,6 @@ export class SidebarComponent implements OnInit {
             url: string;
           }>(`/api/imagens/produto?nome=${encodeURIComponent(item.nome)}`)
           .subscribe((res) => {
-            console.log('resposta pexels:', item.nome, res);
             if (res.url) this.imagensCache[item.nome] = res.url;
           });
       }

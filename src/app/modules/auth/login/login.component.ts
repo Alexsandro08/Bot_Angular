@@ -15,34 +15,37 @@ export class LoginComponent {
   private iniciarParticles(): void {
     particlesJS('particles-js', {
       particles: {
-        number: { value: 60, density: { enable: true, value_area: 800 } },
-        color: { value: '#4f8cff' },
+        number: { value: 350, density: { enable: true, value_area: 800 } },
+        color: { value: '#ffffff' },
         shape: { type: 'circle' },
-        opacity: { value: 0.15, random: true },
-        size: { value: 3, random: true },
+        opacity: {
+          value: 0.5,
+          random: true,
+          anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
+        },
+        size: {
+          value: 2,
+          random: true,
+          anim: { enable: false },
+        },
         line_linked: {
-          enable: true,
-          distance: 150,
-          color: '#4f8cff',
-          opacity: 0.08,
-          width: 1,
+          enable: false, // ← sem linhas
         },
         move: {
           enable: true,
-          speed: 1.2,
+          speed: 0.2,
           direction: 'none',
           random: true,
+          straight: false,
           out_mode: 'out',
+          bounce: false,
         },
       },
       interactivity: {
         detect_on: 'canvas',
         events: {
-          onhover: { enable: true, mode: 'repulse' },
-          resize: true,
-        },
-        modes: {
-          repulse: { distance: 80, duration: 0.4 },
+          onhover: { enable: false },
+          onclick: { enable: false },
         },
       },
       retina_detect: true,
@@ -101,3 +104,6 @@ export class LoginComponent {
     });
   }
 }
+
+
+ 
