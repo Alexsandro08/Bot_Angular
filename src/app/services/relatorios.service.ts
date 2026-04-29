@@ -32,44 +32,44 @@ export interface RelatorioPayload {
 
 @Injectable({ providedIn: 'root' })
 export class RelatoriosService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = '/api/relatorios';
 
   constructor(private http: HttpClient) {}
 
   salvar(payload: RelatorioPayload): Observable<any> {
-    return this.http.post(`${this.apiUrl}/api/relatorios`, payload, {
+    return this.http.post(this.apiUrl, payload, {
       withCredentials: true,
     });
   }
 
   listar(): Observable<Relatorio[]> {
-    return this.http.get<Relatorio[]>(`${this.apiUrl}/api/relatorios`, {
+    return this.http.get<Relatorio[]>(this.apiUrl, {
       withCredentials: true,
     });
   }
 
   montarPayload(historico: Pedido[]): RelatorioPayload {
-  const mapa: Record<string, number> = {};
-  historico.forEach(p => {
-    p.carrinho.forEach((item: string) => {
-      const match = item.match(/(\d+)x\s+(.+?)(?:\s+\(R\$|$)/);
-      if (match) {
-        const nome = match[2]?.trim() ?? '';
-        const qtd = parseInt(match[1] ?? '0');
-        mapa[nome] = (mapa[nome] || 0) + qtd;
-      }
+    const mapa: Record<string, number> = {};
+    historico.forEach((p) => {
+      p.carrinho.forEach((item: string) => {
+        const match = item.match(/(\d+)x\s+(.+?)(?:\s+\(R\$|$)/);
+        if (match) {
+          const nome = match[2]?.trim() ?? '';
+          const qtd = parseInt(match[1] ?? '0');
+          mapa[nome] = (mapa[nome] || 0) + qtd;
+        }
+      });
     });
-  });
 
-  return {
-    faturamento: historico.reduce((acc, p) => acc + p.total, 0),
-    total_pedidos: historico.length,
-    pix: historico.filter(p => p.pagamento === 'Pix').length,
-    dinheiro: historico.filter(p => p.pagamento === 'Dinheiro').length,
-    cartao: historico.filter(p => p.pagamento === 'Cartão').length,
-    produtos_mais_vendidos: Object.entries(mapa)
-      .map(([nome, quantidade]) => ({ nome, quantidade }))
-      .sort((a, b) => b.quantidade - a.quantidade)
-  };
-}
+    return {
+      faturamento: historico.reduce((acc, p) => acc + p.total, 0),
+      total_pedidos: historico.length,
+      pix: historico.filter((p) => p.pagamento === 'Pix').length,
+      dinheiro: historico.filter((p) => p.pagamento === 'Dinheiro').length,
+      cartao: historico.filter((p) => p.pagamento === 'Cartão').length,
+      produtos_mais_vendidos: Object.entries(mapa)
+        .map(([nome, quantidade]) => ({ nome, quantidade }))
+        .sort((a, b) => b.quantidade - a.quantidade),
+    };
+  }
 }

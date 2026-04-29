@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SocketService } from '../../../../services/socket.service';
-import { AuthService } from '../../../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,15 +15,12 @@ export class QrModalComponent implements OnInit, OnDestroy {
   conectado = false;
   private subs: Subscription[] = [];
 
-  constructor(
-    private socketService: SocketService,
-  ) {
-    console.log('📱 QrModalComponent inicializado');
-  }
+  constructor(private socketService: SocketService) { }
 
   ngOnInit(): void {
     this.subs.push(
       this.socketService.on('qr_loading').subscribe(() => {
+        if (this.conectado) return; //
         this.mostrar = true;
         this.carregando = true;
         this.qrUrl = '';
@@ -41,14 +37,11 @@ export class QrModalComponent implements OnInit, OnDestroy {
           this.qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
         }
       }),
-
       this.socketService.on('ready').subscribe(() => {
-        console.log('📱 WhatsApp conectado!');
         this.conectado = true;
         this.carregando = false;
         setTimeout(() => {
           this.mostrar = false;
-          this.conectado = false;
         }, 2000);
       }),
 

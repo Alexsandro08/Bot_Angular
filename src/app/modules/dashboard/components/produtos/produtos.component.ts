@@ -1,6 +1,12 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { ProdutosService, Produto } from '../../../../services/produtos.service';
+import {
+  ProdutosService,
+  Produto,
+} from '../../../../services/produtos.service';
+import { AuthService } from '../../../../services/auth.service';
+
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
 
 const CATEGORIAS = [
   'Lanches',
@@ -17,6 +23,8 @@ const CATEGORIAS = [
   styleUrl: './produtos.component.scss',
 })
 export class ProdutosComponent implements OnInit {
+  private tokenSub?: Subscription;
+
   produtos: Produto[] = [];
 
   modalAberto = false;
@@ -25,7 +33,7 @@ export class ProdutosComponent implements OnInit {
   filtroCategoria = '';
   busca = '';
 
-  indexAtual: string  | null = null;
+  indexAtual: string | null = null;
 
   categorias = CATEGORIAS;
 
@@ -33,24 +41,38 @@ export class ProdutosComponent implements OnInit {
   dropdownAberto = false;
 
   form: Partial<Produto> = {
-  nome: '',
-  preco: 0,       
-  quantidade: 0,
-  status: 'Disponível',
-  categoria: '',
-  tempoPreparo: 0, 
-  descricao: '',
-};
-  constructor(private produtosService: ProdutosService) {}
+    nome: '',
+    preco: 0,
+    quantidade: 0,
+    status: 'Disponível',
+    categoria: '',
+    tempoPreparo: 0,
+    descricao: '',
+  };
+  constructor(
+    private produtosService: ProdutosService,
+    private auth: AuthService,
+  ) {}
 
   ngOnInit(): void {
     this.carregar();
+
+    // ✅ recarrega sempre que o token for renovado
+    this.auth.tokenRenovado$.subscribe(() => {
+      this.carregar();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.tokenSub?.unsubscribe();
   }
 
   carregar(): void {
-    this.produtosService.listar().subscribe((p) => (this.produtos = p));
+    this.produtosService.listar().subscribe((p) => {
+      this.produtos = p;
+    });
   }
-
+  
   abrirModal(id: string | null): void {
     this.indexAtual = id;
     this.editando = id !== null;

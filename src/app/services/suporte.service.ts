@@ -20,17 +20,25 @@ export class SuporteService {
   private readonly TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
 
   get chamadosAbertos(): number {
-    return this.chamadosSubject.value.filter((c) => c.status !== 'encerrado').length;
+    return this.chamadosSubject.value.filter((c) => c.status !== 'encerrado')
+      .length;
   }
 
   adicionarChamado(dados: any): void {
-    const existente = this.chamadosSubject.value.find((c) => c.userId === dados.userId);
+    const existente = this.chamadosSubject.value.find(
+      (c) => c.userId === dados.userId,
+    );
 
     if (existente) {
       const chamados = this.chamadosSubject.value.map((c) =>
         c.userId === dados.userId
-          ? { ...c, motivo: dados.motivo, hora: new Date(), status: 'aguardando' as const }
-          : c
+          ? {
+              ...c,
+              motivo: dados.motivo,
+              hora: new Date(),
+              status: 'aguardando' as const,
+            }
+          : c,
       );
       this.chamadosSubject.next(chamados);
       this.resetarTimer(dados.userId); // reinicia o timer se chamou de novo
@@ -94,6 +102,5 @@ export class SuporteService {
     );
     this.chamadosSubject.next(chamados);
     this.timers.delete(userId);
-    console.log(`⏱️ Chamado de ${chamado.nome} encerrado por timeout.`);
   }
 }

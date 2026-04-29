@@ -1,13 +1,12 @@
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
   OnInit,
   OnDestroy,
   HostListener,
+  Input,
+  Output,
+  EventEmitter,
   ViewChild,
-  ElementRef,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -16,12 +15,10 @@ import { AuthService } from '../../../../services/auth.service';
 import { LojaService } from '../../../../services/loja.service';
 import { AudioService } from '../../../../services/audio.service';
 import { SuporteService } from '../../../../services/suporte.service';
+import { ImageCropperComponent } from '../image-cropper/image-cropper.component';
 
 declare var Swal: any;
 
-// ============================================================
-// CONSTANTES
-// ============================================================
 const DIAS_SEMANA = [
   { label: 'Dom', valor: 'dom' },
   { label: 'Seg', valor: 'seg' },
@@ -58,36 +55,18 @@ const SWAL_BASE = {
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  // ============================================================
-  // INPUTS / OUTPUTS
-  // ============================================================
   @Input() paginaAtual = 'dashboard';
   @Output() paginaMudou = new EventEmitter<string>();
-  @ViewChild('cropperImg') cropperImg!: ElementRef<HTMLImageElement>;
 
-  // ============================================================
-  // ESTADO GERAL
-  // ============================================================
   nomeRestaurante = '';
   botOnline = false;
   lojaAberta = false;
   horario: any = null;
   alertaFechamento = false;
   mostrarInfo = false;
-
-  // ============================================================
-  // MENUS
-  // ============================================================
   menuAberto = false;
   configMenuAberto = false;
-
-  // ============================================================
-  // LOGO / CROP
-  // ============================================================
   logoUrl: string | null = null;
-  cropModalAberto = false;
-  imagemParaCrop: string | null = null;
-  salvandoLogo = false;
 
   private subs: Subscription[] = [];
 
@@ -100,28 +79,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private suporteService: SuporteService,
   ) {}
 
-  // Sons de notificação
   get somAtivo(): boolean {
     return this.audioService.somAtivo;
   }
-
   get chamadosAberto(): number {
     return this.suporteService.chamadosAbertos;
   }
 
-  toggleSom(): void {
-    this.audioService.inicializar();
-    this.audioService.toggleSom(!this.audioService.somAtivo);
-  }
-
-  // ============================================================
-  // LIFECYCLE
-  // ============================================================
   ngOnInit(): void {
     this.authService.getMe().subscribe((res: any) => {
       if (res?.nome) this.nomeRestaurante = res.nome;
     });
-
     this.carregarLogo();
 
     this.subs.push(
@@ -137,7 +105,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.lojaService.alertaAmarelo$.subscribe(
         (a) => (this.alertaFechamento = a),
       ),
-      this.socketService.on('chamar_atendente').subscribe(() => {}),
     );
   }
 
@@ -145,9 +112,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subs.forEach((s) => s.unsubscribe());
   }
 
-  // ============================================================
-  // NAVEGAÇÃO
-  // ============================================================
   navegar(pagina: string): void {
     this.paginaMudou.emit(pagina);
   }
@@ -166,6 +130,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   toggleAvatarInfo(): void {
     this.mostrarInfo = !this.mostrarInfo;
   }
+  toggleSom(): void {
+    this.audioService.inicializar();
+    this.audioService.toggleSom(!this.audioService.somAtivo);
+  }
 
   @HostListener('document:click', ['$event'])
   clickFora(event: Event): void {
@@ -174,145 +142,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!el.closest('.avatar-bot')) this.mostrarInfo = false;
   }
 
-  // ============================================================
-  // LOGO
-  // ============================================================
   carregarLogo(): void {
-    this.http.get<{ url: string | null }>('/api/logo').subscribe((res) => {
-      this.logoUrl = res.url;
+    this.http.get<{ url: string | null }>('/api/logo').subscribe({
+      next: (res) => (this.logoUrl = res.url),
+      error: () => (this.logoUrl = null),
     });
   }
 
-  // novas propriedades
-  canvasRef!: ElementRef<HTMLCanvasElement>;
-  private img = new Image();
-  private scale = 1;
-  private offsetX = 0;
-  private offsetY = 0;
-  private isDragging = false;
-  private lastX = 0;
-  private lastY = 0;
-  private canvas!: HTMLCanvasElement;
-  private ctx!: CanvasRenderingContext2D;
+  // ✅ chamado pelo EventEmitter do ImageCropperComponent
+  onLogoAtualizada(url: string): void {
+    this.logoUrl = url;
+  }
 
   uploadLogo(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (e) => {
-      this.imagemParaCrop = e.target?.result as string;
-      this.cropModalAberto = true;
-      setTimeout(() => this.iniciarCanvas(), 50);
+      this.cropper.abrir(e.target?.result as string);
     };
     reader.readAsDataURL(file);
     (event.target as HTMLInputElement).value = '';
   }
 
-  private iniciarCanvas(): void {
-    this.canvas = document.getElementById('crop-canvas') as HTMLCanvasElement;
+  // referência ao componente filho
+  @ViewChild('cropper') cropper!: ImageCropperComponent;
 
-    // ajusta o canvas ao container
-    const container = this.canvas.parentElement!;
-    const size = container.offsetWidth;
-    this.canvas.width = size;
-    this.canvas.height = size;
-
-    this.ctx = this.canvas.getContext('2d')!;
-
-    this.img.onload = () => {
-      const scaleX = size / this.img.width;
-      const scaleY = size / this.img.height;
-      this.scale = Math.max(scaleX, scaleY);
-      this.offsetX = (size - this.img.width * this.scale) / 2;
-      this.offsetY = (size - this.img.height * this.scale) / 2;
-      this.desenhar();
-      this.bindEventos();
-    };
-    this.img.src = this.imagemParaCrop!;
-  }
-
-  private desenhar(): void {
-    const size = this.canvas.width;
-    this.ctx.fillStyle = '#151929';
-    this.ctx.fillRect(0, 0, size, size);
-    this.ctx.drawImage(
-      this.img,
-      this.offsetX,
-      this.offsetY,
-      this.img.width * this.scale,
-      this.img.height * this.scale,
-    );
-  }
-
-  private bindEventos(): void {
-    this.canvas.onmousedown = (e) => {
-      this.isDragging = true;
-      this.lastX = e.clientX;
-      this.lastY = e.clientY;
-    };
-    this.canvas.onmousemove = (e) => {
-      if (!this.isDragging) return;
-      this.offsetX += e.clientX - this.lastX;
-      this.offsetY += e.clientY - this.lastY;
-      this.lastX = e.clientX;
-      this.lastY = e.clientY;
-      this.desenhar();
-    };
-    this.canvas.onmouseup = () => (this.isDragging = false);
-    this.canvas.onwheel = (e) => {
-      e.preventDefault();
-      this.scale *= e.deltaY < 0 ? 1.1 : 0.9;
-      this.desenhar();
-    };
-
-    // touch
-    this.canvas.ontouchstart = (e) => {
-      this.lastX = e.touches[0].clientX;
-      this.lastY = e.touches[0].clientY;
-    };
-    this.canvas.ontouchmove = (e) => {
-      e.preventDefault();
-      this.offsetX += e.touches[0].clientX - this.lastX;
-      this.offsetY += e.touches[0].clientY - this.lastY;
-      this.lastX = e.touches[0].clientX;
-      this.lastY = e.touches[0].clientY;
-      this.desenhar();
-    };
-  }
-
-  confirmarCrop(): void {
-    this.salvandoLogo = true;
-    this.canvas.toBlob((blob) => {
-      if (!blob) return;
-      const formData = new FormData();
-      formData.append('logo', blob, 'logo.png');
-      this.http
-        .post<{ ok: boolean; url: string }>('/api/logo', formData)
-        .subscribe((res) => {
-          if (res.ok) {
-            this.logoUrl = res.url;
-            this.fecharCrop();
-            Swal.fire({
-              title: 'Logo atualizada!',
-              icon: 'success',
-              timer: 1500,
-              showConfirmButton: false,
-            });
-          }
-          this.salvandoLogo = false;
-        });
-    }, 'image/png');
-  }
-
-  fecharCrop(): void {
-    this.cropModalAberto = false;
-    this.imagemParaCrop = null;
-    this.salvandoLogo = false;
-  }
-  // ============================================================
-  // LOJA
-  // ============================================================
   toggleLoja(): void {
     if (this.lojaAberta) {
       this.abrirSwalMotivos(
@@ -321,20 +176,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
         MOTIVOS_FECHAMENTO,
         (motivo) => {
           this.http.post('/api/loja/motivo', { motivo }).subscribe({
-            next: () => {
-              console.log('✅ motivo salvo, fechando loja');
-              this.lojaService.fecharLoja();
-            },
-            error: (err) => {
-              console.error('❌ erro ao salvar motivo:', err);
-              this.lojaService.fecharLoja(); // fecha mesmo se falhar
-            },
+            next: () => this.lojaService.fecharLoja(),
+            error: () => this.lojaService.fecharLoja(),
           });
         },
       );
     } else {
-      this.http.delete('/api/loja/motivo').subscribe();
-      this.lojaService.abrirLoja();
+      Swal.fire({
+        title: 'Abrir a loja?',
+        text: 'Os clientes poderão fazer pedidos.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, abrir!',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#2ed573',
+      }).then((r: any) => {
+        if (r.isConfirmed) {
+          this.http.delete('/api/loja/motivo').subscribe();
+          this.lojaService.abrirLoja();
+        }
+      });
     }
   }
 
@@ -362,13 +223,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const botoesHtml = motivos
       .map(
         (m) => `
-      <button type="button" id="motivo-${m.valor}" style="
-        width:100%; padding:12px 16px; border-radius:10px; font-size:14px;
-        font-weight:600; cursor:pointer; border:1px solid #363b4a;
-        background:#1b1e29; color:#8892a4; text-align:left;
-        display:flex; align-items:center; gap:10px; margin-bottom:8px;
-      ">${m.emoji} ${m.label}</button>
-    `,
+        <button type="button" id="motivo-${m.valor}" style="
+          width:100%; padding:12px 16px; border-radius:10px; font-size:14px;
+          font-weight:600; cursor:pointer; border:1px solid #363b4a;
+          background:#1b1e29; color:#8892a4; text-align:left;
+          display:flex; align-items:center; gap:10px; margin-bottom:8px;
+        ">${m.emoji} ${m.label}</button>
+      `,
       )
       .join('');
 
@@ -392,9 +253,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ============================================================
-  // HORÁRIO
-  // ============================================================
   editarHorario(): void {
     const h = this.lojaService.horario;
 

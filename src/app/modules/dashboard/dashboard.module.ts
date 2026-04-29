@@ -17,6 +17,7 @@ import { OnboardingComponent } from './components/onboarding/onboarding.componen
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { RelatoriosComponent } from './components/relatorios/relatorios.component';
 import { SuporteComponent } from './components/suporte/suporte.component';
+import { ImageCropperComponent } from './components/image-cropper/image-cropper.component';
 
 const routes: Routes = [{ path: '', component: DashboardComponent }];
 
@@ -35,6 +36,7 @@ const routes: Routes = [{ path: '', component: DashboardComponent }];
     NotificationsComponent,
     RelatoriosComponent,
     SuporteComponent,
+    ImageCropperComponent,
   ],
   imports: [
     CommonModule,

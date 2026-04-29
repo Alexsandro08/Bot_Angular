@@ -108,24 +108,6 @@ export class PedidosService {
     }
   }
 
-  iniciarTimeoutPix(numPedido: number): void {
-    setTimeout(
-      () => {
-        const pedido = this.pedidosSubject.value.find(
-          (p) => p.numPedido == numPedido,
-        );
-        if (
-          pedido &&
-          (pedido.status === 'aguardando_pix' ||
-            pedido.status === 'validacao_pendente')
-        ) {
-          this.cancelarPedido(numPedido, 'cancelado_timeout');
-        }
-      },
-      10 * 60 * 1000,
-    ); 
-  }
-
   limparPendentes(): void {
     const pendentes = this.pedidosSubject.value.filter(
       (p) => p.status === 'pendente' || p.status === 'validacao_pendente',

@@ -23,6 +23,7 @@ export class LojaService {
   private aviso5minSubject = new BehaviorSubject<boolean>(false);
   private aviso1minSubject = new BehaviorSubject<boolean>(false);
   private alertaAmareloSubject = new BehaviorSubject<boolean>(false);
+  private abertaManualmente = false;
   private fechadoManualmente = false;
 
   aviso10min$ = this.aviso10minSubject.asObservable();
@@ -50,6 +51,7 @@ export class LojaService {
   inicializarComDados(me: any): Promise<void> {
     return new Promise((resolve) => {
       this.fechadoManualmente = !!sessionStorage.getItem('fechado_manualmente');
+      this.abertaManualmente = !!sessionStorage.getItem('aberta_manualmente');
 
       const horarioValido = me.horario_abertura && me.horario_fechamento;
 
@@ -66,7 +68,7 @@ export class LojaService {
       if (horario) this.iniciarTimer();
       setTimeout(() => {
         this.inicializado = true;
-      }, 1000); 
+      }, 1000);
       resolve();
     });
   }
@@ -94,9 +96,11 @@ export class LojaService {
   }
 
   abrirLoja(): void {
-    if (this.abertaSubject.value === true) return; 
+    if (this.abertaSubject.value === true) return;
     this.fechadoManualmente = false;
+    this.abertaManualmente = true;
     sessionStorage.removeItem('fechado_manualmente');
+    sessionStorage.setItem('aberta_manualmente', '1');
     this.abertaSubject.next(true);
     this.sincronizar(true);
   }
@@ -104,7 +108,9 @@ export class LojaService {
   fecharLoja(): void {
     if (this.abertaSubject.value === false) return;
     this.fechadoManualmente = true;
+    this.abertaManualmente = false;
     sessionStorage.setItem('fechado_manualmente', '1');
+    sessionStorage.removeItem('aberta_manualmente');
     this.salvarRelatorioSubject.next();
     this.abertaSubject.next(false);
     this.alertaAmareloSubject.next(false);
@@ -206,11 +212,21 @@ export class LojaService {
     }
 
     if (deveEstarAberta && !this.aberta) {
-      if(!this.fechadoManualmente) this.abrirLoja();
+      const segundosDesdeAbertura = segundosAgora - segundosAbertura;
+      const ehNovaAbertura = segundosDesdeAbertura <= 60;
+      if (ehNovaAbertura) {
+        this.fechadoManualmente = false;
+        sessionStorage.removeItem('fechado_manualmente');
+      }
+        this.abertaManualmente = false;
+        sessionStorage.removeItem('aberta_manualmente');
+      if (!this.fechadoManualmente) this.abrirLoja();
     } else if (!deveEstarAberta && this.aberta) {
-      this.fechadoManualmente = false;
-      sessionStorage.removeItem('fechar_manualmente');
-      this.fecharLoja();
+      if (!this.abertaManualmente) {
+        this.fechadoManualmente = false;
+        sessionStorage.removeItem('fechado_manualmente');
+        this.fecharLoja();
+      }
     }
   }
 }

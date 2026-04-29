@@ -16,9 +16,15 @@ export class AuthInterceptor implements HttpInterceptor {
   private refreshing = false;
   private refreshSubject = new BehaviorSubject<string | null>(null);
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+  ) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<any>> {
     const token = this.auth.getToken();
     const authReq = token ? this.addToken(req, token) : req;
 
@@ -38,26 +44,27 @@ export class AuthInterceptor implements HttpInterceptor {
     });
   }
 
-  private handle401(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.refreshing) {
-      return this.refreshSubject.pipe(
+  // auth.interceptor.ts
+  private handle401(req: HttpRequest<any>, next: HttpHandler) {
+    if (this.auth.isRefreshing) {
+      return this.auth.refreshSubject.pipe(
         filter((t) => t !== null),
         take(1),
         switchMap((token) => next.handle(this.addToken(req, token!))),
       );
     }
 
-    this.refreshing = true;
-    this.refreshSubject.next(null);
+    this.auth.isRefreshing = true;
+    this.auth.refreshSubject.next(null);
 
     return this.auth.refresh().pipe(
       switchMap((res: any) => {
-        this.refreshing = false;
-        this.refreshSubject.next(res.accessToken);
+        this.auth.isRefreshing = false;
+        this.auth.refreshSubject.next(res.accessToken);
         return next.handle(this.addToken(req, res.accessToken));
       }),
       catchError((err) => {
-        this.refreshing = false;
+        this.auth.isRefreshing = false;
         this.auth.logout();
         return throwError(() => err);
       }),

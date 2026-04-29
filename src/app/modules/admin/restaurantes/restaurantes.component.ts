@@ -35,7 +35,16 @@ export class RestaurantesComponent implements OnInit {
     this.carregar();
   }
 
-  carregar(): void {
+  carregar(tentativa = 0): void {
+    const token =
+      localStorage.getItem('accessToken') ||
+      sessionStorage.getItem('accessToken');
+    console.log(
+      '[Restaurantes] Token:',
+      token ? 'existe' : 'ausente',
+      '| Tentativa:',
+      tentativa,
+    );
     this.carregando = true;
     this.http
       .get<Restaurante[]>(`${this.apiUrl}/admin/restaurantes`)
@@ -44,6 +53,11 @@ export class RestaurantesComponent implements OnInit {
           this.restaurantes = data;
           this.filtrar();
           this.carregando = false;
+        },
+        error: (err) => {
+          console.error('[Restaurantes] Erro:', err.status, err.error?.msg);
+          this.carregando = false;
+          // não faz retry em 403 — é problema de permissão, não de token
         },
       });
   }

@@ -26,16 +26,20 @@ export class StatsGridComponent implements OnInit {
   diferenca = 0;
 
   calcular(): void {
-    const historico = this.pedidosService.getHistorico();
+    const historicoCompleto = this.pedidosService.getHistorico();
     const pedidos = this.pedidosService.getPedidos();
+    const todayStr = new Date().toDateString();
 
-    const hoje = new Date().toDateString();
+    const historico = historicoCompleto.filter(
+      (p) => p.status === 'finalizado',
+    );
+
     const ontem = new Date();
     ontem.setDate(ontem.getDate() - 1);
     const ontemStr = ontem.toDateString();
 
     const pedidosHoje = historico.filter(
-      (p) => p.criadoEm && new Date(p.criadoEm).toDateString() === hoje,
+      (p) => p.criadoEm && new Date(p.criadoEm).toDateString() === todayStr,
     );
     const pedidosOntem = historico.filter(
       (p) => p.criadoEm && new Date(p.criadoEm).toDateString() === ontemStr,
@@ -51,7 +55,6 @@ export class StatsGridComponent implements OnInit {
     this.finalizados = historico.length;
     this.pendentes = pedidos.length;
 
-    const todayStr = new Date().toDateString();
     this.hoje = historico.filter(
       (p) => p.criadoEm && new Date(p.criadoEm).toDateString() === todayStr,
     ).length;

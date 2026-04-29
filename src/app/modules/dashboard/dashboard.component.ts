@@ -20,7 +20,7 @@ import { SuporteService } from '../../services/suporte.service';
 // ============================================================
 // CONSTANTES
 // ============================================================
-const INTERVALO_CHECAGEM_MS = 10_000;
+const INTERVALO_CHECAGEM_MS = 5 * 60 * 1000;
 const DELAY_DESLOGAR_MS = 4_000;
 const MINUTOS_AVISO_EXPIRACAO = 10;
 
@@ -64,8 +64,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // LIFECYCLE
   // ============================================================
   ngOnInit(): void {
-    console.log('🚀 DashboardComponent ngOnInit chamado');
-    this.verificarOnboarding();
     this.identificarSocket();
     this.inscreverEventos();
     this.verificarExpiracao();
@@ -144,7 +142,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // ============================================================
   // INICIALIZAÇÃO
   // ============================================================
-  private verificarOnboarding(): void {}
 
   carregando = true;
 
@@ -233,6 +230,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.trocarPagina('dashboard');
           }
         });
+      }),
+
+      this.socketService.on('pedido_timeout').subscribe((d: any) => {
+         console.log('🔴 [pedido_timeout] recebido:', d);
+        this.pedidosService.cancelarPedido(d.numPedido, 'cancelado_timeout');
       }),
 
       this.socketService.on('chamar_atendente').subscribe((d) => {

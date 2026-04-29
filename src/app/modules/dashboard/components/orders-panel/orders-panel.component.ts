@@ -72,15 +72,10 @@ export class OrdersPanelComponent implements OnInit {
     this.socketService.emit('aceitar_pedido', {
       userId: p.userId,
       numPedido: p.numPedido,
-      total: p.total,
       restauranteId: this.restauranteId,
     });
     const novoStatus = p.pagamento === 'Pix' ? 'aguardando_pix' : 'preparo';
     this.pedidosService.atualizarStatus(p.numPedido, novoStatus);
-
-    if (p.pagamento === 'Pix') {
-      this.pedidosService.iniciarTimeoutPix(p.numPedido); // ← inicia timer 10min
-    }
   }
 
   recusar(p: Pedido): void {

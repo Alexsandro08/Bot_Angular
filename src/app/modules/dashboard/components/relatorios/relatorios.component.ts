@@ -2,9 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
-  AfterViewInit,
   ElementRef,
-  ViewChild,
 } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -69,14 +67,6 @@ export class RelatoriosComponent implements OnInit {
   // ============================================================
   // LIFECYCLE
   // ============================================================
-  @ViewChild('chartFaturamento', { read: ElementRef })
-  chartFaturamento!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('chartPagamentos', { read: ElementRef })
-  chartPagamentos!: ElementRef<HTMLCanvasElement>;
-
-  private chartFatInstance: any = null;
-  private chartPagInstance: any = null;
-
   ngOnInit(): void {
     this.carregarRelatorios();
     this.authService.getMe().subscribe((res: any) => {
@@ -124,123 +114,6 @@ export class RelatoriosComponent implements OnInit {
   }
 
   // ============================================================
-  // FINANCEIRO
-  // ============================================================
-
-  // renderGraficos(): void {
-  //   const Chart = (window as any).Chart;
-  //   const { dias, vendas } = this.pedidosFiltrados;
-
-  //   if (!Chart) return;
-
-  //   this.cdr.detectChanges();
-
-  //   setTimeout(() => {
-  //     if (!this.chartFaturamento || !this.chartPagamentos) return;
-
-  //     if (this.chartFatInstance) this.chartFatInstance.destroy();
-  //     if (this.chartPagInstance) this.chartPagInstance.destroy();
-
-  //     // agrupa faturamento por mês
-  //     const porMes: Record<string, number> = {};
-  //     this.relatorios.forEach((r) => {
-  //       const mes = r.data?.slice(3);
-  //       porMes[mes] = (porMes[mes] || 0) + r.faturamento;
-  //     });
-  //     const meses = Object.keys(porMes).slice(-7);
-  //     const fatData = meses.map((m) => porMes[m]);
-
-  //     this.chartFatInstance = new Chart(this.chartFaturamento.nativeElement, {
-  //       type: 'line',
-  //       data: {
-  //         labels: meses,
-  //         datasets: [
-  //           {
-  //             label: 'Faturamento (R$)',
-  //             data: fatData,
-  //             borderColor: '#4f8cff',
-  //             backgroundColor: 'rgba(79,140,255,0.1)',
-  //             borderWidth: 2,
-  //             tension: 0.4,
-  //             fill: true,
-  //             pointRadius: 4,
-  //             pointHoverRadius: 6,
-  //           },
-  //         ],
-  //       },
-  //       options: {
-  //         responsive: true,
-  //         plugins: { legend: { display: false } },
-  //         scales: {
-  //           x: {
-  //             grid: { color: 'rgba(255,255,255,0.05)' },
-  //             ticks: { color: 'rgba(255,255,255,0.4)' },
-  //           },
-  //           y: {
-  //             grid: { color: 'rgba(255,255,255,0.05)' },
-  //             ticks: {
-  //               color: 'rgba(255,255,255,0.4)',
-  //               callback: (v: any) => `R$ ${v}`,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     this.chartPagInstance = new Chart(this.chartPagamentos.nativeElement, {
-  //       type: 'bar',
-  //       data: {
-  //         labels: dias,
-  //         datasets: [
-  //           {
-  //             label: 'Pedidos',
-  //             data: vendas,
-  //             backgroundColor: 'rgba(79,140,255,0.6)',
-  //             borderColor: '#4f8cff',
-  //             borderWidth: 2,
-  //             borderRadius: 6,
-  //           },
-  //         ],
-  //       },
-  //       options: {
-  //         responsive: true,
-  //         plugins: { legend: { display: false } },
-  //         scales: {
-  //           x: {
-  //             grid: { color: 'rgba(255,255,255,0.05)' },
-  //             ticks: { color: 'rgba(255,255,255,0.4)' },
-  //           },
-  //           y: {
-  //             grid: { color: 'rgba(255,255,255,0.05)' },
-  //             ticks: { color: 'rgba(255,255,255,0.4)', stepSize: 1 },
-  //           },
-  //         },
-  //       },
-  //     });
-  //   }, 300);
-  // }
-
-  // get mesesDisponiveis(): string[] {
-  //   const meses = new Set(this.relatorios.map((r) => r.data.slice(3)));
-  //   return Array.from(meses).sort();
-  // }
-
-  // get pedidosFiltrados(): { dias: string[]; vendas: number[] } {
-  //   let lista;
-  //   if (this.modoGrafico === 'mes' && this.filtroGraficoMes) {
-  //     lista = this.relatorios.filter(
-  //       (r) => r.data.slice(3) === this.filtroGraficoMes,
-  //     );
-  //   } else {
-  //     lista = this.relatorios.slice(-7);
-  //   }
-  //   return {
-  //     dias: lista.map((r) => r.data.slice(0, 5)),
-  //     vendas: lista.map((r) => r.total_pedidos),
-  //   };
-  // }
-
-  // ============================================================
   // COMPROVANTES
   // ============================================================
   carregarComprovantes(): void {
@@ -274,7 +147,6 @@ export class RelatoriosComponent implements OnInit {
   }
 
   atualizarFiltrados(): void {
-    console.log('atualizando, search:', this.searchComp);
     if (!this.searchComp.trim()) {
       this.comprovantesFiltrados = [...this.comprovantes];
       return;
@@ -336,37 +208,14 @@ export class RelatoriosComponent implements OnInit {
   // ============================================================
   // SALVAR
   // ============================================================
-  private montarPayload(): RelatorioPayload {
-    const historico = this.pedidosService.getHistorico();
-    const mapa: Record<string, number> = {};
-
-    historico.forEach((p) => {
-      p.carrinho.forEach((item) => {
-        const match = item.match(/(\d+)x\s+(.+?)(?:\s+\(R\$|$)/);
-        if (match) {
-          const nome = match[2]?.trim() ?? '';
-          const qtd = parseInt(match[1] ?? '0');
-          mapa[nome] = (mapa[nome] || 0) + qtd;
-        }
-      });
-    });
-
-    return {
-      faturamento: historico.reduce((acc, p) => acc + p.total, 0),
-      total_pedidos: historico.length,
-      pix: historico.filter((p) => p.pagamento === 'Pix').length,
-      dinheiro: historico.filter((p) => p.pagamento === 'Dinheiro').length,
-      cartao: historico.filter((p) => p.pagamento === 'Cartão').length,
-      produtos_mais_vendidos: Object.entries(mapa)
-        .map(([nome, quantidade]) => ({ nome, quantidade }))
-        .sort((a, b) => b.quantidade - a.quantidade),
-    };
-  }
 
   salvarManual(): void {
     if (this.salvando || this.jaExisteHoje) return;
     this.salvando = true;
-    this.relatoriosService.salvar(this.montarPayload()).subscribe({
+    const payload = this.relatoriosService.montarPayload(
+      this.pedidosService.getHistorico(),
+    );
+    this.relatoriosService.salvar(payload).subscribe({
       next: () => {
         this.salvando = false;
         this.carregarRelatorios();
