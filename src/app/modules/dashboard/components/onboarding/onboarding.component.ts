@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { LojaService, HorarioLoja } from '../../../../services/loja.service';
+import { LojaService } from '../../../../services/loja.service';
 
 @Component({
   selector: 'app-onboarding',

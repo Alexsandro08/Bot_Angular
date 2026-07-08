@@ -1,7 +1,7 @@
 <div class="relatorios-container">
   <div class="relatorios-header">
     <h2><i class="bi bi-bar-chart-line"></i> Relatórios</h2>
-    <div class="header-actions">
+    <div class="header-actions" id="tour-relatorios-acoes">
       <button
         class="btn-salvar"
         (click)="salvarManual()"
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <div class="cards-resumo">
+  <div class="cards-resumo" id="tour-relatorios-cards">
     <div class="card-resumo">
       <i class="bi bi-cash-stack"></i>
       <div>
@@ -51,7 +51,7 @@
   </div>
 
   <!-- TABS -->
-  <div class="tabs-relatorio">
+  <div class="tabs-relatorio" id="tour-relatorios-tabs">
     <button
       [class.ativo]="abaAtiva === 'historico'"
       (click)="abaAtiva = 'historico'"
@@ -60,52 +60,15 @@
     </button>
     <button
       [class.ativo]="abaAtiva === 'comprovantes'"
-      (click)="abaAtiva = 'comprovantes'; carregarComprovantes()"
+      (click)="trocarParaComprovantes()"
     >
       <i class="bi bi-receipt-cutoff"></i> Comprovantes de Pix
     </button>
-    <!-- <button
-      [class.ativo]="abaAtiva === 'graficos'"
-      (click)="abaAtiva = 'graficos'; renderGraficos()"
-    >
-      <i class="bi bi-cash-coin"></i> Financeiro
-    </button>
-     -->
   </div>
-
-  <!-- ABA GRÁFICOS -->
-   <!--<div class="graficos-wrap" *ngIf="abaAtiva === 'graficos'">
-    <div class="grafico-box">
-      <h3>Faturamento Mensal</h3>
-      <canvas #chartFaturamento></canvas>
-    </div>
-    <div class="grafico-box">
-      <div class="grafico-header">
-        <h3>Pedidos por Dia</h3>
-        <div class="filtros-grafico">
-         <select [(ngModel)]="modoGrafico" (change)="renderGraficos()">
-            <option value="recentes">Últimos 7 registros</option>
-            <option value="mes">Por mês</option>
-          </select>
-          <select
-            *ngIf="modoGrafico === 'mes'"
-            [(ngModel)]="filtroGraficoMes"
-            (change)="renderGraficos()"
-          >
-            <option value="">Selecione o mês</option>
-            <option *ngFor="let m of mesesDisponiveis" [value]="m">
-              {{ m }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <canvas #chartPagamentos></canvas>
-    </div>
-  </div> -->
 
   <!-- ABA HISTÓRICO -->
   <div class="relatorios-body" *ngIf="abaAtiva === 'historico'">
-    <div class="tabela-box">
+    <div class="tabela-box" id="tour-relatorios-historico">
       <h3>Histórico por dia</h3>
       <div class="loading" *ngIf="carregando">Carregando...</div>
       <div class="filtros">
@@ -126,7 +89,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let r of relatoriosFiltrados">
+          <tr *ngFor="let r of relatoriosPaginados">
             <td>{{ r.data }}</td>
             <td>{{ r.total_pedidos }}</td>
             <td>R$ {{ r.faturamento.toFixed(2) }}</td>
@@ -136,12 +99,38 @@
           </tr>
         </tbody>
       </table>
+      <div class="paginacao" *ngIf="totalPaginas > 1">
+        <button
+          class="pg-btn"
+          (click)="irParaPagina(paginaHistorico - 1)"
+          [disabled]="paginaHistorico === 1"
+        >
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <button
+          class="pg-btn"
+          *ngFor="let p of paginas"
+          [class.ativo]="p === paginaHistorico"
+          (click)="irParaPagina(p)"
+        >
+          {{ p }}
+        </button>
+
+        <button
+          class="pg-btn"
+          (click)="irParaPagina(paginaHistorico + 1)"
+          [disabled]="paginaHistorico === totalPaginas"
+        >
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
       <p class="vazio" *ngIf="!carregando && relatoriosFiltrados.length === 0">
         Nenhum relatório encontrado nesse período.
       </p>
     </div>
 
-    <div class="ranking-box">
+    <div class="ranking-box" id="tour-relatorios-ranking">
       <h3>🏆 Produtos mais vendidos</h3>
       <div class="ranking-list">
         <div
@@ -193,7 +182,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let c of comprovantesFiltrados">
+        <tr *ngFor="let c of comprovantesPaginados">
           <td>
             <strong style="color: white">#{{ c.num_pedido || "—" }}</strong>
           </td>
@@ -214,7 +203,32 @@
         </tr>
       </tbody>
     </table>
+    <div class="paginacao" *ngIf="totalPaginasComprovantes > 1">
+      <button
+        class="pg-btn"
+        (click)="irParaPaginaComprovantes(paginaComprovantes - 1)"
+        [disabled]="paginaComprovantes === 1"
+      >
+        <i class="bi bi-chevron-left"></i>
+      </button>
 
+      <button
+        class="pg-btn"
+        *ngFor="let p of paginasComprovantes"
+        [class.ativo]="p === paginaComprovantes"
+        (click)="irParaPaginaComprovantes(p)"
+      >
+        {{ p }}
+      </button>
+
+      <button
+        class="pg-btn"
+        (click)="irParaPaginaComprovantes(paginaComprovantes + 1)"
+        [disabled]="paginaComprovantes === totalPaginasComprovantes"
+      >
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
     <p
       class="vazio"
       *ngIf="!carregandoComp && comprovantesFiltrados.length === 0"

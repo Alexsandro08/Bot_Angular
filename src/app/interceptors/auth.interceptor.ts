@@ -9,16 +9,12 @@ import {
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, switchMap, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private refreshing = false;
-  private refreshSubject = new BehaviorSubject<string | null>(null);
 
   constructor(
     private auth: AuthService,
-    private router: Router,
   ) {}
 
   intercept(

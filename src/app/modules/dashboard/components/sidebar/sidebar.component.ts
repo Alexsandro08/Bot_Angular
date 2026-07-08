@@ -35,7 +35,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private pedidosService: PedidosService,
     private http: HttpClient,
-  ) {}
+  ) { }
 
   ngAfterViewInit(): void {
     this.viewIniciada = true;

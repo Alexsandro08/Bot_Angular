@@ -1,21 +1,16 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ElementRef,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
   RelatoriosService,
   Relatorio,
-  RelatorioPayload,
   ProdutoVendido,
 } from '../../../../services/relatorios.service';
 import { PedidosService } from '../../../../services/pedidos.service';
 import { AuthService } from '../../../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { TourService } from '../../../../services/tour.service';
 
 // ============================================================
 // CONSTANTES
@@ -62,13 +57,20 @@ export class RelatoriosComponent implements OnInit {
     private authService: AuthService,
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
+    private tourService: TourService,
   ) {}
 
   // ============================================================
   // LIFECYCLE
   // ============================================================
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.tourService.verificarEIniciar('relatorios'), 800);
+  }
+
   ngOnInit(): void {
     this.carregarRelatorios();
+    this.carregarComprovantes();
     this.authService.getMe().subscribe((res: any) => {
       this.nomeRestaurante = res?.nome || 'SuperTech';
     });
@@ -133,6 +135,14 @@ export class RelatoriosComponent implements OnInit {
       error: () => (this.carregandoComp = false),
     });
   }
+  
+  trocarParaComprovantes(): void {
+    this.abaAtiva = 'comprovantes';
+    // só carrega se ainda não tiver dados
+    if (this.comprovantes.length === 0) {
+      this.carregarComprovantes();
+    }
+  }
 
   private searchTimer: any;
   onSearchChange(valor: string): void {
@@ -147,21 +157,40 @@ export class RelatoriosComponent implements OnInit {
   }
 
   atualizarFiltrados(): void {
-    if (!this.searchComp.trim()) {
-      this.comprovantesFiltrados = [...this.comprovantes];
-      return;
+    let lista = [...this.comprovantes];
+
+    // filtro por número do pedido
+    if (this.searchComp.trim()) {
+      lista = lista.filter((c) =>
+        String(c.num_pedido ?? '').includes(this.searchComp),
+      );
     }
-    this.comprovantesFiltrados = this.comprovantes.filter(
-      (c) =>
-        c.num_pedido != null && String(c.num_pedido).includes(this.searchComp),
-    );
+
+    // filtro por data início
+    if (this.filtroCompInicio) {
+      lista = lista.filter(
+        (c) => new Date(c.criado_em) >= new Date(this.filtroCompInicio),
+      );
+    }
+
+    // filtro por data fim
+    if (this.filtroCompFim) {
+      lista = lista.filter(
+        (c) => new Date(c.criado_em) <= new Date(this.filtroCompFim),
+      );
+    }
+
+    this.comprovantesFiltrados = lista;
+    this.paginaComprovantes = 1;
   }
 
   limparFiltroComp(): void {
     this.filtroCompInicio = '';
     this.filtroCompFim = '';
     this.searchComp = '';
-    this.carregarComprovantes();
+    this.paginaComprovantes = 1;
+
+    this.comprovantesFiltrados = [...this.comprovantes];
   }
 
   verComprovante(url: string): void {
@@ -190,6 +219,7 @@ export class RelatoriosComponent implements OnInit {
   // FILTROS
   // ============================================================
   filtrar(): void {
+    this.paginaHistorico = 1; // ← adiciona essa linha
     this.relatoriosFiltrados = this.relatorios.filter((r) => {
       const [d, m, a] = r.data.split('/');
       const dataStr = `${a}-${m}-${d}`;
@@ -200,6 +230,7 @@ export class RelatoriosComponent implements OnInit {
   }
 
   limparFiltro(): void {
+    this.paginaHistorico = 1; // ← adiciona essa linha
     this.filtroInicio = '';
     this.filtroFim = '';
     this.relatoriosFiltrados = this.relatorios;
@@ -227,17 +258,20 @@ export class RelatoriosComponent implements OnInit {
   // ============================================================
   // EXPORTAR PDF
   // ============================================================
-  exportarPDF(): void {
+  async exportarPDF(): Promise<void> {
     const doc = new jsPDF();
     const dataHoje = new Date().toLocaleDateString('pt-BR');
     let cursorY = 20;
 
     // LOGO
     if (this.logoUrl) {
-      doc.addImage(this.logoUrl, 'PNG', 14, cursorY, 20, 20);
-      cursorY += 2;
+      try {
+        const base64 = await this.urlParaBase64(this.logoUrl);
+        doc.addImage(base64, 'PNG', 14, cursorY, 20, 20);
+      } catch {
+        console.warn('Logo não carregou, pulando...');
+      }
     }
-
     // cabeçalho
     const tituloX = this.logoUrl ? 38 : 14;
     doc.setFontSize(18);
@@ -301,5 +335,86 @@ export class RelatoriosComponent implements OnInit {
     // salva
     const nomeArquivo = this.nomeRestaurante.toLowerCase().replace(/\s+/g, '-');
     doc.save(`relatorio-${nomeArquivo}-${dataHoje.replace(/\//g, '-')}.pdf`);
+  }
+
+  // ============================================================
+  // HELPER — converte URL de imagem pra base64
+  // ============================================================
+  private urlParaBase64(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext('2d')!.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => reject(new Error('Erro ao carregar imagem'));
+      img.src = url;
+    });
+  }
+
+  // ============================================================
+  // PAGINAÇÃO
+  // ============================================================
+
+  paginaHistorico = 1;
+  paginaComprovantes = 1;
+  itensPorPagina = 7;
+
+  /* =========================
+   HISTÓRICO
+========================= */
+
+  get totalPaginas(): number {
+    return Math.ceil(this.relatoriosFiltrados.length / this.itensPorPagina);
+  }
+
+  get paginas(): number[] {
+    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  }
+
+  get relatoriosPaginados(): Relatorio[] {
+    const inicio = (this.paginaHistorico - 1) * this.itensPorPagina;
+
+    return this.relatoriosFiltrados.slice(inicio, inicio + this.itensPorPagina);
+  }
+
+  irParaPagina(p: number): void {
+    if (p >= 1 && p <= this.totalPaginas) {
+      this.paginaHistorico = p;
+    }
+  }
+
+  /* =========================
+   COMPROVANTES
+========================= */
+
+  get totalPaginasComprovantes(): number {
+    return Math.ceil(this.comprovantesFiltrados.length / this.itensPorPagina);
+  }
+
+  get paginasComprovantes(): number[] {
+    return Array.from(
+      { length: this.totalPaginasComprovantes },
+      (_, i) => i + 1,
+    );
+  }
+
+  get comprovantesPaginados(): any[] {
+    const inicio = (this.paginaComprovantes - 1) * this.itensPorPagina;
+
+    return this.comprovantesFiltrados.slice(
+      inicio,
+      inicio + this.itensPorPagina,
+    );
+  }
+
+  irParaPaginaComprovantes(p: number): void {
+    if (p >= 1 && p <= this.totalPaginasComprovantes) {
+      this.paginaComprovantes = p;
+    }
   }
 }

@@ -1,7 +1,7 @@
 <div class="suporte-container">
 
   <!-- LISTA DE CHAMADOS -->
-  <div class="chamados-lista">
+  <div class="chamados-lista" id="tour-suporte-lista">
     <div class="chamados-header">
       <h3><i class="bi bi-headset"></i> Suporte</h3>
       <span class="total-badge" *ngIf="chamados.length > 0">{{ chamados.length }}</span>
@@ -35,7 +35,7 @@
   </div>
 
   <!-- CHAT -->
-  <div class="chat-area" *ngIf="chamadoAtivo; else semChamado">
+  <div class="chat-area" *ngIf="chamadoAtivo; else semChamado" id="tour-suporte-chat">
     <div class="chat-header">
       <div class="chat-header-info">
         <div class="chat-avatar">{{ chamadoAtivo.nome.charAt(0).toUpperCase() }}</div>
@@ -82,7 +82,7 @@
   </div>
 
   <ng-template #semChamado>
-    <div class="chat-vazio">
+    <div class="chat-vazio" id="tour-suporte-chat-vazio">
       <i class="bi bi-chat-square-dots"></i>
       <p>Selecione um chamado para iniciar o atendimento</p>
     </div>

@@ -16,6 +16,7 @@ import { RelatoriosService } from '../../services/relatorios.service';
 import { AuthService } from '../../services/auth.service';
 import { AudioService } from '../../services/audio.service';
 import { SuporteService } from '../../services/suporte.service';
+import { TourService } from '../../services/tour.service';
 
 // ============================================================
 // CONSTANTES
@@ -58,11 +59,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private audioService: AudioService,
     private suporteService: SuporteService,
+    private tourService: TourService,
   ) {}
 
   // ============================================================
   // LIFECYCLE
   // ============================================================
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.tourService.verificarEIniciar('dashboard'), 800);
+  }
+
   ngOnInit(): void {
     this.identificarSocket();
     this.inscreverEventos();
@@ -128,6 +135,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     clearInterval(this.intervalSessao);
     clearInterval(this.intervalExpiracao);
   }
+
+  // ============================================================
+  // TOUR GUIADO
+  // ============================================================
 
   // ============================================================
   // NAVEGAÇÃO
@@ -233,7 +244,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }),
 
       this.socketService.on('pedido_timeout').subscribe((d: any) => {
-         console.log('🔴 [pedido_timeout] recebido:', d);
+        console.log('🔴 [pedido_timeout] recebido:', d);
         this.pedidosService.cancelarPedido(d.numPedido, 'cancelado_timeout');
       }),
 

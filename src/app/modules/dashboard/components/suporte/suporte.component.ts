@@ -4,12 +4,13 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
-  ChangeDetectorRef,  // ← ADICIONAR
+  ChangeDetectorRef
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SocketService } from '../../../../services/socket.service';
 import { AuthService } from '../../../../services/auth.service';
 import { SuporteService } from '../../../../services/suporte.service';
+import { TourService } from '../../../../services/tour.service';
 
 interface MsgChat {
   texto: string;
@@ -47,8 +48,13 @@ export class SuporteComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private authService: AuthService,
     private suporteService: SuporteService,
-    private cdr: ChangeDetectorRef,  // ← ADICIONAR
+    private cdr: ChangeDetectorRef, 
+    private tourService: TourService
   ) {}
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.tourService.verificarEIniciar('suporte'), 800);
+  }
 
   ngOnInit(): void {
     this.authService.getMe().subscribe((me: any) => {
@@ -59,12 +65,14 @@ export class SuporteComponent implements OnInit, OnDestroy {
       // lista de chamados vindos do service
       this.suporteService.chamados$.subscribe((chamados) => {
         this.chamados = chamados;
-        this.cdr.detectChanges();  // ← ADICIONAR
+        this.cdr.detectChanges(); // ← ADICIONAR
       }),
 
       // mensagens do cliente durante atendimento
       this.socketService.on('mensagem_cliente').subscribe((d: any) => {
-        const chamado = this.chamados.find((c: Chamado) => c.userId === d.userId);
+        const chamado = this.chamados.find(
+          (c: Chamado) => c.userId === d.userId,
+        );
         if (!chamado) return;
         chamado.mensagens.push({
           texto: d.mensagem,

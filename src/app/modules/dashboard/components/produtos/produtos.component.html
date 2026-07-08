@@ -1,8 +1,8 @@
-<div class="page-produtos">
+<div class="page-produtos" id="tour-produtos-header">
   <div class="produtos-header">
     <h2>Gerenciar Produtos</h2>
 
-    <div class="filtros">
+    <div class="filtros" id="tour-produtos-filtros">
       <div class="search-box">
         <i class="bi bi-search"></i>
         <input
@@ -32,12 +32,12 @@
       </div>
     </div>
 
-    <button class="btn-confirm" (click)="abrirModal(null)">
+    <button class="btn-confirm" (click)="abrirModal(null)" id="tour-produtos-novo">
       <i class="bi bi-plus-lg"></i> Novo Produto
     </button>
   </div>
 
-  <div class="tabela-wrapper">
+  <div class="tabela-wrapper" id="tour-produtos-tabela">
     <table>
       <thead>
         <tr>

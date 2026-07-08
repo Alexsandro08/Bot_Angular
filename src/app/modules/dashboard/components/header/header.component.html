@@ -1,5 +1,5 @@
 <div class="sidebar" [class.open]="menuAberto">
-  <div class="sidebar-logo">
+  <div class="sidebar-logo" id="tour-logo">
     <div class="logo-icon logo-upload" (click)="logoInput.click()">
       <div *ngIf="!logoUrl" class="logo-skeleton"></div>
       <img *ngIf="logoUrl" [src]="logoUrl" alt="logo" class="logo-img" />
@@ -15,7 +15,7 @@
     <span class="sidebar-nome">{{ nomeRestaurante || "..." }}</span>
   </div>
 
-  <nav class="sidebar-nav">
+  <nav class="sidebar-nav" id="tour-nav">
     <a
       [class.active]="paginaAtual === 'dashboard'"
       (click)="navegar('dashboard'); fecharMenu()"
@@ -50,6 +50,7 @@
       [class.fechada]="!lojaAberta"
       (click)="toggleLoja()"
       [class.alerta]="alertaFechamento"
+      id="tour-btn-loja"
     >
       <span
         class="status-dot-loja"
@@ -68,6 +69,7 @@
       class="btn-som"
       (click)="toggleSom()"
       [title]="somAtivo ? 'Desativar som' : 'Ativar som'"
+      id="tour-btn-som"
     >
       <i
         class="bi"
@@ -76,9 +78,11 @@
       ></i>
     </button>
 
-    <app-notifications></app-notifications>
+    <div id="tour-notificacoes">
+      <app-notifications></app-notifications>
+    </div>
 
-    <div class="config-wrapper">
+    <div class="config-wrapper" id="tour-config">
       <button
         class="btn-config"
         (click)="toggleConfigMenu()"
@@ -93,6 +97,9 @@
         <button (click)="abrirMotivoFechamento(); fecharConfigMenu()">
           <i class="bi bi-exclamation-circle"></i> Aviso de fechamento
         </button>
+        <button (click)="verTourNovamente(); fecharConfigMenu()">
+          <i class="bi bi-map"></i> Ver tour novamente
+        </button>
       </div>
     </div>
 
@@ -100,6 +107,7 @@
       class="avatar-bot"
       [class.online]="botOnline"
       (click)="toggleAvatarInfo()"
+      id="tour-bot-status"
     >
       <img
         src="assets/logo.png"

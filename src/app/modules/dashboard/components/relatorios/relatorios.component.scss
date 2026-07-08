@@ -493,6 +493,47 @@
   }
 }
 
+// ============================================================
+// PAGINAÇÃO
+// ============================================================
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+
+  .pg-btn {
+    min-width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #ffffff22;
+    background: transparent;
+    color: #b0b8d1;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover:not([disabled]) {
+      background: #ffffff11;
+      color: #fff;
+    }
+
+    &.ativo {
+      background: #4f8cff;
+      border-color: #4f8cff;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    &[disabled] {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+}
+
 @keyframes bounce {
   0%, 100% { transform: translateY(0); opacity: 0.4; }
   50% { transform: translateY(-6px); opacity: 1; }

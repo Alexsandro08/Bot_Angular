@@ -16,6 +16,7 @@ import { LojaService } from '../../../../services/loja.service';
 import { AudioService } from '../../../../services/audio.service';
 import { SuporteService } from '../../../../services/suporte.service';
 import { ImageCropperComponent } from '../image-cropper/image-cropper.component';
+import { TourService } from '../../../../services/tour.service';
 
 declare var Swal: any;
 
@@ -77,6 +78,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private audioService: AudioService,
     private suporteService: SuporteService,
+    private tourService: TourService
   ) {}
 
   get somAtivo(): boolean {
@@ -133,6 +135,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   toggleSom(): void {
     this.audioService.inicializar();
     this.audioService.toggleSom(!this.audioService.somAtivo);
+  }
+  verTourNovamente(): void {
+    this.tourService.resetarTodos();
+    this.tourService.iniciar('dashboard');
   }
 
   @HostListener('document:click', ['$event'])

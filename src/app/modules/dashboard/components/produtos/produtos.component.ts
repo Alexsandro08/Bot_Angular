@@ -4,6 +4,7 @@ import {
   Produto,
 } from '../../../../services/produtos.service';
 import { AuthService } from '../../../../services/auth.service';
+import { TourService } from '../../../../services/tour.service';
 
 import Swal from 'sweetalert2';
 import { Subscription } from 'rxjs';
@@ -52,7 +53,12 @@ export class ProdutosComponent implements OnInit {
   constructor(
     private produtosService: ProdutosService,
     private auth: AuthService,
+    private tourService: TourService
   ) {}
+
+  ngAfterViewInit(): void {
+  setTimeout(() => this.tourService.verificarEIniciar('produtos'), 800);
+}
 
   ngOnInit(): void {
     this.carregar();
@@ -72,7 +78,7 @@ export class ProdutosComponent implements OnInit {
       this.produtos = p;
     });
   }
-  
+
   abrirModal(id: string | null): void {
     this.indexAtual = id;
     this.editando = id !== null;
