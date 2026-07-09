@@ -4,13 +4,14 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SocketService } from '../../../../services/socket.service';
 import { AuthService } from '../../../../services/auth.service';
 import { SuporteService } from '../../../../services/suporte.service';
 import { TourService } from '../../../../services/tour.service';
+import { HttpClient } from '@angular/common/http';
 
 interface MsgChat {
   texto: string;
@@ -48,8 +49,9 @@ export class SuporteComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private authService: AuthService,
     private suporteService: SuporteService,
-    private cdr: ChangeDetectorRef, 
-    private tourService: TourService
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient,
+    private tourService: TourService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -59,39 +61,73 @@ export class SuporteComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.authService.getMe().subscribe((me: any) => {
       this.restauranteId = me?.id || me?._id;
+      this.carregarChamados(); // ✅ busca do Redis ao carregar
     });
 
     this.subs.push(
-      // lista de chamados vindos do service
       this.suporteService.chamados$.subscribe((chamados) => {
         this.chamados = chamados;
-        this.cdr.detectChanges(); // ← ADICIONAR
+        this.cdr.detectChanges();
       }),
 
       // mensagens do cliente durante atendimento
       this.socketService.on('mensagem_cliente').subscribe((d: any) => {
-        const chamado = this.chamados.find(
-          (c: Chamado) => c.userId === d.userId,
-        );
+        const chamado = this.chamados.find((c) => c.userId === d.userId);
         if (!chamado) return;
         chamado.mensagens.push({
           texto: d.mensagem,
           hora: new Date(),
           deAtendente: false,
         });
+        // ✅ salva no Redis via backend já acontece no whatsappManager
+        this.suporteService.atualizarStatus(d.userId, 'encerrado');
         this.cdr.detectChanges();
         setTimeout(() => this.scrollBottom(), 50);
+      }),
+
+      // ✅ novo chamado via socket — adiciona na lista
+      this.socketService.on('chamar_atendente').subscribe((d: any) => {
+        this.suporteService.adicionarChamado(d);
       }),
     );
   }
 
-  ngOnDestroy(): void {
-    this.subs.forEach((s) => s.unsubscribe());
+  // ✅ busca chamados persistidos no Redis
+  private carregarChamados(): void {
+    this.http.get<any[]>('/api/suporte/chamados').subscribe({
+      next: (chamados) => {
+        chamados.forEach((c) => {
+          this.suporteService.adicionarChamado({
+            ...c,
+            hora: new Date(c.hora),
+          });
+        });
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar chamados:', err),
+    });
+    
   }
 
   selecionarChamado(chamado: Chamado): void {
     this.chamadoAtivo = chamado;
-    setTimeout(() => this.scrollBottom(), 50);
+
+    this.http.get<any[]>(`/api/suporte/${chamado.userId}/mensagens`).subscribe({
+      next: (msgs) => {
+        chamado.mensagens = msgs.map((m) => ({
+          texto: m.texto,
+          hora: new Date(m.hora),
+          deAtendente: m.deAtendente,
+        }));
+        this.cdr.detectChanges();
+        setTimeout(() => this.scrollBottom(), 50);
+      },
+      error: () => setTimeout(() => this.scrollBottom(), 50),
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach((s) => s.unsubscribe());
   }
 
   entrarAtendimento(): void {

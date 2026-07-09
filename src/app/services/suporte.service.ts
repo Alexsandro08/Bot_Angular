@@ -36,12 +36,14 @@ export class SuporteService {
               ...c,
               motivo: dados.motivo,
               hora: new Date(),
-              status: 'aguardando' as const,
+              // ✅ só reseta pra aguardando se não vier status definido
+              status: dados.status ?? ('aguardando' as const),
             }
           : c,
       );
       this.chamadosSubject.next(chamados);
-      this.resetarTimer(dados.userId); // reinicia o timer se chamou de novo
+      // ✅ só reinicia timer se não tiver encerrado
+      if (dados.status !== 'encerrado') this.resetarTimer(dados.userId);
       return;
     }
 
@@ -52,13 +54,15 @@ export class SuporteService {
         motivo: dados.motivo,
         numPedido: dados.numPedido,
         hora: new Date(),
-        status: 'aguardando',
+        // ✅ respeita status que vem do Redis
+        status: dados.status ?? 'aguardando',
         mensagens: [],
       },
       ...this.chamadosSubject.value,
     ]);
 
-    this.resetarTimer(dados.userId);
+    // ✅ só inicia timer se não tiver encerrado
+    if (dados.status !== 'encerrado') this.resetarTimer(dados.userId);
   }
 
   getChamados(): Chamado[] {

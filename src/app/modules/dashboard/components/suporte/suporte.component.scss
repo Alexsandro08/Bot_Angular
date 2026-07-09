@@ -5,7 +5,7 @@
   background: #3a3f53;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 // ============================================================
@@ -56,8 +56,12 @@
   color: #5a6478;
   gap: 10px;
 
-  i { font-size: 36px; }
-  p { font-size: 13px; }
+  i {
+    font-size: 36px;
+  }
+  p {
+    font-size: 13px;
+  }
 }
 
 .chamado-item {
@@ -69,9 +73,16 @@
   border-bottom: 1px solid #363b54;
   transition: background 0.2s;
 
-  &:hover { background: rgba(255,255,255,0.03); }
-  &.ativo { background: rgba(79,140,255,0.1); border-left: 3px solid #4f8cff; }
-  &.aguardando .chamado-avatar { border-color: #f1c40f; }
+  &:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  &.ativo {
+    background: rgba(79, 140, 255, 0.1);
+    border-left: 3px solid #4f8cff;
+  }
+  &.aguardando .chamado-avatar {
+    border-color: #f1c40f;
+  }
 }
 
 .chamado-avatar {
@@ -93,8 +104,19 @@
   flex: 1;
   min-width: 0;
 
-  strong { display: block; color: white; font-size: 14px; }
-  small { display: block; color: #8892a4; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  strong {
+    display: block;
+    color: white;
+    font-size: 14px;
+  }
+  small {
+    display: block;
+    color: #8892a4;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .chamado-status {
@@ -160,8 +182,16 @@
     font-size: 16px;
   }
 
-  strong { display: block; color: white; font-size: 14px; }
-  small { display: block; color: #8892a4; font-size: 12px; }
+  strong {
+    display: block;
+    color: white;
+    font-size: 14px;
+  }
+  small {
+    display: block;
+    color: #8892a4;
+    font-size: 12px;
+  }
 }
 
 .chat-acoes {
@@ -170,9 +200,9 @@
 }
 
 .btn-entrar {
-  background: rgba(46,213,115,0.15);
+  background: rgba(46, 213, 115, 0.15);
   color: #2ed573;
-  border: 1px solid rgba(46,213,115,0.3);
+  border: 1px solid rgba(46, 213, 115, 0.3);
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 13px;
@@ -183,13 +213,15 @@
   gap: 6px;
   transition: 0.2s;
 
-  &:hover { background: rgba(46,213,115,0.25); }
+  &:hover {
+    background: rgba(46, 213, 115, 0.25);
+  }
 }
 
 .btn-encerrar {
-  background: rgba(255,71,87,0.15);
+  background: rgba(255, 71, 87, 0.15);
   color: #ff4757;
-  border: 1px solid rgba(255,71,87,0.3);
+  border: 1px solid rgba(255, 71, 87, 0.3);
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 13px;
@@ -200,7 +232,26 @@
   gap: 6px;
   transition: 0.2s;
 
-  &:hover { background: rgba(255,71,87,0.25); }
+  &:hover {
+    background: rgba(255, 71, 87, 0.25);
+  }
+}
+
+.btn-encerrado {
+  background: #ffffff11;
+  color: #b0b8d1;
+  border: 1px solid #ffffff22;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.msg-aviso.encerrado {
+  color: #b0b8d1;
+  background: #ffffff08;
+  border-color: #ffffff11;
 }
 
 .chat-msgs {
@@ -218,7 +269,7 @@
   color: #5a6478;
   font-size: 13px;
   padding: 12px;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 8px;
 }
 
@@ -251,7 +302,10 @@
       border-radius: 12px 12px 0 12px;
     }
 
-    .msg-hora { text-align: right; padding-right: 4px; }
+    .msg-hora {
+      text-align: right;
+      padding-right: 4px;
+    }
   }
 }
 
@@ -273,8 +327,12 @@
     outline: none;
     transition: border-color 0.2s;
 
-    &:focus { border-color: #4f8cff; }
-    &::placeholder { color: #4a4f63; }
+    &:focus {
+      border-color: #4f8cff;
+    }
+    &::placeholder {
+      color: #4a4f63;
+    }
   }
 
   button {
@@ -291,7 +349,9 @@
     font-size: 16px;
     transition: 0.2s;
 
-    &:hover { background: #3a7bd5; }
+    &:hover {
+      background: #3a7bd5;
+    }
   }
 }
 
@@ -304,8 +364,12 @@
   color: #5a6478;
   gap: 12px;
 
-  i { font-size: 48px; }
-  p { font-size: 14px; }
+  i {
+    font-size: 48px;
+  }
+  p {
+    font-size: 14px;
+  }
 }
 
 // ============================================================
@@ -326,6 +390,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
 }
