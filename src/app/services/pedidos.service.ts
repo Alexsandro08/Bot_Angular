@@ -8,6 +8,7 @@ export interface Pedido {
   carrinho: string[];
   total: number;
   endereco: string;
+  pontoReferencia: string;
   pagamento: string;
   status: string;
   comprovante?: string;

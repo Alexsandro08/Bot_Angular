@@ -1,0 +1,75 @@
+<div class="avaliacoes-container">
+  <!-- RESUMO -->
+  <div class="resumo-cards" id="tour-aval-resumo" *ngIf="resumo">
+    <div class="resumo-card destaque">
+      <span class="resumo-valor">{{ resumo.media }}</span>
+      <span class="resumo-stars">{{
+        renderStars(arredondar(resumo.media))
+      }}</span>
+      <span class="resumo-label">Média Geral</span>
+      <small>{{ resumo.total }} avaliações</small>
+    </div>
+    <div class="resumo-card">
+      <i class="bi bi-person-check-fill"></i>
+      <span class="resumo-valor">{{ resumo.humano.media }}</span>
+      <span class="resumo-label">Atendimento Humano</span>
+      <small>{{ resumo.humano.total }} avaliações</small>
+    </div>
+    <div class="resumo-card">
+      <i class="bi bi-robot"></i>
+      <span class="resumo-valor">{{ resumo.bot.media }}</span>
+      <span class="resumo-label">Atendimento Bot</span>
+      <small>{{ resumo.bot.total }} avaliações</small>
+    </div>
+  </div>
+
+  <!-- DISTRIBUIÇÃO -->
+  <div class="distribuicao" id="tour-aval-dist" *ngIf="resumo">
+    <div
+      class="dist-item"
+      *ngFor="let d of resumo.distribuicao.slice().reverse()"
+    >
+      <span class="dist-nota">{{ d.nota }}⭐</span>
+      <div class="dist-barra-wrap">
+        <div
+          class="dist-barra"
+          [style.width.%]="
+            resumo.total > 0 ? (d.quantidade / resumo.total) * 100 : 0
+          "
+        ></div>
+      </div>
+      <span class="dist-qtd">{{ d.quantidade }}</span>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-aval">
+    <button [class.ativo]="filtroTipo === ''" (click)="filtrar('')">
+      Todos
+    </button>
+    <button [class.ativo]="filtroTipo === 'humano'" (click)="filtrar('humano')">
+      <i class="bi bi-person-check-fill"></i> Humano
+    </button>
+    <button [class.ativo]="filtroTipo === 'bot'" (click)="filtrar('bot')">
+      <i class="bi bi-robot"></i> Bot
+    </button>
+  </div>
+
+  <!-- LISTA -->
+  <div class="loading" *ngIf="carregando">Carregando...</div>
+
+  <div class="avaliacoes-lista" id="tour-aval-lista" *ngIf="!carregando">
+    <div class="aval-vazio" *ngIf="avaliacoes.length === 0">
+      <i class="bi bi-star"></i>
+      <p>Nenhuma avaliação ainda.</p>
+    </div>
+    <div class="aval-item" *ngFor="let a of avaliacoes">
+      <div class="aval-avatar">{{ a.nome.charAt(0).toUpperCase() }}</div>
+      <div class="aval-info">
+        <strong>{{ a.nome }}</strong>
+        <span class="aval-stars">{{ renderStars(a.nota) }}</span>
+        <small>{{ getLabelTipo(a.tipo) }} · {{ a.criado_em | horario }}</small>
+      </div>
+    </div>
+  </div>
+</div>

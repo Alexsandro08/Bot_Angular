@@ -1,0 +1,215 @@
+// ============================================================
+// AVALIAÇÕES
+// ============================================================
+.avaliacoes-container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ============================================================
+// CARDS DE RESUMO
+// ============================================================
+.resumo-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  .resumo-card {
+    background: #1e2235;
+    border: 1px solid #ffffff11;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+
+    &.destaque {
+      border-color: #4f8cff44;
+      background: linear-gradient(135deg, #1e2235, #1a2040);
+    }
+
+    i {
+      font-size: 24px;
+      color: #4f8cff;
+    }
+
+    .resumo-valor {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .resumo-stars {
+      font-size: 18px;
+    }
+
+    .resumo-label {
+      font-size: 13px;
+      color: #b0b8d1;
+      font-weight: 500;
+    }
+
+    small {
+      font-size: 12px;
+      color: #ffffff55;
+    }
+  }
+}
+
+// ============================================================
+// DISTRIBUIÇÃO DE NOTAS
+// ============================================================
+.distribuicao {
+  background: #1e2235;
+  border: 1px solid #ffffff11;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .dist-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .dist-nota {
+      font-size: 13px;
+      color: #b0b8d1;
+      width: 40px;
+      text-align: right;
+    }
+
+    .dist-barra-wrap {
+      flex: 1;
+      background: #ffffff11;
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+
+      .dist-barra {
+        height: 100%;
+        background: #4f8cff;
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+    }
+
+    .dist-qtd {
+      font-size: 13px;
+      color: #ffffff88;
+      width: 24px;
+    }
+  }
+}
+
+// ============================================================
+// FILTROS
+// ============================================================
+.filtros-aval {
+  display: flex;
+  gap: 8px;
+
+  button {
+    background: transparent;
+    border: 1px solid #ffffff22;
+    border-radius: 8px;
+    color: #b0b8d1;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #ffffff11;
+      color: #fff;
+    }
+
+    &.ativo {
+      background: #4f8cff;
+      border-color: #4f8cff;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+// ============================================================
+// LISTA DE AVALIAÇÕES
+// ============================================================
+.avaliacoes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aval-item {
+  background: #1e2235;
+  border: 1px solid #ffffff11;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #4f8cff44;
+  }
+
+  .aval-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #4f8cff33;
+    color: #4f8cff;
+    font-weight: 700;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .aval-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    strong {
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .aval-stars {
+      font-size: 16px;
+    }
+
+    small {
+      color: #ffffff55;
+      font-size: 12px;
+    }
+  }
+}
+
+.aval-vazio {
+  text-align: center;
+  padding: 48px;
+  color: #ffffff33;
+
+  i {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+  }
+}
+
+.loading {
+  text-align: center;
+  color: #b0b8d1;
+  padding: 24px;
+}

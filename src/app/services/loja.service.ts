@@ -218,15 +218,16 @@ export class LojaService {
         this.fechadoManualmente = false;
         sessionStorage.removeItem('fechado_manualmente');
       }
-        this.abertaManualmente = false;
-        sessionStorage.removeItem('aberta_manualmente');
+      this.abertaManualmente = false;
+      sessionStorage.removeItem('aberta_manualmente');
       if (!this.fechadoManualmente) this.abrirLoja();
     } else if (!deveEstarAberta && this.aberta) {
-      if (!this.abertaManualmente) {
-        this.fechadoManualmente = false;
-        sessionStorage.removeItem('fechado_manualmente');
-        this.fecharLoja();
-      }
+      // ✅ reseta abertaManualmente ao fechar automaticamente
+      this.abertaManualmente = false;
+      sessionStorage.removeItem('aberta_manualmente');
+      this.fechadoManualmente = false;
+      sessionStorage.removeItem('fechado_manualmente');
+      this.fecharLoja();
     }
   }
 }

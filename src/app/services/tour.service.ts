@@ -5,11 +5,10 @@ import Shepherd from 'shepherd.js';
 // TOUR SERVICE — tour por página
 // ============================================================
 
-type Pagina = 'dashboard' | 'produtos' | 'relatorios' | 'suporte';
+type Pagina = 'dashboard' | 'produtos' | 'relatorios' | 'suporte' | 'avaliacoes';
 
 @Injectable({ providedIn: 'root' })
 export class TourService {
-
   // ============================================================
   // STEPS POR PÁGINA
   // ============================================================
@@ -90,6 +89,12 @@ export class TourService {
         id: 'fim-dashboard',
         title: '✅ Dashboard dominada!',
         text: 'Explore as outras seções pelo menu. O tour vai aparecer automaticamente em cada uma! 🚀',
+      },
+      {
+        id: 'avaliacoes',
+        attachTo: { element: '#tour-nav', on: 'right' },
+        title: '⭐ Avaliações',
+        text: 'Acompanhe as avaliações dos seus clientes após cada atendimento, tanto humano quanto pelo bot.',
       },
     ],
 
@@ -191,6 +196,37 @@ export class TourService {
         text: 'Responda rápido para garantir uma boa experiência ao seu cliente! 😊',
       },
     ],
+
+    avaliacoes: [
+      {
+        id: 'avaliacoes-intro',
+        title: '⭐ Avaliações',
+        text: 'Aqui você acompanha o feedback dos seus clientes após cada atendimento.',
+      },
+      {
+        id: 'avaliacoes-resumo',
+        attachTo: { element: '#tour-aval-resumo', on: 'bottom' },
+        title: '📊 Resumo',
+        text: 'Média geral, média do atendimento humano e do bot separados.',
+      },
+      {
+        id: 'avaliacoes-dist',
+        attachTo: { element: '#tour-aval-dist', on: 'bottom' },
+        title: '📈 Distribuição',
+        text: 'Veja quantas avaliações cada nota recebeu.',
+      },
+      {
+        id: 'avaliacoes-lista',
+        attachTo: { element: '#tour-aval-lista', on: 'top' },
+        title: '📋 Lista',
+        text: 'Todas as avaliações com nome, nota, tipo e horário.',
+      },
+      {
+        id: 'fim-avaliacoes',
+        title: '✅ Pronto!',
+        text: 'Use as avaliações pra melhorar seu atendimento! 🚀',
+      },
+    ],
   };
 
   // ============================================================
@@ -236,11 +272,15 @@ export class TourService {
         title: step.title,
         text: step.text,
         buttons: [
-          ...(!isFirst ? [{
-            text: 'Voltar',
-            action: tour.back,
-            classes: 'shepherd-button-secondary',
-          }] : []),
+          ...(!isFirst
+            ? [
+                {
+                  text: 'Voltar',
+                  action: tour.back,
+                  classes: 'shepherd-button-secondary',
+                },
+              ]
+            : []),
           {
             text: isLast ? 'Concluir 🎉' : 'Próximo →',
             action: isLast ? tour.complete : tour.next,
@@ -268,7 +308,8 @@ export class TourService {
   // RESETAR TODOS (botão "ver tour novamente" geral)
   // ============================================================
   resetarTodos(): void {
-    (['dashboard', 'produtos', 'relatorios', 'suporte'] as Pagina[])
-      .forEach(p => localStorage.removeItem(this.chave(p)));
+    (['dashboard', 'produtos', 'relatorios', 'suporte', 'avaliacoes'] as Pagina[]).forEach(
+      (p) => localStorage.removeItem(this.chave(p)),
+    );
   }
 }

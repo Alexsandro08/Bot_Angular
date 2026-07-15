@@ -19,6 +19,9 @@
           <strong>📍Endereço:</strong>
           {{ pedido.endereco || "Retirada no Local" }}
         </p>
+        <p *ngIf="pedido.pontoReferencia">
+          <strong>🏠 Referência:</strong> {{ pedido.pontoReferencia }}
+        </p>
         <br />
         <p *ngIf="pedido.criadoEm">
           <strong>{{ pedido.criadoEm | horario }}</strong>

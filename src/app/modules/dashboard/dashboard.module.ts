@@ -18,6 +18,7 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { RelatoriosComponent } from './components/relatorios/relatorios.component';
 import { SuporteComponent } from './components/suporte/suporte.component';
 import { ImageCropperComponent } from './components/image-cropper/image-cropper.component';
+import { AvaliacoesComponent } from './components/avaliacoes/avaliacoes.component';
 
 const routes: Routes = [{ path: '', component: DashboardComponent }];
 
@@ -37,6 +38,7 @@ const routes: Routes = [{ path: '', component: DashboardComponent }];
     RelatoriosComponent,
     SuporteComponent,
     ImageCropperComponent,
+    AvaliacoesComponent
   ],
   imports: [
     CommonModule,
