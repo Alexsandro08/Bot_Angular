@@ -16,11 +16,11 @@
           <strong>💵 Troco para:</strong> {{ pedido.troco }}
         </p>
         <p>
-          <strong>📍Endereço:</strong>
+          <strong>🏠 Endereço:</strong>
           {{ pedido.endereco || "Retirada no Local" }}
         </p>
-        <p *ngIf="pedido.pontoReferencia">
-          <strong>🏠 Referência:</strong> {{ pedido.pontoReferencia }}
+        <p *ngIf="pedido.ponto_referencia">
+          <strong>📍Referência:</strong> {{ pedido.ponto_referencia }}
         </p>
         <br />
         <p *ngIf="pedido.criadoEm">

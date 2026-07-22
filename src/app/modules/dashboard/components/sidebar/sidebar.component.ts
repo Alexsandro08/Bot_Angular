@@ -35,7 +35,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private pedidosService: PedidosService,
     private http: HttpClient,
-  ) { }
+  ) {}
 
   ngAfterViewInit(): void {
     this.viewIniciada = true;
@@ -105,17 +105,12 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private calcularMaisVendidos(): void {
     const todos = [
-      ...this.pedidosService
-        .getPedidos()
-        .filter(
-          (p) =>
-            p.pagamento !== 'Pix' ||
-            p.status === 'em_preparo' ||
-            p.status === 'finalizado',
-        ),
+      ...this.pedidosService.getPedidos().filter(
+        (p) => p.status === 'em_preparo', // só aceitos, independente do pagamento
+      ),
       ...this.pedidosService
         .getHistorico()
-        .filter((p) => p.status === 'finalizado'), // ✅
+        .filter((p) => p.status === 'finalizado'),
     ];
 
     const contagem: Record<string, number> = {};

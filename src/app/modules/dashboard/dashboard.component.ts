@@ -48,6 +48,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private jaAvisouExpiracao = false;
   private subs: Subscription[] = [];
   private _ultimoEstadoLoja: boolean | null = null;
+  private filaPreparoEstourado: any[] = [];
+  private modalPreparoAberto = false;
 
   constructor(
     private socketService: SocketService,
@@ -212,6 +214,51 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // ============================================================
   // EVENTOS SOCKET / LOJA
   // ============================================================
+
+  private processarFilaPreparo(): void {
+    if (this.modalPreparoAberto || this.filaPreparoEstourado.length === 0)
+      return;
+
+    this.modalPreparoAberto = true;
+    const d = this.filaPreparoEstourado.shift(); // pega o primeiro da fila
+
+    Swal.fire({
+      title: '🛵 Saiu para entrega?',
+      text: `Pedido #${d.numPedido} de ${d.nome} já deveria ter saído!`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, saiu! 🛵',
+      cancelButtonText: 'Não ainda',
+      confirmButtonColor: '#4f8cff',
+      cancelButtonColor: '#f59e0b',
+      allowOutsideClick: false,
+    }).then((result: any) => {
+      this.modalPreparoAberto = false; // libera pra próximo
+
+      if (result.isConfirmed) {
+        const pedido = this.pedidosService
+          .getPedidos()
+          .find((p) => p.numPedido === d.numPedido);
+        if (pedido) {
+          this.socketService.emit('saiu_entrega', {
+            userId: pedido.userId,
+            numPedido: pedido.numPedido,
+            restauranteId: d.restauranteId,
+          });
+          this.pedidosService.finalizarPedido(pedido.numPedido);
+        }
+      } else {
+        this.socketService.emit('pedido_atrasado_ia', {
+          userId: d.userId,
+          numPedido: d.numPedido,
+          restauranteId: d.restauranteId,
+        });
+      }
+
+      this.processarFilaPreparo(); // processa o próximo da fila
+    });
+  }
+
   private inscreverEventos(): void {
     this.subs.push(
       // novo pedido
@@ -246,6 +293,71 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.socketService.on('pedido_timeout').subscribe((d: any) => {
         console.log('🔴 [pedido_timeout] recebido:', d);
         this.pedidosService.cancelarPedido(d.numPedido, 'cancelado_timeout');
+      }),
+
+      this.socketService.on('pedido_sem_confirmacao').subscribe((d: any) => {
+        this.notificationsService.adicionar(
+          'alerta',
+          '⚠️ Pedido sem confirmação!',
+          `#${d.numPedido} - ${d.nome} aguarda há 5 min`,
+        );
+        this.audioService.pedidoSemConfirmacao();
+
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'warning',
+          title: '⚠️ Pedido sem confirmação!',
+          text: `#${d.numPedido} - ${d.nome} aguarda há 5 minutos!`,
+          showConfirmButton: true,
+          confirmButtonText: 'Ver pedido',
+          confirmButtonColor: '#f59e0b',
+          timer: 0, // ← sem fechar automaticamente, gerente precisa ver
+          timerProgressBar: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.trocarPagina('dashboard');
+          }
+        });
+      }),
+
+      this.socketService.on('pedido_preparo_estourado').subscribe((d: any) => {
+        this.notificationsService.adicionar(
+          'alerta',
+          '🔥 Pedido atrasado!',
+          `#${d.numPedido} - ${d.nome} ainda não saiu para entrega`,
+        );
+
+        this.filaPreparoEstourado.push(d);
+        this.processarFilaPreparo();
+
+        Swal.fire({
+          title: '🛵 Saiu para entrega?',
+          text: `Pedido #${d.numPedido} de ${d.nome} já deveria ter saído!`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sim, saiu! 🛵',
+          cancelButtonText: 'Não ainda',
+          confirmButtonColor: '#4f8cff',
+          cancelButtonColor: '#f59e0b',
+          allowOutsideClick: false, // gerente precisa responder
+        }).then((result: any) => {
+          if (result.isConfirmed) {
+            // busca o pedido pra ter o userId
+            const pedido = this.pedidosService
+              .getPedidos()
+              .find((p) => p.numPedido === d.numPedido);
+            if (pedido) {
+              this.socketService.emit('saiu_entrega', {
+                userId: pedido.userId,
+                numPedido: pedido.numPedido,
+                restauranteId: d.restauranteId, // ← precisa vir no payload do job
+              });
+              this.pedidosService.finalizarPedido(pedido.numPedido);
+            }
+          }
+          // Não → não faz nada por enquanto, item 3 da lista trata a IA
+        });
       }),
 
       this.socketService.on('chamar_atendente').subscribe((d) => {

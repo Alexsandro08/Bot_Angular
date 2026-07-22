@@ -37,6 +37,18 @@ export class AudioService {
     this.bip(880, 0.22, 0.15, 0.5);
   }
 
+  // ⚠️ Pedido sem confirmação — alerta urgente
+  pedidoSemConfirmacao(): void {
+    if (!this.ctx || !this._somAtivo) return;
+    // pulso descendente repetido — sensação de urgência
+    this.bip(640, 0.0, 0.1, 0.5);
+    this.bip(480, 0.12, 0.1, 0.5);
+    this.bip(640, 0.28, 0.1, 0.5);
+    this.bip(480, 0.4, 0.1, 0.5);
+    this.bip(640, 0.56, 0.1, 0.6);
+    this.bip(380, 0.68, 0.2, 0.6);
+  }
+
   // 💰 Comprovante — moeda tipo PicPay
   comprovanteRecebido(): void {
     if (!this.ctx || !this._somAtivo) return;
@@ -49,7 +61,7 @@ export class AudioService {
     this.bip(900, 0.04, 0.18, 0.2, 'sine');
     // eco final
     this.bip(1200, 0.1, 0.12, 0.1, 'sine');
-}
+  }
 
   private bip(
     frequencia: number,
