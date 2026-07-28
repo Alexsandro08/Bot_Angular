@@ -1,11 +1,17 @@
-<div class="order-wrapper">
-  <div class="status-badge-top" [class.preparo]="pedido.status === 'preparo'">
+<div class="order-wrapper" [class.atrasado]="pedido.atrasado">
+  <div
+    class="status-badge-top"
+    [class.preparo]="pedido.status === 'preparo'"
+    [class.atrasado]="pedido.atrasado"
+  >
     <span class="dot-pulse"></span>
     {{ statusMsg }}
   </div>
   <div class="order-list-item">
     <div class="order-left">
-      <div class="order-img">SC</div>
+      <div class="order-img" [style.background]="corAvatar">
+        {{ iniciais }}
+      </div>
       <div class="order-info-text">
         <h4>#{{ pedido.numPedido }} - {{ pedido.nome }}</h4>
         <p><strong>📦 Itens:</strong> {{ pedido.carrinho.join(", ") }}</p>

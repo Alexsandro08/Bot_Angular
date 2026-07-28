@@ -248,6 +248,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.pedidosService.finalizarPedido(pedido.numPedido);
         }
       } else {
+        this.pedidosService.marcarAtrasado(d.numPedido);
         this.socketService.emit('pedido_atrasado_ia', {
           userId: d.userId,
           numPedido: d.numPedido,

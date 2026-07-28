@@ -17,6 +17,7 @@ export class OrderCardComponent {
   @Output() onEntrega = new EventEmitter<Pedido>();
 
   get statusMsg(): string {
+    if (this.pedido.atrasado) return 'Pedido Atrasado ⚠️';
     if (this.pedido.status === 'preparo') return 'Em Preparo...';
     if (this.pedido.status === 'validacao_pendente')
       return 'Comprovante Enviado!';
@@ -38,6 +39,28 @@ export class OrderCardComponent {
     return this.pedido.comprovante.startsWith('data:')
       ? this.pedido.comprovante
       : `data:image/jpeg;base64,${this.pedido.comprovante}`;
+  }
+
+  get iniciais(): string {
+    if (!this.pedido.nome) return '?';
+    return this.pedido.nome
+      .split(' ')
+      .slice(0, 2)
+      .map((n) => n[0].toUpperCase())
+      .join('');
+  }
+
+  get corAvatar(): string {
+    const cores = [
+      '#4f8cff',
+      '#2ecc71',
+      '#e74c3c',
+      '#f39c12',
+      '#9b59b6',
+      '#1abc9c',
+    ];
+    const idx = this.pedido.nome?.charCodeAt(0) % cores.length || 0;
+    return cores[idx];
   }
 
   verComprovante(): void {

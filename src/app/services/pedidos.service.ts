@@ -16,6 +16,7 @@ export interface Pedido {
   horario?: string;
   criadoEm?: string;
   troco?: string;
+  atrasado?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -121,5 +122,13 @@ export class PedidosService {
     this.pedidosSubject.next([]);
     sessionStorage.removeItem('pedidos');
     sessionStorage.removeItem('historico');
+  }
+
+  marcarAtrasado(numPedido: number): void {
+    const pedidos = this.pedidosSubject.value.map((p) =>
+      p.numPedido == numPedido ? { ...p, atrasado: true } : p,
+    );
+    this.pedidosSubject.next(pedidos);
+    this.salvar('pedidos', pedidos);
   }
 }
