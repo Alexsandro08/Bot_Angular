@@ -43,7 +43,8 @@
     </a>
     <a
       [class.active]="paginaAtual === 'avaliacoes'"
-      (click)="navegar('avaliacoes'); fecharMenu()" >
+      (click)="navegar('avaliacoes'); fecharMenu()"
+    >
       <i class="bi bi-star-fill"></i> Avaliações</a
     >
   </nav>
@@ -68,86 +69,85 @@
       >
     </button>
   </div>
+</div>
 
-  <div class="sidebar-actions topbar-actions">
+<app-image-cropper
+  #cropper
+  (logoAtualizada)="onLogoAtualizada($event)"
+></app-image-cropper>
+
+<div class="sidebar-actions topbar-actions">
+  <button
+    class="btn-som"
+    (click)="toggleSom()"
+    [title]="somAtivo ? 'Desativar som' : 'Ativar som'"
+    id="tour-btn-som"
+  >
+    <i
+      class="bi"
+      [class.bi-volume-up-fill]="somAtivo"
+      [class.bi-volume-mute-fill]="!somAtivo"
+    ></i>
+  </button>
+
+  <div id="tour-notificacoes">
+    <app-notifications></app-notifications>
+  </div>
+
+  <div class="config-wrapper" id="tour-config">
     <button
-      class="btn-som"
-      (click)="toggleSom()"
-      [title]="somAtivo ? 'Desativar som' : 'Ativar som'"
-      id="tour-btn-som"
+      class="btn-config"
+      (click)="toggleConfigMenu()"
+      title="Configurações"
     >
-      <i
-        class="bi"
-        [class.bi-volume-up-fill]="somAtivo"
-        [class.bi-volume-mute-fill]="!somAtivo"
-      ></i>
+      <i class="bi bi-gear"></i>
     </button>
-
-    <div id="tour-notificacoes">
-      <app-notifications></app-notifications>
-    </div>
-
-    <div class="config-wrapper" id="tour-config">
-      <button
-        class="btn-config"
-        (click)="toggleConfigMenu()"
-        title="Configurações"
-      >
-        <i class="bi bi-gear"></i>
+    <div class="config-menu" *ngIf="configMenuAberto">
+      <button (click)="editarHorario(); fecharConfigMenu()">
+        <i class="bi bi-clock"></i> Horário
       </button>
-      <div class="config-menu" *ngIf="configMenuAberto">
-        <button (click)="editarHorario(); fecharConfigMenu()">
-          <i class="bi bi-clock"></i> Horário
-        </button>
-        <button (click)="abrirMotivoFechamento(); fecharConfigMenu()">
-          <i class="bi bi-exclamation-circle"></i> Aviso de fechamento
-        </button>
-        <button (click)="verTourNovamente(); fecharConfigMenu()">
-          <i class="bi bi-map"></i> Ver tour novamente
-        </button>
-      </div>
-    </div>
-
-    <div
-      class="avatar-bot"
-      [class.online]="botOnline"
-      (click)="toggleAvatarInfo()"
-      id="tour-bot-status"
-    >
-      <img
-        src="assets/logo.png"
-        width="65px"
-        height="65px"
-        alt="logo"
-        class="logo"
-      />
-      <span
-        class="avatar-dot"
-        [class.dot-online]="botOnline"
-        [class.dot-offline]="!botOnline"
-      ></span>
-      <div class="avatar-popup" *ngIf="mostrarInfo" [class.online]="botOnline">
-        <div class="popup-status">
-          <span class="pulse-ring" *ngIf="botOnline"></span>
-          <img src="assets/logo.png" alt="logo" class="logo" />
-        </div>
-        <strong>Bot {{ botOnline ? "Online" : "Offline" }}</strong>
-        <small>{{ botOnline ? "Recebendo pedidos" : "Desconectado" }}</small>
-      </div>
+      <button (click)="abrirMotivoFechamento(); fecharConfigMenu()">
+        <i class="bi bi-exclamation-circle"></i> Aviso de fechamento
+      </button>
+      <button (click)="verTourNovamente(); fecharConfigMenu()">
+        <i class="bi bi-map"></i> Ver tour novamente
+      </button>
     </div>
   </div>
 
-  <button
-    class="btn-hamburger"
-    (click)="toggleMenu()"
-    [class.open]="menuAberto"
+  <div
+    class="avatar-bot"
+    [class.online]="botOnline"
+    (click)="toggleAvatarInfo()"
+    id="tour-bot-status"
   >
-    <span></span><span></span><span></span>
-  </button>
-
-  <!-- ✅ crop extraído pro componente filho -->
-  <app-image-cropper
-    #cropper
-    (logoAtualizada)="onLogoAtualizada($event)"
-  ></app-image-cropper>
+    <img
+      src="assets/logo.png"
+      width="65px"
+      height="65px"
+      alt="logo"
+      class="logo"
+    />
+    <span
+      class="avatar-dot"
+      [class.dot-online]="botOnline"
+      [class.dot-offline]="!botOnline"
+    ></span>
+    <div class="avatar-popup" *ngIf="mostrarInfo" [class.online]="botOnline">
+      <div class="popup-status">
+        <span class="pulse-ring" *ngIf="botOnline"></span>
+        <img src="assets/logo.png" alt="logo" class="logo" />
+      </div>
+      <strong>Bot {{ botOnline ? "Online" : "Offline" }}</strong>
+      <small>{{ botOnline ? "Recebendo pedidos" : "Desconectado" }}</small>
+    </div>
+  </div>
 </div>
+
+<button class="btn-hamburger" (click)="toggleMenu()" [class.open]="menuAberto">
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+
+<div class="sidebar-overlay" *ngIf="menuAberto" (click)="fecharMenu()"></div>

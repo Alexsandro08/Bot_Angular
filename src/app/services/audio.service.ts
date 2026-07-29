@@ -1,14 +1,25 @@
 import { Injectable } from '@angular/core';
+import { Howl } from 'howler';
 
 @Injectable({ providedIn: 'root' })
 export class AudioService {
-  private ctx: AudioContext | null = null;
   private _somAtivo = true;
 
-  inicializar(): void {
-    if (this.ctx) return;
-    this.ctx = new AudioContext();
-  }
+  private sons = {
+    novoPedido: new Howl({
+      src: ['assets/sounds/novo_pedido.wav'],
+      volume: 0.7,
+    }),
+    comprovante: new Howl({
+      src: ['assets/sounds/comprovante.wav'],
+      volume: 0.7,
+    }),
+    alerta: new Howl({ src: ['assets/sounds/alerta.wav'], volume: 0.7 }),
+    lojaAberta: new Howl({
+      src: ['assets/sounds/loja_aberta.wav'],
+      volume: 0.7,
+    }),
+  };
 
   toggleSom(valor: boolean): void {
     this._somAtivo = valor;
@@ -18,75 +29,28 @@ export class AudioService {
     return this._somAtivo;
   }
 
-  // Loja aberta
+  inicializar(): void {}
+
+  novoPedido(): void {
+    if (!this._somAtivo) return;
+    this.sons.novoPedido.once('end', () => {
+      if (this._somAtivo) this.sons.novoPedido.play();
+    });
+    this.sons.novoPedido.play();
+  }
+
+  comprovanteRecebido(): void {
+    if (!this._somAtivo) return;
+    this.sons.comprovante.play();
+  }
+
+  pedidoSemConfirmacao(): void {
+    if (!this._somAtivo) return;
+    this.sons.alerta.play();
+  }
+
   lojaAberta(): void {
     if (!this._somAtivo) return;
-    if (!this.ctx) this.inicializar();
-    if (!this.ctx) return;
-    // som ascendente positivo
-    this.bip(523, 0.0, 0.12, 0.4); // Dó
-    this.bip(659, 0.13, 0.12, 0.4); // Mi
-    this.bip(784, 0.26, 0.2, 0.5); // Sol
-  }
-
-  // 🔔 Novo pedido — alerta tipo "ding dong" curto
-  novoPedido(): void {
-    if (!this.ctx || !this._somAtivo) return;
-    this.bip(880, 0.0, 0.08, 0.4);
-    this.bip(660, 0.1, 0.08, 0.3);
-    this.bip(880, 0.22, 0.15, 0.5);
-  }
-
-  // ⚠️ Pedido sem confirmação — alerta urgente
-  pedidoSemConfirmacao(): void {
-    if (!this.ctx || !this._somAtivo) return;
-    // pulso descendente repetido — sensação de urgência
-    this.bip(640, 0.0, 0.1, 0.5);
-    this.bip(480, 0.12, 0.1, 0.5);
-    this.bip(640, 0.28, 0.1, 0.5);
-    this.bip(480, 0.4, 0.1, 0.5);
-    this.bip(640, 0.56, 0.1, 0.6);
-    this.bip(380, 0.68, 0.2, 0.6);
-  }
-
-  // 💰 Comprovante — moeda tipo PicPay
-  comprovanteRecebido(): void {
-    if (!this.ctx || !this._somAtivo) return;
-
-    // ataque agudo metálico
-    this.bip(2500, 0.0, 0.015, 0.5, 'triangle');
-    // corpo do pling
-    this.bip(1800, 0.01, 0.08, 0.4, 'sine');
-    // ressonância suave
-    this.bip(900, 0.04, 0.18, 0.2, 'sine');
-    // eco final
-    this.bip(1200, 0.1, 0.12, 0.1, 'sine');
-  }
-
-  private bip(
-    frequencia: number,
-    inicioSeg: number,
-    duracaoSeg: number,
-    volume = 0.3,
-    tipo: OscillatorType = 'sine',
-  ): void {
-    if (!this.ctx) return;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.type = tipo;
-    osc.frequency.setValueAtTime(frequencia, this.ctx.currentTime + inicioSeg);
-
-    gain.gain.setValueAtTime(volume, this.ctx.currentTime + inicioSeg);
-    gain.gain.exponentialRampToValueAtTime(
-      0.001,
-      this.ctx.currentTime + inicioSeg + duracaoSeg,
-    );
-
-    osc.start(this.ctx.currentTime + inicioSeg);
-    osc.stop(this.ctx.currentTime + inicioSeg + duracaoSeg + 0.01);
+    this.sons.lojaAberta.play();
   }
 }

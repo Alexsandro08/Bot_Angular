@@ -45,3 +45,28 @@
   &.amarelo { background: #4f8cff; color: #2d2d2d; }
   &.azul { background: #4f8cff; color: white; }
 }
+
+@media (max-width: 768px) {
+  .orders-panel {
+    padding: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .tabs {
+    gap: 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 10px;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 11px;
+  }
+}

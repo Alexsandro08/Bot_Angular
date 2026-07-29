@@ -115,3 +115,17 @@
   font-weight: 800;
   color: #ffffff;
 }
+
+@media (max-width: 768px) {
+  .side-panel {
+    gap: 12px;
+  }
+
+  .side-card {
+    padding: 16px;
+  }
+
+  .chart-wrap {
+    width: 140px;
+  }
+}

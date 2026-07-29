@@ -62,7 +62,7 @@ export class SidebarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.calcularTicketMedio();
     this.calcularGrafico();
     this.calcularMaisVendidos();
-    this.renderChart(); // ✅ só aqui
+    this.renderChart(); 
   }
 
   private calcularGrafico(): void {
