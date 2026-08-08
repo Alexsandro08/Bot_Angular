@@ -1,0 +1,24 @@
+<div class="wa-screen">
+  <div class="wa-header">
+    <div class="wa-avatar"><img src="assets/logo.png" alt=""></div>
+    <div class="wa-header-info">
+      <div class="wa-name">LunexIA</div>
+      <div class="wa-status">online</div>
+    </div>
+  </div>
+
+  <div class="wa-body" #waBody>
+    <div
+      class="wa-bubble"
+      [class.wa-bubble--cliente]="msg.from === 'cliente'"
+      [class.wa-bubble--bot]="msg.from === 'bot'"
+      *ngFor="let msg of visibleMessages"
+    >
+      {{ msg.text }}
+    </div>
+
+    <div class="wa-bubble wa-bubble--bot wa-typing" *ngIf="isTyping">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>

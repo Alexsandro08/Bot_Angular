@@ -1,0 +1,274 @@
+.dash-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+.dash-topbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  flex-shrink: 0;
+}
+.dash-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.dash-dot--red {
+  background: #ff5f57;
+}
+.dash-dot--yellow {
+  background: #febc2e;
+}
+.dash-dot--green {
+  background: #28c840;
+}
+.dash-title {
+  margin-left: 10px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  font-weight: 600;
+}
+
+.dash-body {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dash-cards {
+  display: flex;
+  gap: 10px;
+}
+.dash-card {
+  flex: 1;
+  background: var(--green-light);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.dash-card-label {
+  font-size: 10.5px;
+  color: var(--gray-700);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.dash-card-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--green-dark);
+}
+
+.dash-chart {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+}
+.dash-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.dash-bar {
+  width: 100%;
+  max-width: 22px;
+  background: var(--green);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.05s linear;
+}
+.dash-bar-label {
+  margin-bottom: 12px;
+  font-size: 9.5px;
+  color: var(--gray-500);
+}
+@media (min-width: 901px) and (max-width: 1300px) {
+  .dash-topbar {
+    padding: 8px 12px;
+    gap: 5px;
+  }
+  .dash-dot {
+    width: 7px;
+    height: 7px;
+  }
+  .dash-title {
+    margin-left: 8px;
+    font-size: 10px;
+  }
+  .dash-body {
+    padding: 12px;
+    gap: 12px;
+  }
+  .dash-cards {
+    gap: 8px;
+  }
+  .dash-card {
+    padding: 8px 10px;
+    border-radius: 7px;
+  }
+  .dash-card-label {
+    font-size: 9px;
+    margin-bottom: 3px;
+  }
+  .dash-card-value {
+    font-size: 15px;
+  }
+  .dash-chart {
+    gap: 6px;
+    padding-top: 6px;
+  }
+  .dash-bar-wrap {
+    gap: 4px;
+  }
+  .dash-bar-label {
+    margin-bottom: 8px;
+    font-size: 8.5px;
+  }
+}
+
+@media (max-width: 900px) {
+  .dash-topbar {
+    padding: 6px 10px;
+    gap: 4px;
+  }
+  .dash-dot {
+    width: 6px;
+    height: 6px;
+  }
+  .dash-title {
+    margin-left: 6px;
+    font-size: 9px;
+  }
+  .dash-body {
+    padding: 10px;
+    gap: 10px;
+  }
+  .dash-cards {
+    gap: 6px;
+  }
+  .dash-card {
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+  .dash-card-label {
+    font-size: 8px;
+    margin-bottom: 2px;
+  }
+  .dash-card-value {
+    font-size: 12px;
+  }
+  .dash-chart {
+    gap: 4px;
+    padding-top: 4px;
+  }
+  .dash-bar-wrap {
+    gap: 3px;
+  }
+  .dash-bar-label {
+    margin-bottom: 6px;
+    font-size: 7px;
+  }
+}
+
+/* Tablets (601-900px): notebook grande, texto não pode ficar minúsculo */
+@media (min-width: 601px) and (max-width: 900px) {
+  .dash-topbar {
+    padding: 7px 11px;
+    gap: 5px;
+  }
+  .dash-dot {
+    width: 6.5px;
+    height: 6.5px;
+  }
+  .dash-title {
+    margin-left: 7px;
+    font-size: 9.5px;
+  }
+  .dash-body {
+    padding: 11px;
+    gap: 11px;
+  }
+  .dash-cards {
+    gap: 7px;
+  }
+  .dash-card {
+    padding: 7px 9px;
+    border-radius: 7px;
+  }
+  .dash-card-label {
+    font-size: 8.5px;
+    margin-bottom: 3px;
+  }
+  .dash-card-value {
+    font-size: 13.5px;
+  }
+  .dash-chart {
+    gap: 5px;
+    padding-top: 5px;
+  }
+  .dash-bar-wrap {
+    gap: 3.5px;
+    margin-bottom: 2px;
+  }
+  .dash-bar-label {
+    margin-bottom: 7px;
+    font-size: 8px;
+  }
+}
+
+/* Celulares reais (até 600px): mantém o que já tinha */
+@media (max-width: 600px) {
+  .dash-topbar {
+    padding: 6px 10px;
+    gap: 4px;
+  }
+  .dash-dot {
+    width: 6px;
+    height: 6px;
+  }
+  .dash-title {
+    margin-left: 6px;
+    font-size: 9px;
+  }
+  .dash-body {
+    padding: 10px;
+    gap: 10px;
+  }
+  .dash-cards {
+    gap: 6px;
+  }
+  .dash-card {
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+  .dash-card-label {
+    font-size: 8px;
+    margin-bottom: 2px;
+  }
+  .dash-card-value {
+    font-size: 12px;
+  }
+  .dash-chart {
+    gap: 4px;
+    padding-top: 4px;
+  }
+  .dash-bar-wrap {
+    gap: 3px;
+  }
+  .dash-bar-label {
+    margin-bottom: 6px;
+    font-size: 7px;
+  }
+}

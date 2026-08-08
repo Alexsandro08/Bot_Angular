@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 * {
   margin: 0;
@@ -12,9 +13,6 @@ body {
   color: white;
 }
 
-// ============================================================
-// SHEPHERD TOUR — tema SuperTech
-// ============================================================
 // ============================================================
 // SHEPHERD TOUR — tema SuperTech
 // ============================================================
@@ -95,4 +93,157 @@ body {
 
 .shepherd-modal-overlay-container {
   fill: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ============================================================
+   LANDING PAGE — tema isolado, só ativa via body.theme-light
+   (não interfere em nada do dashboard acima)
+   ============================================================ */
+:root {
+  --green: #16803c;
+  --green-dark: #0e5f2b;
+  --green-light: #e8f5ec;
+  --ink: #14181a;
+  --gray-700: #4b5563;
+  --gray-500: #6b7280;
+  --gray-200: #e5e7eb;
+  --gray-100: #f3f4f6;
+  --bg: #ffffff;
+  --white: #ffffff;
+  --radius: 12px;
+  --wa-bg: #e5ddd3;
+  --wa-bubble-cliente: #dcf8c6;
+  --wa-bubble-bot: #ffffff;
+}
+
+body.theme-light {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.theme-light a {
+  text-decoration: none;
+  color: inherit;
+}
+
+body.theme-light ul {
+  list-style: none;
+}
+
+body.theme-light img {
+  max-width: 100%;
+  display: block;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.container {
+  max-width: clamp(1180px, 90vw, 1840px);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 72px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 9px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--green);
+  color: var(--white)!important;
+}
+.btn-primary:hover {
+  background: var(--green-dark);
+}
+.btn-outline {
+  background: var(--white);
+  border-color: var(--gray-200);
+  color: var(--ink);
+}
+.btn-outline:hover {
+  border-color: var(--green);
+}
+.btn-block {
+  width: 100%;
+  justify-content: center;
+}
+
+section {
+  padding: clamp(60px, 6vw, 110px) 0;
+}
+
+.section-title {
+  text-align: center;
+  font-size: clamp(30px, 1.2vw + 22px, 38px);
+  font-weight: 800;
+  margin-bottom: 52px;
+}
+
+.reveal-init {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes btn-wiggle {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+.btn-wiggle {
+  animation: btn-wiggle 2.6s ease-in-out infinite;
+}
+.btn-wiggle:hover {
+  animation-play-state: paused;
+}
+
+@keyframes card-pulse {
+  0%,
+  100% {
+    box-shadow: 0 12px 32px rgba(22, 128, 60, 0.18);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 18px 55px rgba(22, 128, 60, 0.55);
+    transform: scale(1.002);
+  }
+}
+.card-pulse {
+  animation: card-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-pulse,
+  .btn-wiggle,
+  .reveal-init,
+  .reveal-visible {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
 }

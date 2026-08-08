@@ -1,0 +1,28 @@
+<div class="dash-screen">
+  <div class="dash-topbar">
+    <div class="dash-dot dash-dot--red"></div>
+    <div class="dash-dot dash-dot--yellow"></div>
+    <div class="dash-dot dash-dot--green"></div>
+    <div class="dash-title">Painel — Hoje</div>
+  </div>
+
+  <div class="dash-body">
+    <div class="dash-cards">
+      <div class="dash-card">
+        <div class="dash-card-label">Pedidos hoje</div>
+        <div class="dash-card-value">{{ pedidosHoje }}</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-label">Faturamento</div>
+        <div class="dash-card-value">R$ {{ faturamentoHoje }}</div>
+      </div>
+    </div>
+
+    <div class="dash-chart">
+      <div class="dash-bar-wrap" *ngFor="let bar of bars">
+        <div class="dash-bar" [style.height.%]="bar.currentPercent"></div>
+        <div class="dash-bar-label">{{ bar.label }}</div>
+      </div>
+    </div>
+  </div>
+</div>

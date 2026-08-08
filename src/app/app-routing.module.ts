@@ -4,7 +4,11 @@ import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  {
+    path: '',
+    loadChildren: () =>
+      import('./public/public.module').then((m) => m.PublicModule),
+  },
   {
     path: 'login',
     loadChildren: () =>
@@ -24,7 +28,7 @@ const routes: Routes = [
       import('./modules/admin/admin.module').then((m) => m.AdminModule),
     canActivate: [AdminGuard],
   },
-  { path: '**', redirectTo: '/login' },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

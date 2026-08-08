@@ -1,0 +1,63 @@
+<div class="container">
+  <header>
+    <div class="logo">
+      <div class="logo-icon"><img src="assets/logo.png" alt="" /></div>
+      <span><span class="la">Lu</span><span class="bot">nexIA</span></span>
+    </div>
+
+    <nav>
+      <ul>
+        <li><a href="#recursos">Recursos</a></li>
+        <li><a href="#como-funciona">Como funciona</a></li>
+        <li><a href="#planos">Planos</a></li>
+        <li><a href="#depoimentos">Depoimentos</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a routerLink="/login" class="entrar-link">Entrar</a>
+      <a routerLink="/planos" class="btn btn-primary">
+        Começar grátis
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          width="15"
+          height="15"
+        >
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </div>
+
+    <button
+      class="hamburger-btn"
+      (click)="toggleMenu()"
+      [class.active]="menuOpen"
+      aria-label="Abrir menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+</div>
+
+<div class="mobile-menu-overlay" *ngIf="menuOpen" (click)="closeMenu()"></div>
+
+<div class="mobile-menu" [class.open]="menuOpen">
+  <div class="mobile-menu-logo">
+    <div class="logo-icon"><img src="assets/logo.png" alt="" /></div>
+    <span><span class="la">Lu</span><span class="bot">nexIA</span></span>
+  </div>
+
+  <ul class="mobile-menu-links">
+    <li><a href="#recursos" (click)="closeMenu()">Recursos</a></li>
+    <li><a href="#como-funciona" (click)="closeMenu()">Como funciona</a></li>
+    <li><a href="#planos" (click)="closeMenu()">Planos</a></li>
+    <li><a href="#depoimentos" (click)="closeMenu()">Depoimentos</a></li>
+    <li><a href="#faq" (click)="closeMenu()">FAQ</a></li>
+  </ul>
+</div>

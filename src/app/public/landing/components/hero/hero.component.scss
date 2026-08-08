@@ -1,0 +1,171 @@
+.hero {
+  display: grid;
+  grid-template-columns: 0.75fr 1.6fr;
+  gap: 24px;
+  align-items: center;
+  padding: 48px 0 36px;
+}
+h1 {
+  font-size: clamp(42px, 2vw + 26px, 56px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+h1 .accent {
+  color: var(--green);
+}
+p {
+  margin-top: 20px;
+  font-size: clamp(16.5px, 0.35vw + 15px, 18px);
+  color: var(--gray-700);
+  max-width: min(440px, 34vw + 200px);
+}
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  margin-top: 28px;
+}
+.hero-badges {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  font-size: 13.5px;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+.hero-badges span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hero-badges svg {
+  width: 15px;
+  height: 15px;
+  color: var(--green);
+}
+.hero-visual {
+  position: relative;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+}
+
+.notebook-wrap {
+  width: 100%;
+  aspect-ratio: 16/10;
+  position: relative;
+
+  background-image: url("/assets/notebook.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  /* Ajuste fino aqui no DevTools até a tela encaixar na moldura do notebook */
+  --tela-top: 16%;
+  --tela-right: 22%;
+  --tela-bottom: 20%;
+  --tela-left: 24%;
+}
+.notebook-wrap app-dashboard-mock {
+  position: absolute;
+  top: var(--tela-top);
+  right: var(--tela-right);
+  bottom: var(--tela-bottom);
+  left: var(--tela-left);
+  display: block;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.celular-wrap {
+  position: absolute;
+  right: -1%;
+  bottom: 1%;
+  width: clamp(90px, 40%, 330px);
+  aspect-ratio: 1024 / 1536;
+
+  background: url("/assets/celular.png") center/contain no-repeat;
+
+  /* Área da tela */
+  --tela-top: 8.6%;
+  --tela-right: 20%;
+  --tela-bottom: 7.2%;
+  --tela-left: 20.7%;
+}
+
+.celular-wrap app-whatsapp-mock {
+  position: absolute;
+  top: calc(var(--tela-top) - 2.2px);
+  right: calc(var(--tela-right) - 1px);
+  bottom: calc(var(--tela-bottom) - 1px);
+  left: calc(var(--tela-left) - 2px);
+  display: block;
+  overflow: hidden;
+  border-radius: 22px; /* ajuste também, pra acompanhar o arredondamento da tela no PNG */
+}
+
+@media (max-width: 1080px) and (min-width: 901px) {
+  .celular-wrap {
+    width: clamp(90px, 40%, 280px);
+  }
+}
+
+@media (min-width: 1081px) and (max-width: 1800px) {
+  .celular-wrap {
+    width: clamp(90px, 40%, 235px);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .hero-visual {
+    min-height: 420px;
+  }
+  .hero-ctas {
+    flex-wrap: wrap;
+  }
+  .hero-ctas .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .hero-badges {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    font-size: 12px;
+  }
+  .celular-wrap {
+    width: 120px; /* um pouco maior que os 130px anteriores */
+    right: 4%;
+    bottom: 15%;
+  }
+  .notebook-wrap {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .wa-header {
+    padding: 6px 8px;
+    gap: 5px;
+  }
+  .wa-name {
+    font-size: 9px;
+  }
+
+  .celular-wrap app-whatsapp-mock {
+    border-radius: 10px;
+    top: calc(var(--tela-top) - 1px);
+    left: calc(var(--tela-left) - 1px);
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .celular-wrap {
+    width: 190px;
+    right: 6%;
+    bottom: 6%;
+  }
+}
+

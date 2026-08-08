@@ -1,0 +1,45 @@
+<section id="planos">
+  <h2 class="section-title">Planos para o seu restaurante</h2>
+  <div class="plans-grid">
+    <div
+      class="plan-card"
+      [class.featured]="plan.featured"
+      [class.card-pulse]="plan.featured"
+      *ngFor="let plan of plans; let i = index"
+      [appScrollReveal]="i * 100"
+    >
+      <div class="plan-badge" *ngIf="plan.badge">{{ plan.badge }}</div>
+
+      <div class="plan-name">{{ plan.name }}</div>
+      <div class="plan-desc">{{ plan.desc }}</div>
+
+      <div class="plan-price" *ngIf="plan.price">
+        {{ plan.price }}<span>{{ plan.priceSuffix }}</span>
+      </div>
+      <div class="plan-consult" *ngIf="plan.consult">{{ plan.consult }}</div>
+
+      <ul class="plan-features">
+        <li *ngFor="let feature of plan.features">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          >
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+          {{ feature }}
+        </li>
+      </ul>
+
+      <a
+        routerLink="/cadastro"
+        class="btn btn-block"
+        [class.btn-primary]="plan.ctaStyle === 'primary'"
+        [class.btn-outline]="plan.ctaStyle === 'outline'"
+      >
+        {{ plan.ctaLabel }}
+      </a>
+    </div>
+  </div>
+</section>

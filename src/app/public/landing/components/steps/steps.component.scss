@@ -1,0 +1,61 @@
+.steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  position: relative;
+}
+.step {
+  text-align: center;
+  padding: 0 20px;
+  position: relative;
+}
+.step-icon-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+.step-icon {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: var(--green-light);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.step-icon svg {
+  width: 32px;
+  height: 32px;
+}
+.step-connector {
+  position: absolute;
+  top: 37px;
+  left: calc(50% + 55px);
+  width: calc(100% - 55px);
+  border-top: 2px dashed var(--gray-200);
+  z-index: 1;
+}
+h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+p {
+  font-size: 14px;
+  color: var(--gray-500);
+  max-width: 250px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .step-connector {
+    display: none;
+  }
+}

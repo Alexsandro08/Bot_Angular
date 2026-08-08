@@ -1,0 +1,98 @@
+footer {
+  padding: 56px 0 28px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr 1.2fr;
+  gap: 24px;
+  padding-bottom: 40px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+.logo .la {
+  color: var(--ink);
+}
+.logo .bot {
+  color: var(--green);
+}
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  margin-top: 10px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.footer-brand p {
+  font-size: 13.5px;
+  color: var(--gray-500);
+  margin-top: 12px;
+  max-width: 220px;
+}
+.footer-social {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.footer-social a {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-700);
+}
+.footer-social svg {
+  width: 15px;
+  height: 15px;
+}
+.footer-col h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.footer-col li {
+  margin-bottom: 10px;
+}
+.footer-col a {
+  font-size: 13.5px;
+  color: var(--gray-500);
+}
+.footer-col a:hover {
+  color: var(--green);
+}
+.footer-col.contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--gray-500);
+}
+.footer-col.contact svg {
+  width: 14px;
+  height: 14px;
+  color: var(--green);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.footer-bottom {
+  border-top: 1px solid var(--gray-100);
+  padding-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

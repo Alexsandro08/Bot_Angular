@@ -1,0 +1,89 @@
+<section id="recursos">
+  <h2 class="section-title" [appScrollReveal]="0">Recursos</h2>
+  <div class="features-grid">
+   <div class="feature-card" *ngFor="let feature of features; let i = index" [appScrollReveal]="i * 80">
+      <div class="feature-icon">
+        <svg *ngIf="i === 0" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.4c1.4.8 3.1 1.2 4.8 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2z"
+          />
+        </svg>
+        <svg
+          *ngIf="i === 1"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <rect x="5" y="8" width="14" height="10" rx="2" />
+          <path d="M9 8V5a3 3 0 016 0v3M9 13h.01M15 13h.01" />
+        </svg>
+        <svg
+          *ngIf="i === 2"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path d="M4 4h9a3 3 0 013 3v13a2.5 2.5 0 00-2.5-2.5H4z" />
+          <path d="M20 4h-9a3 3 0 00-3 3v13a2.5 2.5 0 012.5-2.5H20z" />
+        </svg>
+        <svg
+          *ngIf="i === 3"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <rect x="1" y="7" width="14" height="10" rx="1" />
+          <path d="M15 10h4l3 3v4h-7z" />
+          <circle cx="6" cy="19" r="1.5" />
+          <circle cx="17.5" cy="19" r="1.5" />
+        </svg>
+        <svg
+          *ngIf="i === 4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path d="M3 3v18h18M7 15l3-4 3 2 5-6" />
+        </svg>
+        <svg
+          *ngIf="i === 5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            d="M20.6 12.3L12.3 20.6a1.5 1.5 0 01-2.1 0l-7-7a1.5 1.5 0 010-2.1L11.5 3.2 20.6 12.3z"
+          />
+          <circle cx="8.5" cy="8.5" r="1.3" />
+        </svg>
+        <svg
+          *ngIf="i === 6"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <path d="M2 10h20" />
+        </svg>
+        <svg
+          *ngIf="i === 7"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path d="M3 18v-6a9 9 0 0118 0v6" />
+          <path d="M21 19a2 2 0 01-2 2h-1v-6h3zM3 19a2 2 0 002 2h1v-6H3z" />
+        </svg>
+      </div>
+      <h3>{{ feature.title }}</h3>
+      <p>{{ feature.desc }}</p>
+    </div>
+  </div>
+</section>

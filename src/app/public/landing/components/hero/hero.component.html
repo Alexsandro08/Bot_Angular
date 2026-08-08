@@ -1,0 +1,85 @@
+<div class="container">
+  <section class="hero" [appScrollReveal]="0" style="padding-top: 48px">
+    <div>
+      <h1>
+        Seu restaurante<br />nunca mais<br /><span class="accent"
+          >perde um pedido.</span
+        >
+      </h1>
+      <p>
+        Automatize pedidos e atendimento pelo WhatsApp com inteligência
+        artificial. Mais vendas, menos erros e clientes mais satisfeitos.
+      </p>
+      <div class="hero-ctas">
+        <a routerLink="/planos" class="btn btn-primary btn-wiggle">
+          Começar grátis
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            width="15"
+            height="15"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+        <a href="#" class="btn btn-outline">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Ver demonstração
+        </a>
+      </div>
+      <div class="hero-badges">
+        <span
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          >
+            <path d="M20 6L9 17l-5-5" /></svg
+          >7 dias grátis</span
+        >
+        <span
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          >
+            <path d="M20 6L9 17l-5-5" /></svg
+          >Sem cartão</span
+        >
+        <span
+          ><svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          >
+            <path d="M20 6L9 17l-5-5" /></svg
+          >Cancelamento fácil</span
+        >
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="notebook-wrap">
+        <app-dashboard-mock></app-dashboard-mock>
+      </div>
+      <div class="celular-wrap">
+        <div class="celular-screen">
+          <app-whatsapp-mock></app-whatsapp-mock>
+        </div>
+
+        <img
+          src="assets/celular.png"
+          class="celular-frame"
+          alt="Celular"
+          draggable="false"
+        />
+      </div>
+    </div>
+  </section>
+</div>

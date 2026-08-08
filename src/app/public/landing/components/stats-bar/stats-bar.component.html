@@ -1,0 +1,54 @@
+<div class="stats-bar" [appScrollReveal]="0">
+  <div class="container">
+    <div class="stats-lead">
+      Confiado por restaurantes que não param de crescer
+    </div>
+
+    <div class="stat-item" *ngFor="let stat of stats">
+      <div class="stat-icon">
+        <svg
+          *ngIf="stat.icon === 'pedidos'"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M6 2l1.5 4h9L18 2M3 6h18l-1.5 14a2 2 0 01-2 2H6.5a2 2 0 01-2-2L3 6zM9 10v6M15 10v6"
+          />
+        </svg>
+        <svg
+          *ngIf="stat.icon === 'restaurantes'"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M3 9l9-7 9 7v11a1 1 0 01-1 1H4a1 1 0 01-1-1z" />
+        </svg>
+        <svg
+          *ngIf="stat.icon === 'uptime'"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z" />
+        </svg>
+        <svg
+          *ngIf="stat.icon === 'satisfacao'"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M12 2l3 6.5 7 .8-5.2 4.7 1.4 6.9L12 17.6l-6.2 3.3 1.4-6.9L2 8.3l7-.8z"
+          />
+        </svg>
+      </div>
+      <div>
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </div>
+</div>
